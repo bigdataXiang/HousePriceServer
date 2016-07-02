@@ -9,8 +9,10 @@ import net.sf.json.JSONObject;
 /**
  * Created by ZhouXiang on 2016/7/2.
  */
-public class handler_info {
-    public String get(){
+public class handler_info implements handler{
+
+    @Override
+    public String get(String path){
         return callDataFromMongo("rentout_code","fang",15275);
     }
     public String callDataFromMongo(String collName,String source,int code){

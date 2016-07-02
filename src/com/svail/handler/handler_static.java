@@ -7,11 +7,14 @@ import java.io.File;
 /**
  * Created by ZhouXiang on 2016/7/2.
  */
-public class handler_index implements handler{
+public class handler_static implements handler{
 
     @Override
     public String get(String path){
-        File f = new File("view/index.html");
-        return UtilFile.getContent(f);
+        File f = new File(path);
+        String s=UtilFile.getContent(f);
+        return s;
     }
+
+
 }
