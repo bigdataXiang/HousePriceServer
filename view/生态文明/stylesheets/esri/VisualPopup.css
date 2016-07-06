@@ -1,0 +1,59 @@
+/*visualpopup*/
+.visualpopup {
+    min-width: 250px;
+    max-width: 400px;
+}
+.visualpopup .attrs-area {
+    padding: 0 20px;
+    max-height: 235px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.visualpopup .attrs-area li {
+    list-style: none;
+    padding: 5px 0;
+    color: #898989;
+}
+.visualpopup .files-area {
+    padding: 0 20px;
+}
+.visualpopup .opt-area {
+    margin-top: 10px;
+}
+.visualpopup .opt-area button {
+    margin-left: 5px;
+}
+.visualpopup .nav-tabs {
+    border-bottom: none;
+}
+.visualpopup .nav-tabs li a {
+    color: #6B6565;
+    padding: 5px 20px;
+    text-decoration: none;
+    border-radius: 0;
+    margin-right: 0;
+    border: none;
+    border-top: solid transparent 2px;
+}
+.visualpopup .nav-tabs li.active a {
+    color: rgb(32,147,239);
+    border-top: solid rgb(32,147,239) 2px;
+    background-image: -ms-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -webkit-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -moz-linear-gradient(top, rgb(225, 210, 250), #fff);
+}
+.visualpopup .nav-tabs li a:hover {
+    border: none;
+    color: rgb(32,147,239);
+    border-top: solid rgb(32,147,239) 2px;
+    background-image: -ms-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -webkit-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -moz-linear-gradient(top, rgb(225, 210, 250), #fff);
+}
+.visualpopup .nav-tabs li a:focus {
+    border: none;
+    border-top: solid rgb(32,147,239) 2px;
+}
+.visualpopup .tab-content {
+    padding: 10px 0;
+}

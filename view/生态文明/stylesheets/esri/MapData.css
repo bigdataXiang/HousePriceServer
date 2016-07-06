@@ -1,0 +1,172 @@
+/* map data */
+.mapdata {
+    position: absolute;
+    z-index: 32;
+    left: 10px;
+    bottom: 108px;
+}
+.mapdata .databar {
+    position: relative;
+}
+/* .esrimap .mapdata .toggle {
+	position: absolute;
+	z-index: 1;
+	text-align: center;
+	margin: 3px 3px 0 3px;
+	background-color: rgba(144, 144,144, 0.5);
+	opacity: 1;
+	cursor: pointer;
+} */
+.mapdata .img {
+    width: 72px;
+    height: 70px;
+    margin: 3px;
+    padding-top: 45px;
+    background-image: url(../images/basemap.png);
+    background-repeat: no-repeat;
+    border: 1px solid #fff;
+}
+.mapdata small {
+    cursor: pointer;
+}
+.mapdata li.active .img,
+.mapdata .img:hover {
+    box-shadow: 0px 0px 5px #5bc2e0;
+    cursor: pointer;
+}
+.mapdata li.active small,
+.mapdata .img:hover small {
+    color: #5bc2e0;
+}
+.mapdata .img.gray {
+    background-position: 0 0;
+}
+.mapdata .img.color {
+    background-position: -70px 0;
+}
+.mapdata .img.colorpoi {
+    background-position: -140px 0;
+}
+.mapdata .img.eng {
+    background-position: -210px 0;
+}
+.mapdata .img.chinaborder {
+    background-position: -280px 0;
+}
+.mapdata .img.worldborder {
+    background-position: -350px 0;
+}
+.mapdata .img.blueblack {
+    background-position: -420px 0;
+}
+.mapdata .img.blueblack small {
+    color: #fff;
+}
+.mapdata li.active .img.blueblack small,
+.mapdata .img.blueblack:hover small {
+    color: #5bc2e0;
+}
+.mapdata .datas {
+    position: absolute;
+    z-index: 2;
+    margin-left: -10px;
+    background-color: rgba(144, 144,144, 0.5);
+    bottom: -246px;
+}
+.mapdata .datas li {
+    list-style-type: none;
+    display: inline-block;
+}
+.mapdata .data-tab {
+    margin-top: -30px;
+}
+.mapdata .data-tab li {
+    width: 100px;
+    height: 30px;
+    padding-top: 3px;
+    text-align: center;
+    background-color: #fff;
+    border: 1px solid rgba(144, 144,144, 0.5);
+}
+.mapdata .data-tab li.active {
+    color: #fff;
+    background-color: #9a57ef;
+}
+.mapdata .data-tab li:hover {
+    color: #fff;
+    background-color: #7e39cf;
+    cursor: pointer;
+}
+.mapdata .data-tab li.data-tab-btn {
+    width: 50px;
+    padding-top: 3px;
+}
+.mapdata .data-panel {
+    /* width: 100%; */
+    height: 108px;
+}
+.mapdata .toggle {
+    position: absolute;
+    z-index: 1;
+    opacity: 1;
+}
+.mapdata .toggle-tab {
+    width: 120px;
+    height: 30px;
+}
+.mapdata .toggle-tab li {
+    list-style-type: none;
+    display: inline-block;
+    width: 50%;
+    height: 100%;
+    padding-top: 3px;
+    text-align: center;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: center center;
+    border: 1px solid rgba(144, 144,144, 0.5);
+}
+.mapdata .toggle-tab li:hover {
+    border-color: #7e39cf;
+    cursor: pointer;
+}
+.mapdata .toggle-tab li.basemap {
+    padding: 5px;
+    background-image: url(../images/mapdata/basemap.png);
+}
+.mapdata .toggle-tab li.basemap:hover {
+    background-image: url(../images/mapdata/basemap-hover.png);
+}
+.mapdata .toggle-tab li.thematic {
+    background-image: url(../images/mapdata/thematic.png);
+}
+.mapdata .toggle-tab li.thematic:hover {
+    background-image: url(../images/mapdata/thematic-hover.png);
+}
+.mapdata .toggle-map {
+    /* position: relative; */
+    width: 120px;
+    /* height: 90px; */
+    height: 60px;
+    text-align: center;
+    background-repeat: no-repeat;
+    border: 1px solid #fff;
+    border-top: none;
+}
+.mapdata .toggle .map-name {
+    position: absolute;
+    width: 118px;
+    height: 30px;
+    top: 58px;
+    padding-top: 5px;
+    background-color: #fff;
+}
+.mapdata .toggle:hover .toggle-map {
+    /* border-color: #7e39cf; */
+    cursor: pointer;
+}
+.mapdata .toggle:hover .map-name {
+    /* color: #fff;
+     background-color: #7e39cf; */
+    cursor: pointer;
+}

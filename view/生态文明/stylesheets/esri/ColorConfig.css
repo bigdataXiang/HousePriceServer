@@ -1,0 +1,14 @@
+/* color config */
+.color-config .colors {
+    height: 340px;
+}
+.color-config ul.inline-block > li {
+    display: inline-block;
+}
+.color-config .colors li {
+    list-style-type: none;
+    margin: 3px;
+}
+.color-config li > i:hover {
+    cursor: pointer;
+}

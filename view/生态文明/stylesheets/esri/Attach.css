@@ -1,0 +1,76 @@
+/*attach*/
+.attach {
+    padding: 10px 0;
+}
+.attach .tooltip {
+    border-style: none;
+}
+.attach .empty-tip {
+    color: #999;
+    text-align: center;
+}
+.attach .top-area {
+    color: #898989;
+    padding: 0 0 20px 10px;
+}
+.attach .file-selector {
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+    opacity: 0;
+}
+.attach ul {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+.attach li {
+    float: left;
+    position: relative;
+    list-style: none;
+    width: 100px;
+    height: 100px;
+    margin: 0 5px;
+}
+.attach li.add-item > div.item-area {
+    cursor: pointer;
+}
+.attach li > div {
+    text-align: center;
+    margin: 5px;
+    margin: 5px auto;
+}
+.attach li > div.item-area {
+    border: solid 2px transparent;
+}
+.attach li > div.item-area .filename {
+    color:#555;
+    display: block;
+    padding-top: 10px;
+    text-align: center;
+}
+.attach li:hover .action-area {
+    display: block;
+}
+.attach li.add-item > div.item-area  {
+    width: 64px;
+    height: 64px;
+    background: url(../images/up.png) no-repeat left center;
+}
+.attach li.add-item > div.item-area:hover  {
+    background: url(../images/up-over.png) no-repeat left center;
+}
+.attach .action-area {
+    position: absolute;
+    left: 18px;
+    bottom: 20px;
+    display: none;
+}
+.attach .action-area .btn {
+    padding: 3px 9px;
+    color: #5bc2e0;
+    border: solid #5bc2e0 1px;
+}
+.attach .action-area .btn:hover {
+    color: #fff;
+    background-color: #5bc2e0;
+}

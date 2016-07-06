@@ -1,0 +1,33 @@
+/*pointqueryresult*/
+.pointqueryresult {
+}
+.pointqueryresult .empty-tip {
+    color: #999;
+    text-align: center;
+}
+.pointqueryresult ul.result-area {
+    /*max-height: 340px;*/
+    overflow-x: hidden;
+    /*overflow-y: auto;*/
+}
+.pointqueryresult ul.result-area li {
+    padding: 10px 0 10px 40px;
+    min-width: 100px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: 20px center;
+}
+.pointqueryresult ul.result-area li:hover {
+    background-color: rgba(100,177,239,0.3);
+}
+.pointqueryresult ul.result-area li .fetaurename {
+    padding-left: 10px;
+}
+.pointqueryresult .pager-area {
+    text-align: center;
+}
+.pointqueryresult .foot-area {
+    display: none;
+    padding: 10px 0;
+    text-align: center;
+}

@@ -1,0 +1,66 @@
+/*localqueryer*/
+.localqueryer {
+    width: 275px;
+    position: relative;
+}
+.localqueryer input {
+    font-size: 12px;
+    /* background: #fff url(../images/search-btn.png) no-repeat 226px center; */
+    background-color: #e4e4e4;
+}
+.localqueryer .query-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    /* width: 36px;
+    height: 26px;
+    background-repeat: no-repeat;
+    background-position: 12px center;
+    border-left: solid #ccc 1px;
+    margin: 4px 0; */
+    width: 75px;
+    height: 34px;
+    color: #fff;
+    background-color: #9a57ef;
+    padding: 8px 0 0 13px;
+}
+.localqueryer .query-btn:hover {
+    /* background-image: url(../images/search-btn-o.png); */
+    background-color: #7e39cf;
+    cursor: pointer;
+}
+.localqueryer .data-list{
+    position: absolute;
+    top: 33px;
+    left: 0;
+    width: 275px;
+    display: none;
+    z-index: 50;
+    background: #fff;
+    border: solid #ccc 1px;
+    list-style: none;
+    max-height: 200px;
+    overflow: auto;
+}
+.localqueryer .data-list li{
+    padding: 3px 12px;
+    cursor: pointer;
+    color: #999;
+}
+.localqueryer .data-list li:hover{
+    background-color: rgba(100,177,239,0.3);
+}
+.localqueryer .data-list li span{
+    color: #c33;
+}
+.localqueryer .ready{
+
+}
+.localqueryer .current-data{
+    color: #c33;
+    display: inline-block;
+    height: 25px;
+    position: absolute;
+    top: 7px;
+    left: 5px;
+}

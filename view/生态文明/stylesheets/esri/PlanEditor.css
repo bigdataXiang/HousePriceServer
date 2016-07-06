@@ -1,0 +1,10 @@
+/* plan edit */
+.plan-editor {
+    width: 720px;
+}
+.plan-editor .label.upload {
+    cursor: pointer;
+}
+.plan-editor .datapanel {
+    height: 270px;
+}

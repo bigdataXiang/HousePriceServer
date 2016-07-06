@@ -1,0 +1,99 @@
+/*citylist*/
+.citylist {
+    display: none;
+    max-width: none;
+    width: 400px;
+    position: absolute;
+    background-color: #fff;
+    border: solid #ccc 1px;
+    opacity: 0;
+}
+
+.citylist h5 {
+    margin: 0;
+    background-color: #eeeeee;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 15px;
+    color: #646464;
+}
+
+.citylist .select-area {
+    padding-bottom: 13px;
+}
+
+.citylist .assist {
+    padding: 8px 0 8px 10px;
+}
+
+.citylist .assist a {
+    padding: 0 5px;
+}
+
+.citylist .letters {
+    background-color: #eeeeee;
+}
+
+.citylist .letters .mark {
+    width: 97px;
+    height: 35px;
+    line-height: 35px;
+    background-color: #2093ef;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+}
+
+.citylist .letters a {
+    color: #646464;
+    display: inline-block;
+    text-align: center;
+    padding: 0 5px;
+}
+
+.citylist .content {
+    overflow: auto;
+    height: 200px;
+    border-bottom: solid #ccc 1px;
+}
+
+.citylist .content table.cityGroupDiv {
+    border-bottom: solid #ccc 1px;
+}
+
+.citylist .content table.cityGroupDiv td.firstPro {
+    color: #646464;
+    font-size: 24px;
+    width: 37px;
+    vertical-align: middle;
+    line-height: 24px;
+    font-family: Arial;
+    text-align: center;
+}
+
+.citylist .content table.cityGroupDiv th.proName {
+    background-color: #f6f6f6;
+    width: 60px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.citylist .content table.cityGroupDiv th.proName * {
+    color: #646464;
+}
+
+.citylist .content table.cityGroupDiv td.citys {
+    padding: 4px 10px;
+}
+
+.citylist .content table.cityGroupDiv td.citys a {
+    white-space: nowrap;
+    float: left;
+    padding: 2px 5px;
+    -webkit-transition: all 0.5s ease-in-out;
+    color: #646464;
+}
+
+.citylist .content table.cityGroupDiv td.citys a:hover {
+    -webkit-transform: scale(1.2, 1.2);
+}

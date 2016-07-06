@@ -1,0 +1,20 @@
+/*poiclusterqueryresult*/
+.poiclusterqueryresult {
+}
+.poiclusterqueryresult .empty-tip {
+    color: #999;
+    text-align: center;
+}
+.poiclusterqueryresult ul.result-area {
+}
+.poiclusterqueryresult ul.result-area li {
+    list-style: none;
+    float: left;
+    padding: 5px 20px;
+}
+.poiclusterqueryresult ul.result-area li a {
+    text-decoration: underline;
+}
+.poiclusterqueryresult ul.result-area li span {
+    color: #ccc;
+}

@@ -1,0 +1,78 @@
+/*drivetime*/
+.drivetime {
+    padding: 20px 40px 10px 20px;
+}
+.drivetime .step {
+    height: 210px;
+    padding-left: 30px;
+}
+.drivetime .step > div {
+    margin: 20px 0;
+}
+.drivetime .step > div label {
+    font-weight: bold;
+}
+.drivetime .step > div small {
+    color: #acacac;
+}
+.drivetime .count-area button {
+    color: #5bc2e0;
+    border: solid #5bc2e0 1px;
+    background-color: #fff;
+    padding: 3px 8px;
+    margin: 0 5px;
+}
+.drivetime .count-area button:hover {
+    background-color: #5bc2e0;
+    color: #fff;
+}
+.drivetime .count-area button.selected {
+    background-color: #5bc2e0;
+    color: #fff;
+}
+.drivetime .scene {
+    position: relative;
+    padding-left: 20px;
+    margin-left: 20px;
+}
+.drivetime .scene .car {
+    position: absolute;
+    left: 0;
+    top: 10px;
+}
+.drivetime .scene .range {
+    float: left;
+    text-align: right;
+    width: 120px;
+}
+.drivetime .range img {
+    width: 20px;
+    height: 20px;
+    margin-right: -3px;
+}
+.drivetime .range .stage {
+    height: 10px;
+}
+.drivetime .r1 .stage {
+    background-color: #e9d3b9;
+}
+.drivetime .r2 .stage {
+    background-color: #e1b787;
+}
+.drivetime .r3 .stage {
+    background-color: #cd9149;
+}
+.drivetime .range .time {
+    margin-right: -27px;
+}
+.drivetime .range .time input {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    padding: 0 0 0 5px;
+}
+.drivetime .quota-area li {
+    float: left;
+    margin: 0 10px;
+    list-style-type: none;
+}

@@ -1,0 +1,86 @@
+#jui_dropdown_demo {
+    height: 400px;
+}
+
+#jui_dropdown_demo button {
+    padding: 3px !important;
+}
+
+#jui_dropdown_demo ul li {
+    background: none;
+    display: inline-block;
+    list-style: none;
+}
+
+/* selected option indicator ------------------------------------------------ */
+#opt_selected {
+    margin-top: 20px;
+    font-size: 20px;
+}
+
+/* demo_dropdown 1 ---------------------------------------------------------- */
+.container1 {
+    margin: 20px 30px 10px 30px ;
+    display: inline-block;
+}
+
+.menu1 {
+    position: absolute;
+    width: 240px !important;
+    margin-top: 3px !important;
+}
+
+#launcher1 span {
+    display: inline-block;
+}
+
+/* demo_dropdown 2 ---------------------------------------------------------- */
+.container2 {
+    margin: 20px 30px 10px 30px ;
+    display: inline-block;
+}
+
+.menu2 {
+    position: absolute;
+    width: 120px !important;
+    margin-top: 3px !important;
+}
+
+/* demo_dropdown 3 ---------------------------------------------------------- */
+.container3 {
+    margin: 20px 30px 10px 30px ;
+    padding: 4px;
+    width: 200px;
+    display: inline-block;
+}
+
+.menu3 {
+    position: absolute;
+    width: 120px !important;
+    margin-top: 3px !important;
+}
+
+.launcher3_container {
+    padding: 4px 4px 6px 4px;
+}
+
+.launcher3 {
+    padding: 3px;
+}
+
+/* demo_dropdown 4 ---------------------------------------------------------- */
+.container4 {
+    margin: 20px 30px 10px 30px ;
+    padding: 4px;
+    display: inline-block;
+}
+
+.menu4 {
+    position: absolute;
+    width: 100px !important;
+    margin-top: 3px !important;
+}
+
+#launcher4 span {
+    display: inline-block;
+}

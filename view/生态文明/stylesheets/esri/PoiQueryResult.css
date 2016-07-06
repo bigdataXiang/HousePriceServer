@@ -1,0 +1,36 @@
+/*poiqueryresult*/
+.poiqueryresult {
+}
+.poiqueryresult .empty-tip {
+    color: #999;
+    text-align: center;
+}
+.poiqueryresult ul.result-area {
+}
+.poiqueryresult ul.result-area li {
+    padding: 10px 0 10px 40px;
+    min-width: 100px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: 20px 15px;
+}
+.poiqueryresult ul.result-area li:hover {
+    background-color: #eef;
+}
+.poiqueryresult ul.result-area li .feature-name {
+    padding-left: 10px;
+    color:#00acec;
+    font-size: 12px;
+}
+.poiqueryresult ul.result-area li .feature-address {
+    padding: 0 10px;
+    font-size: 12px;
+}
+.poiqueryresult .pager-area {
+    text-align: center;
+    margin: 5px 0;
+}
+.poiqueryresult .foot-area {
+    display: none;
+    text-align: center;
+}

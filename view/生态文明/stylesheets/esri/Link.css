@@ -1,0 +1,50 @@
+/*link*/
+.link {}
+.link input {
+    display: inline-block;
+    width: 260px;
+}
+.link a {
+    display: inline-block;
+    text-decoration: none;
+}
+.link a.tool {
+    padding: 3px 6px;
+    border: solid #ccc 1px;
+    color: rgb(124, 84, 195);
+}
+.link a.tool:hover {
+    background-color: rgb(124, 84, 195); /* #34abff; */
+    color: #fff;
+}
+.link a.tool:hover {
+}
+.link .link-value{
+    display: none;
+}
+.link .links-area {
+    padding: 10px 0;
+}
+.link .link-item {
+    padding: 10px 20px;
+}
+.link .link-item a.target {
+    width: 240px;
+    overflow: hidden;;
+}
+.link .link-item a.tool {
+    float: right;
+    margin: 0 3px;
+}
+.link .link-item a.ok-link {
+    display: none;
+}
+.link .link-item a.cancel-link {
+    display: none;
+}
+.link .add-area {
+    padding: 10px 20px;
+}
+.link .add-area input {
+    width: 268px;
+}

@@ -1,0 +1,91 @@
+/* dataselector */
+.dataselector {
+    color:#000;
+}
+.dataselector .head-area h4 {
+    float: left;
+    font-size: 16px;
+}
+.dataselector .head-area a {
+    float: right;
+    line-height: 37px;
+    margin-right: 10px;
+    color: #2093ef;
+    text-decoration: none;
+}
+.dataselector .head-area {
+    padding: 0 20px 10px 20px;
+}
+.dataselector .caption-area {
+    padding-left: 30px;
+    color: #2093ef;
+}
+.dataselector .caption-area a {
+    margin-left: 10px;
+    color: #2093ef;
+    text-decoration: none;
+}
+.dataselector .data-area {
+    max-height: 400px;
+    overflow: auto;
+    padding: 10px 0;
+    margin: 0 20px;
+}
+.dataselector .data-area li {
+    list-style-type: none;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-bottom: dashed #ccc 1px;
+}
+.dataselector .data-area li:last-child {
+    border-bottom: none;
+}
+.dataselector .data-area li input {
+    float: left;
+}
+.dataselector .data-area li .data-name {
+    float: left;
+    padding-left: 10px;
+}
+.dataselector .data-area li .download {
+    float: right;
+    display: none;
+    padding: 0 5px;
+}
+.dataselector .data-area li .del {
+    float: right;
+    display: none;
+    padding: 0 5px;
+}
+.dataselector .data-area li .re-name {
+    float: right;
+    display: none;
+    padding: 0 5px;
+}
+.dataselector .data-area li:hover {
+    background-color: rgb(247, 247, 247); /* #f5f5f5; */
+}
+.dataselector .data-area li:hover .download {
+    display: inline-block;
+    color: #2093ef;
+}
+.dataselector .data-area li:hover .del {
+    display: inline-block;
+    color: #2093ef;
+}
+.dataselector .data-area li:hover .re-name {
+    display: inline-block;
+    color: #2093ef;
+}
+.dataselector .foot-area {
+    padding: 10px 20px 20px;
+}
+.dataselector .empty-area {
+    margin: 0 auto;
+    width: 200px;
+    margin-top: 70px;
+    display: none;
+}
+.dataselector .pager-area {
+    text-align: center;
+}

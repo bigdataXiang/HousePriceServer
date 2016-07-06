@@ -1,0 +1,36 @@
+/*districtqueryresult*/
+.districtqueryresult {
+}
+.districtqueryresult .empty-tip {
+    color: #999;
+    text-align: center;
+}
+.districtqueryresult ul.result-area {
+    /*max-height: 340px;*/
+    overflow-x: hidden;
+    /*overflow-y: auto;*/
+}
+.districtqueryresult ul.result-area li {
+    padding: 10px 0 10px 10px;
+    min-width: 100px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: 20px center;
+}
+.districtqueryresult ul.result-area li:hover {
+    background-color: #eef;
+}
+.districtqueryresult ul.result-area li .fetaurename {
+    padding-left: 10px;
+}
+.districtqueryresult ul.result-area li small {
+    color: #9f9f9f;
+}
+.districtqueryresult .pager-area {
+    text-align: center;
+}
+.districtqueryresult .foot-area {
+    display: none;
+    padding: 10px 0;
+    text-align: center;
+}

@@ -1,0 +1,21 @@
+/* grade range */
+.grade-range {
+    margin-bottom: 10px;
+}
+.grade-range li {
+    padding-top: 10px;
+}
+.grade-range .form-control.from,
+.grade-range .form-control.to {
+    width: 80px;
+}
+.grade-range .form-control.alias {
+    width: 55px;
+    margin-left: 5px;
+}
+.grade-range .form-control.error {
+    border-color: #f50;
+}
+.grade-range svg {
+    float: left;
+}

@@ -1,0 +1,107 @@
+/* layer setting */
+.layer-setting .header {
+    height: 50px;
+    padding-left: 72px;
+    background-color: rgb(226, 226, 226);
+    border: 1px solid rgb(196, 196, 196);
+}
+
+.layer-setting .header > span {
+    float: left;
+    width: 85px;
+    height: 35px;
+    margin-top: 8px;
+    padding-top: 8px;
+    text-align: center;
+}
+
+.layer-setting .symbol-panels {
+    position: relative;
+    width: 327px;
+    height: 217px;
+    overflow: hidden;
+}
+
+.layer-setting .symbol-container {
+    position: absolute;
+    width: 662px;
+}
+
+.layer-setting .symbol-container.init-margin {
+    margin-left: 0px;
+}
+
+.layer-setting .symbol-container.more-margin {
+    margin-left: -327px;
+}
+
+.layer-setting .symbol-container > div {
+    float: left;
+    width: 327px;
+}
+
+.layer-setting .symbol-container .symbols.style .style-default {
+    opacity: 0.5;
+    min-height: 167px;
+    padding: 15px 0 10px 22px;
+    background-color: rgb(247, 247, 247);
+    border: 1px solid rgb(226, 226, 226);
+    border-top: none;
+}
+
+.layer-setting .symbol-container .symbols.style .style-default li {
+    list-style-type: none;
+    display: inline-block;
+    width: 82px;
+    height: 82px;
+    margin: 0 5px;
+    background-repeat: no-repeat;
+    background-color: rgb(238, 238, 238);
+    border: 1px solid rgb(226, 226, 226);
+}
+
+.layer-setting .symbol-container .symbols.style .style-default li.fill {
+    background-image: url(../images/fill-disable.png);
+}
+
+.layer-setting .symbol-container .symbols.style .style-default li.grade {
+    background-image: url(../images/grade-disable.png);
+}
+
+.layer-setting .symbol-container .symbols.style .style-default li.types {
+    background-image: url(../images/types-disable.png);
+}
+
+.layer-setting .symbol-container .symbols.style .style-default .img-icon {
+    height: 60px;
+}
+
+.layer-setting .symbol-container .symbols.style .style-default .img-tip {
+    font-size: 12px;
+    padding-top: 6px;
+    height: 28px;
+    color: #fff;
+    background-color: #aaa;
+    text-align: center;
+}
+
+.layer-setting .back {
+    height: 30px;
+    padding: 3px 0 3px 10px;
+    background-color: rgb(247, 247, 247);
+    border: 1px solid rgb(226, 226, 226);
+    border-top: none;
+}
+
+.layer-setting .back > button {
+    width: 60px;
+    height: 22px;
+    padding: 1px;
+}
+
+.layer-setting .sets-more {
+    height: 187px;
+    background-color: rgb(247, 247, 247);
+    border: 1px solid rgb(226, 226, 226);
+    border-top: none;
+}

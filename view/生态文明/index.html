@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  	<title>生态文明建设 网络时空数据调查分析平台</title>
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+      
+      .leaflet-tile-pane {
+      	opacity: 0.2;
+      }
+    </style>
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-responsive.css" >
+    <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
+    <link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+		<link href="stylesheets/ui.css" rel="stylesheet">
+    
+    
+    <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="lib/leaflet/leaflet.js"></script>
+    <script src="lib/heatmap/heatmap.min.js"></script>
+    <script src="lib/heatmap/leaflet-heatmap.js"></script>
+    <script type="text/javascript" src='lib/leaflet/leaflet.ChineseTmsProviders.js'></script>
+		
+    <script src="data/archivement.js"></script>
+    <script src="data/scheme.js"></script>
+    <script src="data/orgnization.js"></script>
+    <script src="data/leader.js"></script>
+    <script src="data/projection.js"></script>
+    
+    
+</head>
+<body>
+
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+  		<div class="container">
+   			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+     			<span class="icon-bar"></span>
+       			<span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">生态文明建设</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active">网络时空数据调查分析平台</li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+    	<div class="row-fluid">
+			<div id="map" class="span9"></div>
+		</div>
+	</div>
+
+ 	<script type="text/javascript">
+		var map;
+		var resize = function () {
+			var $map = $('#map');
+			
+			$map.height($(window).height() - $('div.navbar').outerHeight());
+			
+			if (map) {
+				map.invalidateSize();
+			}
+		};
+	
+		$(window).on('resize', function () {
+			resize();
+		});
+	
+		resize();
+    
+    var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map',{maxZoom:18,minZoom:5});
+		var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map',{maxZoom:18,minZoom:5});
+		var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:5});
+		var normal = L.layerGroup([normalm]),
+    		image = L.layerGroup([imgm,imga]);
+		/*var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map',{maxZoom:18,minZoom:5}),
+	   	normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion',{maxZoom:18,minZoom:5}),
+	   	imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map',{maxZoom:18,minZoom:5}),
+	   	imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion',{maxZoom:18,minZoom:5});
+	  
+	  var normal = L.layerGroup([normalm,normala]),
+	   	image = L.layerGroup([imgm,imga]);
+		*/
+		var baseLayers = {
+			"地图":normal,
+			"影像":image,
+		}
+		var overlayLayers = {};
+    
+		map = L.map("map",{
+			layers:[normal],
+			zoomControl:true
+		}).setView([39.8, 116.3], 3); /* 39°54'27"，东经116°23'17*/
+
+		
+		
+    var cfg = {
+			// radius should be small ONLY if scaleRadius is true (or small radius is intended)
+			// if scaleRadius is false it will be the constant radius used in pixels
+			"radius": 1.8,
+			"maxOpacity": .3, 
+			// scales the radius based on map zoom
+			"scaleRadius": true, 
+			// if set to false the heatmap uses the global maximum for colorization
+			// if activated: uses the data maximum within the current map boundaries 
+			//   (there will always be a red spot with useLocalExtremas true)
+			"useLocalExtrema": false,
+			// which field name in your data represents the latitude - default "lat"
+			latField: 'lat',
+			// which field name in your data represents the longitude - default "lng"
+			lngField: 'lng',
+			// which field name in your data represents the data value - default "value"
+			valueField: 'value'
+		};
+		var heatmap = new HeatmapOverlay(cfg);
+    map.addLayer(heatmap);
+			
+    var cdata = {
+		 	max: 1,
+		 	data: []
+		};
+		var tdat = projection;
+		for (var n = 0; n < tdat.features.length; ++ n) {
+     	cdata.data.push({lng:tdat.features[n].geometry.coordinates[0], lat: tdat.features[n].geometry.coordinates[1], value: 1});
+		}
+				
+		heatmap.setData(cdata);
+				
+		function onEachFeature(feature, clayer) {
+			if (feature.properties) {
+				
+				clayer.bindPopup("<DIV><span style=\"font-weight:bold;\"><a target=\"blank\" href=\"" + feature.properties.href + "\">" + feature.properties.title + "</a></span></DIV><HR/><DIV><span>" + feature.properties.abs + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + feature.properties.region + "</span></DIV><DIV><span  style=\"font-weight:bold;\">时间:	</span><span>" + feature.properties.time + "<span></DIV>" );
+		 	}
+		}
+		/* var geojsonMarkerOptions = {
+			radius: 12,
+		  fillColor: "#ff7800",
+		  color: "#FFF",
+		  weight: 1,
+		  opacity: 1,
+		  fillOpacity: 1
+		};
+		var tdat = scheme;
+    // '00FFFF', '008080', '0000FF', '000080', 'FF00FF', '800080'
+		L.geoJson(tdat,  {
+			onEachFeature: onEachFeature,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, geojsonMarkerOptions);
+			}
+		}).addTo(map);
+		
+		
+		var prjOptions = {
+			radius: 9,
+		  fillColor: "#ff7800",
+		  color: "#FFF",
+		  weight: 1,
+		  opacity: 1,
+		  fillOpacity: 1
+		};
+		
+		L.geoJson(projection,  {
+			onEachFeature: onEachFeature,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, prjOptions);
+			}
+		}).addTo(map);
+		
+		var orgOptions = {
+			radius: 6,
+		  fillColor: "#ff7800",
+		  color: "#FFF",
+		  weight: 1,
+		  opacity: 1,
+		  fillOpacity: 1
+		};
+		L.geoJson(orgnization,  {
+			onEachFeature: onEachFeature,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, orgOptions);
+			}
+		}).addTo(map);
+		
+		var arcOptions = {
+			radius: 4,
+		  fillColor: "#ff7800",
+		  color: "#FFF",
+		  weight: 1,
+		  opacity: 1,
+		  fillOpacity: 1
+		};
+		
+		L.geoJson(archivement,  {
+			onEachFeature: onEachFeature,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, arcOptions);
+			}
+		}).addTo(map);
+		
+		*/
+		map.setView([39.8, 116.3], 3);;
+		var layerControl = new L.Control.Layers();
+	
+		layerControl.addTo(map);
+		resize();
+	</script>
+</body>
+</html>

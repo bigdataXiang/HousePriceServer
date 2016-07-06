@@ -1,0 +1,47 @@
+/*customerpopup*/
+.customerpopup {
+}
+
+.customerpopup > .nav-tabs {
+    border-bottom: none;
+}
+
+.customerpopup > .nav-tabs li {
+    /*display: none;*/
+}
+
+.customerpopup > .nav-tabs li a {
+    color: #6B6565;
+    padding: 5px 20px;
+    text-decoration: none;
+    border-radius: 0;
+    margin-right: 0;
+    border: none;
+    border-top: solid transparent 2px;
+}
+
+.customerpopup > .nav-tabs li.active a {
+    color: rgb(124, 84, 195);
+    border-top: solid rgb(124, 84, 195) 2px;
+    background-image: -ms-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -webkit-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -moz-linear-gradient(top, rgb(225, 210, 250), #fff);
+}
+
+.customerpopup > .nav-tabs li a:hover {
+    border: none;
+    color: rgb(124, 84, 195);
+    border-top: solid rgb(124, 84, 195) 2px;
+    background-image: -ms-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -webkit-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -moz-linear-gradient(top, rgb(225, 210, 250), #fff);
+}
+
+.customerpopup > .nav-tabs li a:focus {
+    border: none;
+    border-top: solid rgb(124, 84, 195) 2px;
+}
+
+.customerpopup > .tab-content {
+    padding: 10px 0;
+}

@@ -1,0 +1,27 @@
+/* chart config */
+.chart-config {
+    width: 270px;
+}
+.chart-config .items {
+    height: 320px;
+    max-height: 320px;
+}
+.chart-config .items > div {
+    padding: 3px;
+    border: 1px solid #fff;
+}
+.chart-config .items > div:hover {
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+.chart-config .items .field-color {
+    float: left;
+    width: 35px;
+    height: 20px;
+    cursor: pointer;
+}
+.chart-config .items label {
+    margin-left: 7px;
+    margin-bottom: 0;
+    cursor: pointer;
+}

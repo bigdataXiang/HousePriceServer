@@ -1,0 +1,44 @@
+/* edit toolbar */
+.edit-toolbar {
+    position: absolute;
+    z-index: 34;
+    left: 60px;
+    top: -320px;
+    width: 300px;
+    border-radius: 4px 4px 0 0;
+}
+.edit-toolbar.show {
+    top: 107px;
+}
+.edit-toolbar .panel-title {
+    float: left;
+    font-size: 1.125em;
+    margin-left: 105px;
+}
+.edit-toolbar .panel-heading {
+    height: 36px;
+    border-radius: 0;
+    line-height: 20px;
+    padding: 7px 15px;
+}
+.edit-toolbar .panel-heading .btn-group {
+    float: right;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+.edit-toolbar .panel-heading .btn-group:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.edit-toolbar .panel-heading button.close {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    color: #fff;
+    opacity: 1;
+    outline: none;
+}
+.edit-toolbar .edit-tools {
+    margin-top: 10px;
+}

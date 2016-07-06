@@ -1,0 +1,13 @@
+/* simplepopup */
+.simplepopup {
+    min-width: 350px;
+    max-width: 400px;
+}
+.simplepopup .attrs-area {
+    padding: 20px;
+}
+.simplepopup .attrs-area li {
+    list-style: none;
+    padding: 5px 0;
+    color: #898989;
+}

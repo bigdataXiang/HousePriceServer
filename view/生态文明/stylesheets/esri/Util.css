@@ -1,0 +1,179 @@
+/* toc common */
+.toc-slider {
+    width: 160px;
+    height: 8px;
+}
+.toc-colorpick {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #d7d7d7;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* layer settings row */
+.layerset-row {
+    padding-top: 10px;
+    padding-bottom: 5px;
+    overflow: hidden;
+}
+.layerset-row > * {
+    float: left;
+    margin-left: 10px;
+}
+.layerset-row > *:first-child {
+    margin-left: 0;
+}
+.layerset-row > .slider {
+    margin-top: 5px;
+}
+.layerset-row .toc-slider {
+    width: 65px;
+}
+.layerset-row > .value {
+    width: 20px;
+    color: #34abff;
+}
+.layerset-row.multiple {
+    height: 100px;
+}
+.layerset-row .long-slider {
+    width: 150px;
+}
+
+/* style - basic ops */
+.basic-ops {
+    padding: 10px 0 0 25px;
+}
+.basic-ops > .basic-title {
+    float: left;
+    width: 60px;
+    height: 30px;
+    padding-top: 2px;
+}
+.basic-ops > .basic-content {
+    float: left;
+    width: 185px;
+    height: 30px;
+}
+.basic-ops > .basic-button {
+    margin-top: 17px;
+    background-color: rgb(226, 226, 226);
+    border: 1px solid rgb(226, 226, 226);
+}
+.basic-ops > .basic-button:hover {
+    color: #fff;
+    background-color: rgb(124, 84, 195);
+}
+.basic-ops a.active {
+    color: #fff;
+    background-color: #0072bb;
+}
+.basic-ops a {
+    margin-left: 5px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.basic-ops .style-icon {
+    float: left;
+    width: 24px;
+    height: 24px;
+    margin: 0 10px 0 5px;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+}
+.basic-ops .style-icon:hover {
+    background-color: #e7e7e7;
+    cursor: pointer;
+}
+.basic-ops .style-icon.active {
+    background-color: #d7d7d7;
+}
+.basic-ops .style-icon-grade {
+    background-image: url(../images/grade.png);
+}
+.basic-ops .style-icon-types {
+    background-image: url(../images/types.png);
+}
+.basic-ops .style-icon-fill {
+    background-image: url(../images/fill.png);
+}
+.basic-ops .form-control,
+.more-ops .form-control {
+    width: 100px;
+    height: 24px;
+    padding: 0 1px;
+}
+.basic-ops .form-control {
+    margin-left: 10px;
+}
+.basic-ops .grade-field,
+.basic-ops .types-field {
+    width: 180px;
+}
+.more-ops select[multiple] {
+    width: 120px;
+    height: 90px;
+}
+.basic-ops .btn,
+.more-ops .btn {
+    font-size: 12px;
+    width: 85px;
+    height: 26px;
+    padding: 2px 5px;
+    margin-top: -2px;
+}
+.more-ops {
+    clear: both;
+    padding: 5px 0 0px 25px;
+}
+.more-ops .slider {
+    margin-top: 7px;
+}
+.more-ops .typecolors {
+    width: 24px;
+    height: 24px;
+    background-image: url(../images/colors.png);
+    border-radius: 4px;
+}
+.more-ops .typecolors:hover {
+    background-color: #e7e7e7;
+    cursor: pointer;
+}
+
+/* marker style */
+.style-markers {
+    float: left;
+}
+.style-markers > li {
+    list-style-type: none;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin: 0 5px;
+    text-align: center;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+}
+.style-markers > li.circle {
+    background-image: url(../images/symbol/circle.png);
+}
+.style-markers > li.square {
+    background-image: url(../images/symbol/square.png);
+}
+.style-markers > li.diamond {
+    background-image: url(../images/symbol/diamond.png);
+}
+.style-markers > li.upload {
+    background-image: url(../images/symbol/upload.jpg);
+}
+.style-markers > li.upload:hover {
+    background-image: url(../images/symbol/upload_hover.jpg);
+}
+.style-markers > li:hover,
+.style-markers > li.active {
+    background-color: rgb(226, 226, 226);
+    cursor: pointer;
+}

@@ -1,0 +1,77 @@
+.planmanage {
+    color: rgb(51, 51, 51);
+    padding: 20px 40px;
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery {
+    position: relative;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery input.keyword {
+    height: 28px;
+    width: 250px;
+    /*border: none;*/
+    background-color: #e5e4e4;
+    border-width: 1px;
+    float: left;
+    margin-right: 10px;
+    padding-left: 25px;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery input.keyword:hover {
+    border-color: #7e39cf;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery .icon-search {
+    position: absolute;
+    left: 5px;
+    font-size: 1.25em;
+    top: 5px;
+    color: #a0a0a0;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery .icon-remove {
+    position: absolute;
+    right: 15px;
+    font-size: 1em;
+    top: 7px;
+    color: #a0a0a0;
+    cursor: pointer;
+    display: none;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery .icon-remove:hover {
+    color: #7e39cf;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery ul {
+    position: absolute;
+    top: 28px;
+    width: 250px;
+    display: none;
+    z-index: 50;
+    background: #fff;
+    border: solid #ccc 1px;
+    list-style: none;
+    overflow: auto;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery ul li {
+    padding: 3px 12px;
+    cursor: pointer;
+    color: #999;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery ul li:hover{
+    background-color: #eef;
+}
+.planmanage .planmanage-toolarea .planmanage-mapquery ul li.selected{
+    background-color: #eef;
+}
+.planmanage .planmanage-listarea {
+    /*padding: 0 27px;*/
+    width: 100%;
+    height: 85%;
+}
+.planmanage .planmanage-listarea > div {
+    margin-top: 25px;
+    margin-right: 25px;
+    float: left;
+}
+.planmanage .pager-tool {
+    text-align: center;
+}

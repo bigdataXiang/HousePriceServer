@@ -1,0 +1,35 @@
+/* importer */
+.importer .area {
+    float: left;
+}
+.importer .tabs-area ul {
+    color: #000;
+}
+.importer .tabs-area li {
+    list-style: none;
+    padding: 10px 20px;
+    width: 120px;
+    border-bottom: 1px solid rgb(196, 196, 196);
+    cursor: pointer;
+    text-align: center;
+}
+.importer .tabs-area li.active {
+    background-color: #fff; /* #ccc; */
+}
+.importer .tabs-area ul li.table {
+    display: none;
+}
+.importer .main-area {
+    min-height: 200px;
+    padding-top: 20px;
+    background-color: #fff;
+}
+.importer .added-tip-area {
+    margin: 0 auto;
+    width: 850px;
+    padding-top: 50px;
+    text-align: center;
+}
+.importer .added-tip-area h3 {
+    color: #000;
+}

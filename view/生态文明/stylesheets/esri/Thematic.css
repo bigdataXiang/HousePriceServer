@@ -1,0 +1,223 @@
+/* thematic */
+.thematic {
+    padding: 5px;
+}
+
+.thematic .more-thematic {
+    width: 100px;
+    height: 90px;
+    padding-top: 25px;
+    text-align: center;
+    color: #ccc;
+    background-color: #f2f2f4;
+    border: 1px solid #fff;
+}
+
+.thematic .more-thematic:hover {
+    color: #9a57ef;
+    background-color: #fff;
+    border-color: #9a57ef;
+    cursor: pointer;
+}
+
+.thematic .more-thematic i,
+.thematic .more-thematic span {
+    display: block;
+}
+
+.thematic .navi {
+    width: 20px;
+    height: 90px;
+    padding: 30px 0 0 5px;
+    color: #f2f2f4;
+}
+
+.thematic .navi:hover {
+    color: #9a57ef;
+    cursor: pointer;
+}
+
+.thematic .navi.disable,
+.thematic .navi.disable:hover {
+    color: #eee;
+    cursor: not-allowed;
+}
+
+.thematic .thematic-ctrl > div {
+    margin-left: 10px;
+}
+
+.thematic .thematic-container {
+    position: relative;
+    height: 90px;
+    overflow: hidden;
+}
+
+.thematic .thematic-list {
+    position: absolute;
+    left: 0;
+}
+
+.thematic .thematic-list > li {
+    position: relative;
+    width: 120px;
+    height: 90px;
+    margin: 0 5px;
+    text-align: center;
+    background-color: #fff;
+    background-position: -21px -21px;
+    background-repeat: no-repeat;
+    border: 1px solid #fff;
+}
+
+.thematic .thematic-list > li.active {
+    border-color: #7e39cf;
+}
+
+.thematic .thematic-list > li:hover {
+    border-color: #9a57ef;
+    cursor: pointer;
+}
+
+/*.thematic .thematic-list > li[data-category="餐饮"] {*/
+/*background-image: url(../images/thematic/commercial.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="餐饮"].active,*/
+/*.topicselector .data-smallType .div-smallType .img[data-category="餐饮"] {*/
+/*background-image: url(../images/thematic/commercial-active.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="教育"] {*/
+/*background-image: url(../images/thematic/consume.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="教育"].active,*/
+/*.topicselector .data-smallType .div-smallType .img[data-category="教育"] {*/
+/*background-image: url(../images/thematic/consume-active.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="购物"] {*/
+/*background-image: url(../images/thematic/economics.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="购物"].active,*/
+/*.topicselector .data-smallType .div-smallType .img[data-category="购物"] {*/
+/*background-image: url(../images/thematic/economics-active.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="服务"] {*/
+/*background-image: url(../images/thematic/commercial.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="服务"].active,*/
+/*.topicselector .data-smallType .div-smallType .img[data-category="服务"] {*/
+/*background-image: url(../images/thematic/commercial-active.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="房产"] {*/
+/*background-image: url(../images/thematic/economics.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="房产"].active,*/
+/*.topicselector .data-smallType .div-smallType .img[data-category="房产"] {*/
+/*background-image: url(../images/thematic/economics-active.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="医疗"] {*/
+/*background-image: url(../images/thematic/poi.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="医疗"].active,*/
+/*.topicselector .data-smallType .div-smallType .img[data-category="医疗"] {*/
+/*background-image: url(../images/thematic/poi-active.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="交通"] {*/
+/*background-image: url(../images/thematic/poi.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="交通"].active,*/
+/*.topicselector .data-smallType .div-smallType .img[data-category="交通"] {*/
+/*background-image: url(../images/thematic/poi-active.png);*/
+/*}*/
+
+/*.thematic .thematic-list > li[data-category="经济"] {*/
+/*background-image: url(../images/thematic/economics.png);*/
+/*}*/
+/*.thematic .thematic-list > li[data-category="经济"].active,*/
+/*.topicselector .data-smallType .div-smallType .img[data-category="经济"] {*/
+/*background-image: url(../images/thematic/economics-active.png);*/
+/*}*/
+.thematic .thematic-list > li[data-name^="pop|"] {
+    background-image: url(../images/thematic/population.png);
+}
+
+.thematic .thematic-list > li[data-name^="pop|"].active, {
+    background-image: url(../images/thematic/population-active.png);
+}
+
+.thematic .thematic-list > li[data-name^="business|"],
+.thematic .thematic-list > li[data-name^="bussiness|"] {
+    background-image: url(../images/thematic/commercial.png);
+}
+
+.thematic .thematic-list > li[data-name^="business|"].active,
+.thematic .thematic-list > li[data-name^="bussiness|"].active,
+.topicselector .data-smallType .div-smallType .img[data-category="商业"] {
+    background-image: url(../images/thematic/commercial-active.png);
+}
+
+.thematic .thematic-list > li[data-name^="poi|"] {
+    background-image: url(../images/thematic/poi.png);
+}
+
+.thematic .thematic-list > li[data-name^="poi|"].active, {
+    background-image: url(../images/thematic/poi-active.png);
+}
+
+.thematic .thematic-list > li[data-name^="Business_POI|"] {
+    background-image: url(../images/thematic/poi.png);
+}
+
+.thematic .thematic-list > li[data-name^="Business_POI|"].active, {
+    background-image: url(../images/thematic/poi-active.png);
+}
+
+.thematic .thematic-list > li[data-name^="consume|"] {
+    background-image: url(../images/thematic/consume.png);
+}
+
+.thematic .thematic-list > li[data-name^="consume|"].active, {
+    background-image: url(../images/thematic/consume-active.png);
+}
+
+.thematic .thematic-list > li[data-name^="brand|"] {
+    background-image: url(../images/thematic/brand.png);
+}
+
+.thematic .thematic-list > li[data-name^="brand|"].active {
+    background-image: url(../images/thematic/brand-active.png);
+}
+
+.thematic .thematic-list > li .thematic-name {
+    position: absolute;
+    width: 118px;
+    height: 30px;
+    top: 58px;
+    padding-top: 5px;
+    background-color: #fff;
+}
+
+.thematic .thematic-list > li.active .thematic-name {
+    color: #fff;
+    background-color: #7e39cf;
+}
+
+.thematic .thematic-list > li:hover .thematic-name {
+    cursor: pointer;
+}
+
+.thematic .thematic-list > li .remove-thematic {
+    position: absolute;
+    display: none;
+    width: 20px;
+    height: 20px;
+    top: -1px;
+    right: -10px;
+    color: #fff;
+    background-color: #9a57ef;
+    border-radius: 10px;
+}
+
+.thematic .thematic-list > li:hover .remove-thematic {
+    display: block;
+    cursor: pointer;
+}

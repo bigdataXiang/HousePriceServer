@@ -1,0 +1,108 @@
+/*macropopup*/
+.macropopup {
+    min-width: 250px;
+    max-width: 500px;
+}
+
+.macropopup .nav {
+    border-bottom: none;
+}
+
+.macropopup .nav li a {
+    color: #6B6565;
+    padding: 5px 20px;
+    text-decoration: none;
+    border-radius: 0;
+    margin-right: 0;
+    border: none;
+    border-top: solid transparent 2px;
+}
+
+.macropopup .nav li.active a {
+    color: rgb(124, 84, 195);
+    border-top: solid rgb(124, 84, 195) 2px;
+    background-image: -ms-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -webkit-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -moz-linear-gradient(top, rgb(225, 210, 250), #fff);
+}
+
+.macropopup .nav li a:hover {
+    border: none;
+    color: rgb(124, 84, 195);
+    border-top: solid rgb(124, 84, 195) 2px;
+    background-image: -ms-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -webkit-linear-gradient(top, rgb(225, 210, 250), #fff);
+    background-image: -moz-linear-gradient(top, rgb(225, 210, 250), #fff);
+}
+
+.macropopup .nav li a:focus {
+    border: none;
+    border-top: solid rgb(124, 84, 195) 2px;
+}
+
+.macropopup .tab-content {
+    padding: 10px 0;
+}
+
+.macropopup .tab-content > .tab-pane {
+    padding: 0 20px;
+    max-height: 300px;
+}
+
+.macropopup .tab-content > .tab-pane .attrs li {
+    list-style: none;
+    padding: 5px 0;
+    color: #898989;
+    border-bottom: dashed #ccc 1px;
+}
+
+.macropopup .tab-content > .tab-pane .attrs li:last-child {
+    border-bottom: none;
+}
+
+/*地理大数据tab*/
+.macropopup .tab-content > .tab-pane:last-child {
+    overflow: hidden;
+}
+
+.macropopup .tab-content > .tab-pane:last-child .middle-nav {
+    float: left;
+    border-right: solid #ccc 1px;
+}
+
+.macropopup .tab-content > .tab-pane:last-child .middle-container {
+    float: left;
+    padding-left: 20px;
+}
+
+.macropopup .middle-nav li {
+    list-style: none;
+    padding: 5px 0;
+    color: #898989;
+}
+
+.macropopup .middle-nav li a {
+    color: #6B6565;
+    padding: 5px 20px;
+    text-decoration: none;
+}
+
+.macropopup .middle-nav li.active a {
+    color: rgb(124, 84, 195);
+}
+
+.macropopup .middle-nav li a:hover {
+    color: rgb(124, 84, 195);
+}
+
+.macropopup .middle-container {
+    float: left;
+}
+
+.macropopup .middle-container > .tab-pane {
+    display: none;
+}
+
+.macropopup .middle-container > .tab-pane.active {
+    display: block;
+}

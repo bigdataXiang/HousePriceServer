@@ -1,0 +1,117 @@
+.new-basemap {
+    position: absolute;
+    z-index: 36;
+    right: 12px;
+    bottom: 70px;
+}
+
+.new-basemap .basemapout {
+    background: #fff;
+    border-radius: 10px;
+}
+
+.new-basemap .basemapout:HOVER {
+    opacity: .7;
+}
+
+.basemapout .basemapbtn {
+    display: block;
+    height: 34px;
+    width: 34px;
+    background: url(../images/basemap/ditubtn.png);
+    background-repeat: no-repeat;
+}
+
+.new-basemap .map-list {
+    position: absolute;
+    left: -260px;
+    top: -53px;
+    background: #f8f8f8;
+    display: none;
+    z-index: 200;
+}
+
+.map-list ul {
+    width: 248px;
+    margin-left: 5px;
+}
+
+.map-list li {
+    float: left;
+    list-style: none;
+}
+
+.map-list .arrow {
+    position: absolute;
+    display: block;
+    width: 8px;
+    height: 16px;
+    right: -8px;
+    top: 60px;
+    background: url(../images/basemap/arrow.png) no-repeat;
+}
+
+.map-list .mapa:HOVER {
+
+}
+
+.map-list .mapa {
+    display: block;
+    height: 53px;
+    width: 52px;
+    background: url(../images/basemap/newbasemaps.png) no-repeat;
+    margin: 8px 4px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.map-list .mapa:HOVER {
+    text-decoration: none;
+}
+
+.map-list .maptitle {
+    /* display: none; */
+    font-size: 12px;
+    bottom: -54px;
+    position: relative;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.41);
+    display: block;
+    color: #fff;
+}
+
+.map-list .chinaborder {
+    background-position: -159px -61px;
+}
+
+.map-list .warm {
+    background-position: -80px -1px;
+}
+
+.map-list .blueblack {
+    background-position: -1px -61px;
+}
+
+.map-list .gray {
+    background-position: -80px -61px;
+}
+
+.map-list .color {
+    background-position: -1px -1px
+}
+
+.map-list .english {
+    background-position: -159px -1px;
+}
+
+.map-list .gaode {
+    background-position: -238px -61px;
+}
+
+.map-list .tengxun {
+    background-position: -238px -1px;
+}
+
+.map-list span.active {
+    bottom: -35px;
+}

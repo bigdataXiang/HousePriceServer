@@ -1,0 +1,26 @@
+/* edit popup */
+.editpopup {
+    width: 410px;
+    padding: 10px 5px;
+    border-top: 1px solid #ccc;
+}
+.editpopup .editpopup-attrs {
+    max-height: 235px;
+}
+.editpopup .editpopup-attrs label {
+    width: 85px;
+    text-align: right;
+}
+.editpopup .editpopup-attrs input {
+    display: inline-block;
+    width: 270px;
+    margin-left: 10px;
+    margin-right: 20px;
+}
+.editpopup .editpopup-buttons {
+    margin-left: 75px;
+    margin-top: 10px;
+}
+.editpopup .editpopup-buttons button {
+    margin-left: 10px;
+}

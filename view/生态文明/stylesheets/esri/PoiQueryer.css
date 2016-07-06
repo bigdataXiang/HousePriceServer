@@ -1,0 +1,72 @@
+/*poiqueryer*/
+.poiqueryer {
+}
+.poiqueryer .query-area {
+    position: relative;
+    width: 275px;
+    display: inline-block;
+}
+.poiqueryer input {
+    /* background: #fff url(../gistech/query/images/search-btn.png) no-repeat 226px center; */
+    background-color: #e4e4e4;
+    font-size: 12px;
+}
+.poiqueryer .query-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    /* width: 36px;
+    height: 26px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 12px center;
+    border-left: solid #ccc 1px;
+    margin: 4px 0; */
+    width: 75px;
+    height: 34px;
+    color: #fff;
+    background-color: #9a57ef;
+    padding: 8px 0 0 13px;
+}
+.poiqueryer .query-btn:hover {
+    /* background-image: url(../gistech/query/images/search-btn-o.png); */
+    background-color: #7e39cf;
+    cursor: pointer;
+}
+.poiqueryer .data-list {
+    position: absolute;
+    top: 33px;
+    left: 0;
+    width: 275px;
+    display: none;
+    z-index: 50;
+    background: #fff;
+    border: solid #ccc 1px;
+    list-style: none;
+    overflow: auto;
+}
+.poiqueryer .data-list li{
+    padding: 3px 12px;
+    cursor: pointer;
+    color: #999;
+}
+.poiqueryer .data-list li:hover{
+    background-color: #eef;
+}
+.poiqueryer .data-list li.selected{
+    background-color: #eef;
+}
+.poiqueryer .category-area{
+    display: inline-block;
+    position: relative;
+    margin-left: 10px;
+}
+.poiqueryer .category-area .toggle{
+    color: #fff;
+    text-decoration: underline;
+}
+.poiqueryer .category-area > div{
+    position: absolute;
+    top: 20px;
+    left: -330px;
+}

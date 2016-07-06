@@ -1,0 +1,61 @@
+.new-tools {
+    position: absolute;
+    z-index: 36;
+    left: 490px;
+    /*top: -60px;*/
+    top: 20px;
+}
+/*.new-tools.show {*/
+    /*top: 20px;*/
+/*}*/
+
+.new-tools i, .new-tools a {
+    float: left;
+    background: url(../images/tools.png);
+    height: 35px;
+}
+
+.new-tools .tool-begin {
+    width: 10px;
+    background-position: 0 0;
+    cursor: move;
+}
+
+.new-tools a {
+    width: 33px;
+}
+
+.new-tools a:HOVER {
+    /*filter: alpha(opacity=50);*/
+    /*-moz-opacity: 0.5;*/
+    /*opacity: 0.5;*/
+    background-position-y: 35px;
+}
+
+.new-tools .print {
+    background-position: -10px 0;
+}
+
+.new-tools .distance {
+    background-position: -43px 0;
+}
+
+.new-tools .area {
+    background-position: -76px 0;
+}
+
+.new-tools .circle {
+    background-position: -109px 0;
+}
+
+.new-tools .polygon {
+    background-position: -142px 0;
+}
+
+.new-tools .clear {
+    background-position: -175px 0;
+}
+
+.new-tools .selected {
+    background-position-y: 35px;
+}

@@ -1,0 +1,137 @@
+/* planadder */
+.planadder {
+    color: rgb(51, 51, 51);
+    padding: 5px 10px;
+    background-color: #fff;
+}
+
+.planadder .input-area input {
+    width: 300px;
+}
+
+.planadder .input-area form > div {
+    overflow: hidden;
+}
+
+.planadder .input-area .input-label {
+    float: left;
+}
+
+.planadder .input-area .input-decs {
+    resize: none;
+}
+
+.planadder .input-area .map-label {
+    color: #000000;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 9px;
+    margin-left: 4px;
+    float: left;
+    background-color: lightgray;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.planadder .selected-area {
+    border: solid #ccc 1px;;
+}
+
+.planadder .selected-area .header {
+    line-height: 30px;
+    background-color: #e7e7e7;
+    color: #000;
+    border-bottom: solid #ccc 1px;;
+}
+
+.planadder .selected-area .header span {
+    float: left;
+    padding-left: 10px;
+}
+
+.planadder .selected-area .header a {
+    float: right;
+    padding-right: 10px;
+    display: none;
+}
+
+.planadder .selected-area .empty-area {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.planadder .data-area {
+    max-height: 200px;
+    overflow: auto;
+    display: none;
+}
+
+.planadder .data-area li {
+    list-style-type: none;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.planadder .data-area li .data-type {
+    float: left;
+    padding: 0 10px;
+}
+
+.planadder .data-area li .data-name {
+    float: left;
+    padding-left: 10px;
+}
+
+.planadder .data-area li .cancel {
+    float: right;
+    display: none;
+    padding: 0 5px;
+}
+
+.planadder .data-area li:hover {
+    background-color: #f5f5f5;
+}
+
+.planadder .data-area li:hover .cancel {
+    display: inline-block;
+}
+
+.planadder .help-area {
+    max-height: 200px;
+    overflow: auto;
+    display: none;
+}
+
+.planadder .help-area li {
+    list-style-type: none;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.planadder .help-area li .data-type {
+    float: left;
+    padding: 0 10px;
+}
+
+.planadder .help-area li .data-name {
+    float: left;
+    padding-left: 10px;
+}
+
+.planadder .help-area li .cancel {
+    float: right;
+    display: none;
+    padding: 0 5px;
+}
+
+.planadder .help-area li:hover {
+    background-color: #f5f5f5;
+}
+
+.planadder .help-area li:hover .cancel {
+    display: inline-block;
+}
+
+.planadder .foot-area {
+    text-align: right;
+}

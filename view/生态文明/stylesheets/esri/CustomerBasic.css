@@ -1,0 +1,38 @@
+/*customer-basic*/
+.customer-basic {
+}
+
+.customer-basic .nav {
+    overflow: hidden;
+}
+
+.customer-basic .nav li {
+    float: left;
+    color: #6B6565;
+    padding: 5px 20px;
+    margin-right: 0;
+}
+
+.customer-basic .nav li.active {
+    color: rgb(124, 84, 195);
+}
+
+.customer-basic .nav li a:hover {
+    color: rgb(124, 84, 195);
+}
+
+.customer-basic .content-list {
+    padding: 10px 0;
+}
+
+.customer-basic .content-list {
+}
+
+.customer-basic .content-list > div {
+    display: none;
+    min-width: 500px;
+}
+
+.customer-basic .content-list > div.active {
+    display: block;
+}

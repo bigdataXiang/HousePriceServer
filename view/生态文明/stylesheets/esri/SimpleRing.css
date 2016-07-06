@@ -1,0 +1,68 @@
+/*simplering*/
+.simplering {
+    padding: 20px 40px 10px 20px;
+}
+.simplering h3 {
+    margin-bottom: 30px;
+}
+.simplering .step {
+    height: 210px;
+    padding-left: 30px;
+}
+.simplering .first .tip-area{
+    padding-top: 10px;
+}
+.simplering .first .count-area{
+    margin-top: 15px;
+}
+.simplering .first .count-slider{
+    display: inline-block;
+    width: 240px;
+}
+.simplering .first .count-span{
+    display: inline-block;
+    margin-left: 5px;
+    color: #c33;
+}
+.simplering .first .threshold-area{
+    position: relative;
+    margin-top: 20px;
+}
+.simplering .first .threshold-unit{
+    position: absolute;
+    width:auto;
+}
+.simplering .first .thresholds {
+    position: relative;
+    margin-left: 45px;
+    margin-top: 10px;
+}
+.simplering .first .thresholds .con {
+    position: absolute;
+    left: 0;
+}
+.simplering .first .thresholds .con>div {
+    position: relative;
+    border: solid #fff 1px;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
+}
+.simplering .first .thresholds .con>div input {
+    position: absolute;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+}
+.simplering .second .quota-area li{
+    width: 240px;
+    list-style: none;
+    padding-left: 20px;
+}
+.simplering .second .quota-area li span{
+    float: left;
+    padding-left: 10px
+}
+.simplering .second .quota-area li input{
+    float: left;
+}

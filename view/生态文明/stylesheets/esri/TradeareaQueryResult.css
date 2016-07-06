@@ -1,0 +1,37 @@
+/*tradeareaqueryresult*/
+.tradeareaqueryresult {
+}
+.tradeareaqueryresult .empty-tip {
+    color: #999;
+    text-align: center;
+}
+.tradeareaqueryresult ul.result-area {
+}
+.tradeareaqueryresult ul.result-area li {
+    padding: 10px 0 10px 40px;
+    min-width: 100px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: 20px 15px;
+}
+.tradeareaqueryresult ul.result-area li:hover {
+    /* background-color: #eef; */
+    background-color: #ccc;
+}
+.tradeareaqueryresult ul.result-area li .feature-name {
+    color:#00acec;
+    padding-left: 10px;
+    font-size: 12px;
+}
+.tradeareaqueryresult ul.result-area li .feature-city {
+    padding-left: 10px;
+    font-size: 12px;
+}
+.tradeareaqueryresult .pager-area {
+    text-align: center;
+    margin: 5px 0;
+}
+.tradeareaqueryresult .foot-area {
+    display: none;
+    text-align: center;
+}

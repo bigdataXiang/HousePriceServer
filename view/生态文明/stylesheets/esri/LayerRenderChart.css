@@ -1,0 +1,31 @@
+/* chart render */
+.render-chart .layerset-row .toc-slider {
+    width: 80px;
+}
+.render-chart li {
+    list-style-type: none;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin: 0 3px;
+    background-image: url(../images/render.png);
+    background-repeat: no-repeat;
+    border-radius: 4px;
+}
+.render-chart li.bar {
+    background-position: -99px 0;
+}
+.render-chart li.pie {
+    background-position: -124px 0;
+}
+.render-chart li.ring {
+    background-position: -149px 0;
+}
+.render-chart li.grid {
+    background-position: -175px 0;
+}
+.render-chart li:hover,
+.render-chart li.active {
+    background-color: #e7e7e7;
+    cursor: pointer;
+}

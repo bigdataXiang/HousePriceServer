@@ -1,0 +1,107 @@
+/* topicselector */
+.topicselector {
+}
+.topicselector .select-area > div{
+    position: relative;
+    margin: 0 20px 20px 20px;
+}
+.topicselector .data-query .keyword{
+    width: 250px;
+    height: 28px;
+}
+.topicselector .data-query .keyword:hover {
+    border-color: #7e39cf;
+}
+.topicselector .data-query .icon-search{
+    position: absolute;
+    font-size: 1.25em;
+    top: 5px;
+    left: 228px;
+    color: #a0a0a0;
+    cursor: pointer;
+}
+.topicselector .data-query .icon-search:hover {
+    color: #7e39cf;
+}
+.topicselector .data-bigType{
+    height: 22px;
+}
+.topicselector .data-bigType .div-bigType{
+    margin-right: 15px;
+    float: left;
+}
+.topicselector .data-bigType .div-bigType input{
+    margin-right: 5px;
+    cursor: pointer;
+}
+.topicselector .data-smallType {
+    overflow: hidden;
+}
+.topicselector .data-smallType .div-smallType {
+    width: 186px;
+    float: left;
+    padding-bottom: 20px;
+    text-align: center;
+}
+.topicselector .data-smallType .div-smallType .img {
+    width: 100%;
+    height: 40px;
+    /*margin-right: 15px;*/
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.topicselector .data-smallType .div-smallType div {
+    /*float: left;*/
+    margin-bottom: 10px;
+}
+.topicselector .data-smallType .div-smallType .st-hr {
+    border-color: #dedede;
+    margin-top: 0;
+}
+.topicselector .data-smallType .div-smallType .st-name {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/*.topicselector .data-smallType .div-smallType .st-label {*/
+    /*width: 150px;*/
+    /*font-size: 12px;*/
+    /*color: #999999;*/
+    /*white-space: nowrap;*/
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+/*}*/
+.topicselector .data-smallType .div-smallType .st-btLoad {
+    width: 100px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.topicselector .data-smallType .div-smallType .st-btLoad:disabled {
+    border-color: #7e39cf;
+    color: #7e39cf;
+}
+.topicselector .data-smallType .div-smallType .st-btLoad:active {
+    color: #7e39cf;
+}
+.topicselector .pager-tool {
+    text-align: center;
+}
+.topicselector .data-smallType .div-smallType .img[data-category="pop"] {
+    background-image: url(../images/topic/pop.png);
+}
+.topicselector .data-smallType .div-smallType .img[data-category="bussiness"] {
+    background-image: url(../images/topic/bussiness.png);
+}
+.topicselector .data-smallType .div-smallType .img[data-category="Business_POI"] {
+    background-image: url(../images/topic/poi.png);
+}
+.topicselector .data-smallType .div-smallType .img[data-category="consume"] {
+    background-image: url(../images/topic/consume.png);
+}
+.topicselector .data-smallType .div-smallType .img[data-category="brand"] {
+    background-image: url(../images/topic/brand.png);
+}

@@ -1,0 +1,141 @@
+/* grid data */
+.griddata {
+}
+.griddata .main-area {
+    position: relative;
+}
+.griddata .category-list {
+    padding: 5px 0;
+    background: rgb(247, 247, 247);
+    border: 1px solid rgb(226, 226, 226);
+    border-top: none;
+    text-align: center;
+}
+.griddata .expand-out {
+    position: absolute;
+    z-index: 2;
+    cursor: pointer;
+    display: none;
+}
+.griddata .expand-in {
+    position: relative;
+    background: #fff;
+}
+.griddata .expand-in .bg {
+    position: absolute;
+    background-color: rgb(124, 84, 195);
+}
+.griddata .expand-in .fields {
+    position: absolute;
+    text-align: left;
+    font-size: 12px;
+}
+.griddata .expand-in .fields a {
+    color: #fff;
+    padding-left: 7px;
+    text-decoration: none;
+}
+.griddata .expand-in .icon {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 30px;
+    border: solid rgb(124, 84, 195) 1px;
+    background-color: #fff;
+    color: rgb(124, 84, 195);
+    text-align: center;
+}
+.griddata .category-list li.category {
+    cursor: pointer;
+    list-style-type: none;
+    display: inline-block;
+    width: 94px;
+    height: 94px;
+    margin: 1px 4px;
+    position: relative;
+    background-color: #fff;
+    border: solid rgb(226, 226, 226) 1px;
+}
+.griddata .category-list li.category .bg {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    background-color: rgb(237, 238, 239);
+    border-radius: 0 0 80px 0;
+}
+.griddata .category-list li.category.active .bg {
+    background-color: rgb(124, 84, 195);
+}
+.griddata .category-list li.category .name {
+    position: absolute;
+    left: 10px;
+    top: 7px;
+    color: rgb(124, 84, 195);
+    font-weight: bold;
+}
+.griddata .category-list li.category.active .name {
+    color: #fff;
+}
+.griddata .category-list li.category .icon {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 18px;
+    border: solid rgb(124, 84, 195) 1px;
+    background-color: rgb(124, 84, 195);
+    color: #fff;
+}
+.griddata .category-list li.category:hover .icon {
+    background-color: #fff;
+    color: rgb(124, 84, 195);
+}
+.griddata .sel-list {
+    max-height: 86px;
+    margin-top: 10px;
+    padding: 5px;
+    background: rgb(247, 247, 247);
+    border: 1px solid rgb(226, 226, 226);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.griddata .sel-list li {
+    list-style-type: none;
+    background-color: #fff;
+    width: 100%;
+    padding: 6px;
+    margin: 2px 0;
+    color: rgb(124, 84, 195);
+    border: 1px solid rgb(226, 226, 226);
+}
+.griddata .img.medical {
+    background-position: 0 0;
+}
+.griddata .img.education {
+    background-position: -120px 0;
+}
+.griddata .img.transport {
+    background-position: -240px 0;
+}
+.griddata .img.realestate {
+    background-position: -360px 0;
+}
+.griddata li.active .img.medical,
+.griddata .img.medical:hover {
+    background-position: 0 -73px;
+}
+.griddata li.active .img.education,
+.griddata .img.education:hover {
+    background-position: -120px -73px;
+}
+.griddata li.active .img.transport,
+.griddata .img.transport:hover {
+    background-position: -240px -73px;
+}
+.griddata li.active .img.realestate,
+.griddata .img.realestate:hover {
+    background-position: -360px -73px;
+}

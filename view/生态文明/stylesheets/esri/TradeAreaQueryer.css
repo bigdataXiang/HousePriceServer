@@ -1,0 +1,26 @@
+/*tradeareaqueryer*/
+.tradeareaqueryer {
+}
+.tradeareaqueryer {
+}
+.tradeareaqueryer .query-area{
+    position: relative;
+    display: inline-block;
+}
+.tradeareaqueryer input {
+    background: #fff url(../images/search-btn.png) no-repeat 226px center;
+}
+.tradeareaqueryer .query-btn {
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 35px;
+    height: 34px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 12px center;
+}
+.tradeareaqueryer .query-btn:hover {
+    background-image: url(../images/search-btn-o.png);
+}

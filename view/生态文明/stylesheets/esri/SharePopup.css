@@ -1,0 +1,20 @@
+/*sharepopup*/
+.sharepopup {
+    padding: 0 20px;
+}
+.sharepopup .img-area {
+    margin-right: 10px;
+}
+.sharepopup .img-area .img-preview {
+    width: 160px;
+    height: 160px;
+    line-height: 160px;
+    text-align: center;
+    border: solid #ccc 1px;
+}
+.sharepopup .opt-area {
+    text-align: center;
+}
+.sharepopup .foot-area {
+    text-align: center;
+}

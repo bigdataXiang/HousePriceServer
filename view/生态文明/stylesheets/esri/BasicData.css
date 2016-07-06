@@ -1,0 +1,17 @@
+/* basic data */
+.basicdata .header {
+    padding: 4px;
+    background-color: rgb(226, 226, 226);
+    border: 1px solid rgb(196, 196, 196);
+}
+.basicdata .header span {
+    display: block;
+    background-color: rgb(124, 84, 195);
+    color: #fff;
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+}
+.basicdata .content {
+}

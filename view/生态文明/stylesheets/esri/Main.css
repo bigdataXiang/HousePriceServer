@@ -1,0 +1,71 @@
+.visual-main {
+
+}
+
+.visual-main #map-visual {
+    width: 100%;
+    height: 100%;
+}
+
+.visual-main .map .container {
+    max-width: 9999px;
+}
+
+.visual-main map .tooltip {
+    opacity: 1;
+}
+
+.esrimap {
+    position: relative;
+}
+
+.esrimap .loading {
+    position: absolute;
+    z-index: 32;
+    left: 10px;
+    bottom: 25px;
+}
+
+/* grid legend & grade range */
+.range-area {
+    position: absolute;
+    z-index: 100;
+    right: 300px;
+    bottom: 0;
+}
+.range-area > ul {
+    float: right;
+    margin: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid #ccc;
+}
+.range-area > ul li {
+    list-style-type: none;
+    display: inline-block;
+    height: 63px;
+    margin: 3px 3px 0px;
+}
+.range-area > ul span {
+    color: #fff;
+    cursor: default;
+}
+.range-area > ul img {
+    height: 30px;
+}
+.range-area > ul .legend-text {
+    height: 20px;
+}
+.range-area > ul .legend-name {
+    float: left;
+    margin-left: 5px;
+}
+.range-area > ul .legend-range {
+    float: right;
+    margin-right: 5px;
+    margin-left: 10px;
+}
+.range-area > ul .legend-slider {
+    width: 190px;
+    height: 8px;
+    margin: 0 5px;
+}

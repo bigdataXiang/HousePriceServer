@@ -1,0 +1,144 @@
+/* toc */
+.toc {
+    position: absolute;
+    z-index: 32;
+    top: 90px;
+    right: -338px;
+}
+.toc .ctrl {
+    margin-top: 55px;
+}
+.toc .ctrl > div {
+    width: 100%;
+    border-right: 0px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    cursor: pointer;
+}
+.toc .ctrl > .tab {
+    margin-bottom: 3px;
+    color: #d7d7d7;
+}
+.toc .ctrl > .tab .name {
+    background-color: #8e8e8e;
+    width: 52px;
+    height: 52px;
+    padding: 8px;
+    text-align: center;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.toc .ctrl > .tab .angle {
+    display:none;
+    line-height: 52px;
+    padding: 0 5px;
+    position: absolute;
+    left: -14px;
+}
+.toc .ctrl > .tab:hover .name {
+    /*background-color: #946adf;*/
+    background-color: #2093ef;
+}
+.toc .ctrl > .tab.active {
+    color: #fff;
+}
+.toc .ctrl > .tab.active .name {
+    background-color: #2093ef;
+}
+.toc .ctrl > .tab.active .angle {
+    display:block;
+    background-color: #2093ef;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.toc .ctrl > .tab.active:hover .angle {
+    /*background-color: #946adf;*/
+    background-color: #4ba6ef;
+}
+
+
+.toc .body {
+    position: relative;
+    width: 337px;
+    height: 460px;
+    background-color: #fff;
+    overflow: hidden;
+    border: solid #2093ef 1px;
+}
+.toc .panel-container {
+    position: absolute;
+    width: 662px;
+}
+.toc .panel-container.layer-margin {
+    margin-left: 0px;
+}
+.toc .panel-container.basic-margin {
+    margin-left: -331px;
+}
+.toc .panel-container > div {
+    float: left;
+    width: 327px;
+    height: 456px;
+    margin-left: 4px;
+    padding-top: 4px;
+}
+.toc .setting-panel {
+    position: relative;
+    height: 267px;
+}
+.toc .layer-panel > div,
+.toc .setting-panel > div {
+    position: absolute;
+    width: 327px;
+    height: 100%;
+}
+.toc .setting-image {
+    z-index: 2;
+    background: url(../images/adddata.png) 0 0 no-repeat;
+}
+.toc .setting-image:hover {
+    cursor: pointer;
+}
+.toc .setting-panels {
+    z-index: 1;
+}
+.toc .setting-shelter {
+    z-index: 2;
+    cursor: not-allowed;
+}
+.toc .settings {
+    z-index: 1;
+}
+.toc .setting-image,
+.toc .setting-shelter {
+    display: none;
+}
+.toc .layer-panel.prompt .setting-image {
+    display: block;
+}
+.toc .layer-panel.forbidden .setting-shelter {
+    display: block;
+}
+.toc .layer-panel.forbidden .settings {
+    opacity: 0.5;
+}
+.toc .layers {
+    clear: both;
+    max-height: 164px;
+    margin-top: 10px;
+    background-color: rgb(247, 247, 247);
+    border: 1px solid rgb(226, 226, 226);
+}
+.toc .toggle {
+    clear: both;
+    float: right;
+    width: 75px;
+    height: 24px;
+    background: url(../images/left.png) 0 0 no-repeat;
+}
+.toc .toggle.show {
+    background: url(../images/right.png) 0 0 no-repeat;
+}
+.toc .toggle:hover {
+    cursor: pointer;
+}

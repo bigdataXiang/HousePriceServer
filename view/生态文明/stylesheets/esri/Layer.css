@@ -1,0 +1,107 @@
+/* layer */
+.layer {
+    position: relative;
+    width: 100%;
+}
+.layer .layer-bar {
+    height: 32px;
+    margin: 5px;
+    padding: 5px;
+    background-color: #fff;
+    border: 1px solid rgb(226, 226, 226);
+}
+.layer:hover .layer-bar,
+.layer.active .layer-bar {
+    color: #fff;
+    /*background-color: rgb(124, 84, 195);*/
+    background-color: #2093ef;
+    cursor: pointer;
+}
+.layer .checkbox {
+    position: absolute;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+.layer input[type="checkbox"] {
+    cursor: pointer;
+}
+.layer .layer-icon {
+    float: left;
+    width: 18px;
+    height: 18px;
+    margin-left: 5px;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+}
+.layer .layer-icon + label {
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.layer .layer-icon:hover {
+    cursor: pointer;
+}
+.layer .layer-icon.store {
+    background-image: url(../images/layer/store.jpg);
+}
+.layer .layer-icon.store.checked {
+    background-image: url(../images/layer/store_c.jpg);
+}
+.layer .layer-icon.sale {
+    background-image: url(../images/layer/sale.jpg);
+}
+.layer .layer-icon.sale.checked {
+    background-image: url(../images/layer/sale_c.jpg);
+}
+.layer .layer-icon.building {
+    background-image: url(../images/layer/building.jpg);
+}
+.layer .layer-icon.building.checked {
+    background-image: url(../images/layer/building_c.jpg);
+}
+.layer .layer-icon.customer {
+    background-image: url(../images/layer/customer.jpg);
+}
+.layer .layer-icon.customer.checked {
+    background-image: url(../images/layer/customer_c.jpg);
+}
+.layer .layer-icon.candidate {
+    background-image: url(../images/layer/candidate.jpg);
+}
+.layer .layer-icon.candidate.checked {
+    background-image: url(../images/layer/candidate_c.jpg);
+}
+.layer .layer-icon.competitor {
+    background-image: url(../images/layer/competitor.jpg);
+}
+.layer .layer-icon.competitor.checked {
+    background-image: url(../images/layer/competitor_c.jpg);
+}
+.layer .layer-icon.other {
+    background-image: url(../images/layer/other.jpg);
+}
+.layer .layer-icon.other.checked {
+    background-image: url(../images/layer/other_c.jpg);
+}
+.layer .buttons {
+    position: absolute;
+    display: none;
+    right: 15px;
+}
+.layer.active .buttons,
+.layer:hover .buttons {
+    display: block;
+}
+.layer .buttons > i {
+    margin-right: 5px;
+}
+.layer .buttons > i:hover {
+    cursor: pointer;
+}
+.layer .layer-setting {
+    display: none;
+    padding: 1px;
+}
+.layer.active .layer-setting {
+    display: block;
+}
