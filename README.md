@@ -6,6 +6,7 @@
 //github 提交步骤
 git add -A：提交所有
 git commit -m "":提交说明
+git pull:
 git push：将代码同步到远程
 
 WebStorm半年激活码 
