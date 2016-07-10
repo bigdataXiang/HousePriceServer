@@ -7,12 +7,8 @@
         body {
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
         }
-
-        .leaflet-tile-pane {
-            opacity: 0.2;
-        }
     </style>
-    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-responsive.css" >
+
     <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
     <link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="stylesheets/ui.css" rel="stylesheet">
@@ -21,10 +17,13 @@
     <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="lib/leaflet/leaflet.js"></script>
-    <script src="lib/heatmap/heatmap.min.js"></script>
-    <script src="lib/heatmap/leaflet-heatmap.js"></script>
-    <script type="text/javascript" src='lib/leaflet/leaflet.ChineseTmsProviders.js'></script>
 
+    <script type="text/javascript" src='lib/leaflet/leaflet.ChineseTmsProviders.js'></script>
+    <script src="Chart.js-2.1.6/dist/Chart.bundle.js"></script>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </head>
 <body>
 
@@ -45,50 +44,20 @@
         </div>
     </div>
 </div>
-
 <div class="container-fluid">
     <div class="row-fluid">
         <div id="map" class="span9"></div>
     </div>
 </div>
+<div id="myModal" style="margin: 5%;height: 85%;width: 90%;"  class="modal fade bs-example-modal-sm" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" style="width: 100%;height: 100%;width: 85%;height: 90%;">
+        <div class="modal-content" style="width: 100%;height: 100%">
+            <canvas id="myChart" style="width: 100%;height: 80%;"></canvas>
 
-<canvas id="myChart" width="400" height="400"></canvas>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
-    $(document).ready(function() {
-        var canvs = $('canvas');
-        for (var cas in canvs) {
-            var lineChartData = {
-                // x轴的标示
-                labels : ["January","February","March","April","May","June","July"],
-                // 数据，数组中的每一个object代表一条线
-                datasets : [
-                    {
-                        // 颜色的使用类似于CSS，你也可以使用RGB、HEX或者HSL
-                        // rgba颜色中最后一个值代表透明度
-                        // 填充颜色
-                        fillColor : "rgba(220,220,220,0.5)",
-                        // 线的颜色
-                        strokeColor : "rgba(220,220,220,1)",
-                        // 点的填充颜色
-                        pointColor : "rgba(220,220,220,1)",
-                        // 点的边线颜色
-                        pointStrokeColor : "#fff",
-                        // 与x轴标示对应的数据
-                        data : [65,59,90,81,56,55,40]
-                    },
-                    {
-                        fillColor : "rgba(151,187,205,0)",
-                        strokeColor : "rgba(151,187,205,1)",
-                        pointColor : "rgba(151,187,205,1)",
-                        pointStrokeColor : "#fff",
-                        data : [28,48,40,19,96,27,100]
-                    }
-                ]
-
-            }
-            cas.getContent('2d').line(lineChartData);
-        }
-    })
     var map;
     var resize = function () {
         var $map = $('#map');
@@ -129,10 +98,151 @@
     layerControl.addTo(map);
     resize();
 
-    var bounds = [[38.8076054918,112.3970109742], [39.916985851984146,116.41055488416854]];//(左下角，右上角)
-    L.rectangle(bounds, {color: "#ff7800", weight: 1}).bindPopup("<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "test" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "beijing" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">时间:	</span><span>" + "2016-07-07" + "<span></DIV>" ).addTo(map);
-    map.fitBounds(bounds);
+    $(document).ready(function(){
 
+        $.get("/static/api", function(result){
+            var price= JSON.parse(result);
+            draw(price);
+        });
+
+
+    });
+    function dataStruct(parameter){
+        var config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "form one",
+                    data: [],
+                    fill: false,
+                    borderDash: [5, 5],
+                }, {
+                    hidden: true,
+                    label: 'form two',
+                    data: [],
+                }]
+            },
+            options: {
+                responsive: true,
+                title:{
+                    display:true,
+                    text:'Chart.js Line Chart'
+                },
+                tooltips: {
+                    mode: 'label',
+                    callbacks: {
+                        beforeTitle: function() {
+                            return '...beforeTitle';
+                        },
+                        afterTitle: function() {
+                            return '...afterTitle';
+                        },
+                        beforeBody: function() {
+                            return '...beforeBody';
+                        },
+                        afterBody: function() {
+                            return '...afterBody';
+                        },
+                        beforeFooter: function() {
+                            return '...beforeFooter';
+                        },
+                        footer: function() {
+                            return 'Footer';
+                        },
+                        afterFooter: function() {
+                            return '...afterFooter';
+                        },
+                    }
+                },
+                hover: {
+                    mode: 'dataset'
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            show: true,
+                            labelString: 'Month'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            show: true,
+                            labelString: 'Value'
+                        },
+                        ticks: {
+                            suggestedMin: -10,
+                            suggestedMax: 250,
+                        }
+                    }]
+                }
+            }
+        };
+        for(var i=0;i<parameter.data.size;i++){
+            config.data.labels.push(parameter.data[i].time);
+        }
+        for(var i=0;i<parameter.data.size;i++){
+            config.data.datasets[0].data.push(parameter.data[i].price);
+        }
+        for(var i=0;i<parameter.data.size;i++){
+            config.data.datasets[1].data.push(parameter.data[i].price);
+        }
+        return config;
+    }
+
+    var pricedata;
+    function draw(price ) {
+        var width=0.01354;
+        console.log(price);
+        for(var n=0;n<3;n++){
+            var dist_wid=n*width;
+            for(var m=0;m<3;m++){
+                var dist_len=m*width;
+                var bounds = [[39.8076054918+dist_len,(116.3970109742+dist_wid)], [39.821145+dist_len,(116.41055488416854+dist_wid)]];//(左下角，右上角)
+
+               var rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:mycolor(price.data[m*n]) , weight:1,fillOpacity:0.6});
+                rect.on('click', function() {
+                    var ctx = document.getElementById("myChart").getContext("2d");
+                    $.post("/static/timeprice",
+                            {
+                                code:1
+                            },
+                            function(data,status){
+                                pricedata= JSON.parse(data);
+                                window.myLine = new Chart(ctx, dataStruct(pricedata));
+                                $('#myModal').modal()
+                            });
+
+
+
+                });
+                rect.addTo(map);
+                map.fitBounds(bounds);
+            }
+        }
+    }
+    function mycolor(n) {
+        var r=238,g=99,b=n;
+        var calor="rgb("+r+","+g+","+b+")";
+        return calor;
+    }
+
+    function makepopupdiv(n) {
+        var mycavas = document.createElement("canvas");
+        mycavas.setAttribute("width", "200");//
+        mycavas.setAttribute("height", "300");//
+        mycavas.setAttribute("id", "myChart");//设置Id属性
+        console.log("create");
+
+        var popup = L.popup().setContent("<DIV><span class='showpopup' style=\"font-weight:bold;\"></span></DIV><HR/><DIV>"+mycavas.outerHTML+"<span>"+"test"+n + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "beijing" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">时间:	</span><span>" + "2016-07-07" + "<span></DIV>")
+
+        return popup
+    }
+    $(".showpopup").on("load",function() {
+        console.log("display");
+    },false);
 
 </script>
 </body>
