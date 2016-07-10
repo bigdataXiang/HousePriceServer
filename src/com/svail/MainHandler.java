@@ -2,10 +2,7 @@ package com.svail;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.svail.handler.handler_api;
-import com.svail.handler.handler_index;
-import com.svail.handler.handler_info;
-import com.svail.handler.handler_static;
+import com.svail.handler.*;
 import utils.UtilHttp;
 
 import java.io.*;
@@ -30,6 +27,8 @@ public class MainHandler implements HttpHandler {
             case "/index":response=new handler_index().get(url.getPath());
                 break;
             case "/info":response=new handler_info().get(url.getPath());
+                break;
+            case "/price":response=new handler_gridprice().get(url.getPath(),body);
                 break;
             default:response= new handler_static().get(url.getPath().substring(1));
                 break;
