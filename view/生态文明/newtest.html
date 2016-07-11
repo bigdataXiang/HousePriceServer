@@ -61,51 +61,38 @@
     var map;
     var resize = function () {
         var $map = $('#map');
-
         $map.height($(window).height() - $('div.navbar').outerHeight());
-
         if (map) {
             map.invalidateSize();
         }
     };
-
     $(window).on('resize', function () {
         resize();
     });
-
     resize();
-
     var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map',{maxZoom:18,minZoom:5});
     var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map',{maxZoom:18,minZoom:5});
     var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:5});
     var normal = L.layerGroup([normalm]),
             image = L.layerGroup([imgm,imga]);
-
     var baseLayers = {
         "地图":normal,
         "影像":image,
     }
     var overlayLayers = {};
-
     map = L.map("map",{
         layers:[normal],
         zoomControl:true
     }).setView([39.8, 116.3], 3); /* 39°54'27"，东经116°23'17*/
-
     map.setView([39.8, 116.3], 3);;
     var layerControl = new L.Control.Layers();
-
     layerControl.addTo(map);
     resize();
-
     $(document).ready(function(){
-
         $.get("/static/api", function(result){
             var price= JSON.parse(result);
             draw(price);
         });
-
-
     });
     function dataStruct(parameter){
         var config = {
@@ -181,17 +168,16 @@
             }
         };
         for(var i=0;i<parameter.data.length;i++){
-            config.data.labels.push(parameter.data[i].time);
+            config.data.labels.push(parameter.data[i].date);
         }
         for(var i=0;i<parameter.data.length;i++){
-            config.data.datasets[0].data.push(parameter.data[i].price);
+            config.data.datasets[0].data.push(parameter.data[i].average_price);
         }
         for(var i=0;i<parameter.data.length;i++){
-            config.data.datasets[1].data.push(parameter.data[i].price);
+            config.data.datasets[1].data.push(parameter.data[i].average_price);
         }
         return config;
     }
-
     var pricedata;
     function draw(price) {
         var width=0.01354;
@@ -201,14 +187,12 @@
             for(var m=0;m<3;m++){
                 var dist_len=m*width;
                 var bounds = [[39.8076054918+dist_len,(116.3970109742+dist_wid)], [39.821145+dist_len,(116.41055488416854+dist_wid)]];//(左下角，右上角)
-
                 var rect;
                 var gridecolor=price.data[n*3+m];
-                 rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:mycolor(gridecolor.color) , weight:1,fillOpacity:0.6,"gridcode":gridecolor.code});
-                 rect.code=gridecolor.code;
-
-                 rect.on('click', function() {
-                     console.log(rect.code);
+                rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:mycolor(gridecolor.color) , weight:1,fillOpacity:0.6,"gridcode":gridecolor.code});
+                rect.code=gridecolor.code;
+                rect.on('click', function() {
+                    console.log(rect.code);
                     var json={
                         "collname":"rentout_code",
                         "type":"fang",
@@ -217,12 +201,12 @@
                     $.post("/price",
                             JSON.stringify(json)
                             ,
-                           function(data,status){
-                               var ctx = document.getElementById("myChart").getContext("2d");
-                               pricedata= JSON.parse(data);
+                            function(data,status){
+                                var ctx = document.getElementById("myChart").getContext("2d");
+                                pricedata= JSON.parse(data);
                                 window.myLine = new Chart(ctx, dataStruct(pricedata));
-                                 $('#myModal').modal()
-                    }
+                                $('#myModal').modal()
+                            }
                     )
                 });
                 rect.addTo(map);
@@ -235,22 +219,18 @@
         var calor="rgb("+r+","+g+","+b+")";
         return calor;
     }
-
     function makepopupdiv(n) {
         var mycavas = document.createElement("canvas");
         mycavas.setAttribute("width", "200");//
         mycavas.setAttribute("height", "300");//
         mycavas.setAttribute("id", "myChart");//设置Id属性
         console.log("create");
-
         var popup = L.popup().setContent("<DIV><span class='showpopup' style=\"font-weight:bold;\"></span></DIV><HR/><DIV>"+mycavas.outerHTML+"<span>"+"test"+n + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "beijing" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">时间:	</span><span>" + "2016-07-07" + "<span></DIV>")
-
         return popup
     }
     $(".showpopup").on("load",function() {
         console.log("display");
     },false);
-
 </script>
 </body>
 </html>
