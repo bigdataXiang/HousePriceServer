@@ -31,13 +31,14 @@ public class handler_gridprice{
         DBCollection coll = db.getDB().getCollection(collName);
         BasicDBObject document = new BasicDBObject();
         document.put("gridcode",code);
+        document.put("source",source);
         DBCursor cursor = coll.find(document);
         String poi="";
         int count=0;
         JSONArray array = new JSONArray();
         while (cursor.hasNext()) {
-            poi=cursor.next().toString();
 
+            poi=cursor.next().toString();
             JSONObject obj=JSONObject.fromObject(poi);
             JSONObject result=new JSONObject();
 

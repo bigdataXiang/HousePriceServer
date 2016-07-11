@@ -90,6 +90,8 @@
     var layerControl = new L.Control.Layers();
     layerControl.addTo(map);
     resize();
+
+    //这个接口是用来传递网格的color和code的
     $(document).ready(function(){
         $.get("/static/api", function(result){
             var price= JSON.parse(result);
@@ -254,7 +256,7 @@
         var calor="rgb("+r+","+g+","+b+")";
         return calor;
     }
-    function makepopupdiv(n) {
+/*    function makepopupdiv(n) {
         var mycavas = document.createElement("canvas");
         mycavas.setAttribute("width", "200");//
         mycavas.setAttribute("height", "300");//
@@ -265,7 +267,7 @@
     }
     $(".showpopup").on("load",function() {
         console.log("display");
-    },false);
+    },false);*/
 </script>
 </body>
 </html>
