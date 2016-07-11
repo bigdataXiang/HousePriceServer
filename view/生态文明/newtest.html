@@ -96,6 +96,20 @@
             draw(price);
         });
     });
+
+    //生成随机颜色和尺度
+    var randomScalingFactor = function() {
+        return Math.round(Math.random() * 100);
+        //return 0;
+    };
+    var randomColorFactor = function() {
+        return Math.round(Math.random() * 255);
+    };
+    var randomColor = function(opacity) {
+        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
+    };
+
+    //表格所需要的数据结构
     function dataStruct(parameter){
         var config = {
             type: 'line',
@@ -178,6 +192,16 @@
         for(var i=0;i<parameter.data.length;i++){
             config.data.datasets[1].data.push(parameter.data[i].average_price);
         }
+        //给曲线随机赋颜色值
+        for(var i=0;i<config.data.datasets.length;i++){
+            config.data.datasets[i].borderColor = randomColor(0.4);
+            config.data.datasets[i].backgroundColor = randomColor(0.5);
+            config.data.datasets[i].pointBorderColor = randomColor(0.7);
+            config.data.datasets[i].pointBackgroundColor = randomColor(0.5);
+            config.data.datasets[i].pointBorderWidth = 1;
+
+        }
+
         return config;
     }
     var pricedata;
