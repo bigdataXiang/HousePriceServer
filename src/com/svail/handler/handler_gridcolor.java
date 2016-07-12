@@ -3,6 +3,7 @@ package com.svail.handler;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.svail.bean.MultiFieldComparison;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -15,20 +16,7 @@ import java.util.*;
  * Created by ZhouXiang on 2016/7/11.
  */
 public class handler_gridcolor {
-
-    public String get(String path){
-
-        JSONObject date=new JSONObject();
-        date.put("year","2016");
-        date.put("month","06");
-        date.put("day","03");
-        double max = getMaxPrice("rentout_code","fang",date);
-        JSONArray result = getAvenragePrice(result_array );
-        String data=setColor(result,max);
-
-        return data;
-    }
- /*  public static void main(String[] args){
+     /*  public static void main(String[] args){
 
        JSONObject date=new JSONObject();
        date.put("year","2016");
@@ -39,6 +27,62 @@ public class handler_gridcolor {
        String data=setColor(result,max);
        FileTool.Dump(data,"D:/gridcolor.txt","utf-8");
    }*/
+
+
+    public String get(String path){
+
+        JSONObject date=new JSONObject();
+        date.put("year","2016");
+        date.put("month","06");
+        date.put("day","03");
+        double max = getMaxPrice("rentout_code","fang",date);
+        JSONArray result = getAvenragePrice(result_array );
+        String data=setColor(result,max);
+        String resultdata=FilledGridData(data);
+
+        return resultdata;
+    }
+    public String FilledGridData(String data){
+        String str="";
+        JSONObject data_obj=JSONObject.fromObject(data);
+        JSONArray data_array=data_obj.getJSONArray("data");
+        JSONArray result_obj=new JSONArray();
+
+        List<JSONObject> list = new ArrayList<JSONObject>(); //对时间进行排序的list
+        JSONObject codekey=new JSONObject();
+        for(int i=0;i<data_array.size();i++){
+            JSONObject obj= (JSONObject) data_array.get(i);
+            list.add(obj);
+
+            String code=obj.getString("code");
+            codekey.put(code,"");
+        }
+
+        for(int i=0;i<1000;i++){
+            String codeindex=""+i;
+            if(!codekey.containsKey(codeindex)){
+                JSONObject obj= new JSONObject();
+                obj.put("code",codeindex);
+                obj.put("average_price",0);
+                obj.put("color","#FFC0CB");
+                list.add(obj);
+            }
+        }
+
+        //System.out.println("开始排序：");
+        Collections.sort(list, new CodeComparator()); // 根据网格code排序
+
+        JSONArray resultarray=new JSONArray();
+        Iterator it=list.iterator();
+        if(it.hasNext()){
+            resultarray.add(it.next());
+        }
+        JSONObject resultobj=new JSONObject();
+        resultobj.put("data",resultarray);
+        str=resultobj.toString();
+
+        return str;
+    }
 
     /**
      * 给每个网格的均价赋予一个颜色值
@@ -133,7 +177,7 @@ public class handler_gridcolor {
         System.out.println("该天一共有"+codeprice.size()+"个网格有数据");
 
         //遍历codeprice中的元素，求每个时间节点的价格均值
-        List<JSONObject> list = new ArrayList<JSONObject>(); //对时间进行排序的list
+        JSONArray finalresult=new JSONArray();
         Iterator codekeys = codeprice.keys();
         while(codekeys.hasNext()){
 
@@ -150,37 +194,24 @@ public class handler_gridcolor {
                 }
                 average_price=totalprice/pricelist.size();
             }
-
             price.put("average_price",average_price);
-            list.add(price);
+
+            finalresult.add(price);
         }
-
-        //对时间进行排序
-//      System.out.println("开始排序：");
-        Collections.sort(list, new CodeComparator()); // 根据网格code排序
-
-        JSONArray finalresult=new JSONArray();
-        Iterator it = list.iterator();
-        while (it.hasNext()) {
-            finalresult.add(it.next());
-        }
-
         return finalresult;
     }
     //根据code进行排序
     static class CodeComparator implements Comparator{
         public int compare(Object object1, Object object2) {
-            JSONObject p1 = (JSONObject) object1;
-            JSONObject p2 = (JSONObject) object2;
 
-            int code1=p1.getInt("code");
-            int code2=p2.getInt("code");
+            JSONObject obj1=JSONObject.fromObject(object1);
+            JSONObject obj2=JSONObject.fromObject(object2);
 
-            int flag=0;
-            if(code1>code2){
-                flag=1;
-            }
-           return flag;
+            int code1=obj1.getInt("code");
+            int code2=obj2.getInt("code");
+
+            int flag = new Integer(code1).compareTo(new Integer(code2));
+            return flag;
         }
     }
 }
