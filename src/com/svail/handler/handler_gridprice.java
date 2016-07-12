@@ -15,9 +15,9 @@ import java.util.*;
  * Created by ZhouXiang on 2016/7/10.
  */
 public class handler_gridprice{
-    /*public static void main(String[] args){
+    public static void main(String[] args){
         callDataFromMongo("rentout_code","fang",15275);
-    }*/
+    }
 
     public String get(String path,String body){
         JSONObject content=JSONObject.fromObject(body);
@@ -39,6 +39,7 @@ public class handler_gridprice{
         while (cursor.hasNext()) {
 
             poi=cursor.next().toString();
+            //System.out.println(poi);
             JSONObject obj=JSONObject.fromObject(poi);
             JSONObject result=new JSONObject();
 

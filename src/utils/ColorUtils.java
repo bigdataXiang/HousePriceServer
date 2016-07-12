@@ -201,9 +201,21 @@ public class ColorUtils {
      */
     private static String  hexRgb(int[] rgb) {
         String color="";
-        color="#"+Integer.toHexString(rgb[0])+Integer.toHexString(rgb[1])+Integer.toHexString(rgb[2]);
+        color="#"+ toBrowserHexValue(rgb[0])+toBrowserHexValue(rgb[1])+toBrowserHexValue(rgb[2]);
         return color;
 
+    }
+
+    /*
+    * 转为16进制的color值
+    */
+    private static String toBrowserHexValue(int number) {
+        StringBuilder builder = new StringBuilder(
+                Integer.toHexString(number & 0xff));
+        while (builder.length() < 2) {
+            builder.append("0");
+        }
+        return builder.toString().toUpperCase();
     }
 
 }
