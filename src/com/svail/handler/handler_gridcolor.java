@@ -16,17 +16,29 @@ import java.util.*;
  * Created by ZhouXiang on 2016/7/11.
  */
 public class handler_gridcolor {
-     /*  public static void main(String[] args){
+//   public static void main(String[] args){
 
-       JSONObject date=new JSONObject();
+     /*  JSONObject date=new JSONObject();
        date.put("year","2016");
        date.put("month","06");
        date.put("day","03");
        double max = getMaxPrice("rentout_code","fang",date);
        JSONArray result = getAvenragePrice(result_array );
        String data=setColor(result,max);
-       FileTool.Dump(data,"D:/gridcolor.txt","utf-8");
-   }*/
+       FileTool.Dump(data,"D:/gridcolor.txt","utf-8");*/
+
+/*       JSONObject date=new JSONObject();
+       date.put("year","2016");
+       date.put("month","06");
+       date.put("day","03");
+       double max = getMaxPrice("rentout_code","fang",date);
+       JSONArray result = getAvenragePrice(result_array );
+       String data=setColor(result,max);
+       FilledGridData(data);*/
+
+      /* CaculateValuble("D:\\gridcolor.txt");*/
+
+//   }
      //北京西南角(115.417284,39.438283)
     //北京东北角（117.500126,41.059244）
     //经度差：0.011785999999997188
@@ -42,10 +54,9 @@ public class handler_gridcolor {
         JSONArray result = getAvenragePrice(result_array );
         String data=setColor(result,max);
         String resultdata=FilledGridData(data);
-
         return resultdata;
     }
-    public String FilledGridData(String data){
+    public static String FilledGridData(String data){
         String str="";
         JSONObject data_obj=JSONObject.fromObject(data);
         JSONArray data_array=data_obj.getJSONArray("data");
@@ -61,7 +72,7 @@ public class handler_gridcolor {
             codekey.put(code,"");
         }
 
-        for(int i=0;i<1000;i++){
+        for(int i=1;i<32041;i++){
             String codeindex=""+i;
             if(!codekey.containsKey(codeindex)){
                 JSONObject obj= new JSONObject();
@@ -78,7 +89,9 @@ public class handler_gridcolor {
         JSONArray resultarray=new JSONArray();
         Iterator it=list.iterator();
         while(it.hasNext()){
-            resultarray.add(it.next());
+            JSONObject poi= (JSONObject) it.next();
+            resultarray.add(poi);
+            FileTool.Dump(poi.toString(),"D:/gridcolor.txt","utf-8");
         }
         JSONObject resultobj=new JSONObject();
         resultobj.put("data",resultarray);
@@ -216,5 +229,18 @@ public class handler_gridcolor {
             int flag = new Integer(code1).compareTo(new Integer(code2));
             return flag;
         }
+    }
+
+    public static void CaculateValuble(String folder){
+        Vector<String> pois=FileTool.Load(folder,"utf-8");
+        int count=0;
+        for(int i=0;i<pois.size();i++){
+            JSONObject obj=JSONObject.fromObject(pois.elementAt(i));
+            double price =obj.getDouble("average_price");
+            if(price!=0){
+                count++;
+            }
+        }
+        System.out.println("有效的数据一共有"+count);
     }
 }

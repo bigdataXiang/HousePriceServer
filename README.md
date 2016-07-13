@@ -35,9 +35,9 @@
 
 2.通过平面坐标计算出该点所在的网格系统的行列号row（行），col(列)
 
-    row = (int) Math.ceil((X - X_MIN) / 1000); 其中：ceil()将小数部分一律向整数部分进位。 
+    row = (int) Math.ceil((X - X_MIN) / 1000)=179; 其中：ceil()将小数部分一律向整数部分进位。 
 
-    col = (int) Math.ceil((Y - Y_MIN) / 1000);
+    col = (int) Math.ceil((Y - Y_MIN) / 1000)=179;
 
 3.通过网格系统的行列号计算出该网格的值code
 

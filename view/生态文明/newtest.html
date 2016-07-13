@@ -86,14 +86,14 @@
         layers:[normal],
         zoomControl:true
     }).setView([39.8, 116.3], 3); /* 39°54'27"，东经116°23'17*/
-    map.setView([39.8, 116.3], 3);;
+    map.setView([39.8, 116.3], 3);
     var layerControl = new L.Control.Layers();
     layerControl.addTo(map);
     resize();
 
     //这个接口是用来传递网格的color和code的
     $(document).ready(function(){
-        $.get("/static/api", function(result){
+        $.get("/gridcolor", function(result){
             var price= JSON.parse(result);
             draw(price);
         });
@@ -208,30 +208,32 @@
     }
     var pricedata;
     function draw(price) {
-        var width=0.011785999999997188;
-        var length=0.009003999999997347;
+        var width=0.011785999999997188;//每一千米的经度差
+        var length=0.009003999999997347;//每一千米的纬度差
         console.log(price);
-        var n;
-        var m;
+        var row;
+        var col;
         var rects=[];
 
-        for( n=0;n<3;n++){
-            var dist_wid=n*width;
-            for(m=0;m<3;m++){
-                var dist_len=m*length;
+        for( row=1;row<180;row++){
+            for(col=1;col<180;col++){
+                var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                var dist_len=(row-1)*length;
                 var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.447286999999996+dist_len,(115.42907+dist_wid)]];//(左下角，右上角)
                 var rect;
-                var gridecolor=price.data[n*3+m];
+                var gridcode=(col + 179* (row - 1));//计算每个网格的编码值
 
-                rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:mycolor(gridecolor.color) , weight:1,fillOpacity:0.6,"gridcode":gridecolor.code});
-                rect.index=n*3+m;
+                var gridvalue=price.data[gridcode];
+
+                rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:gridvalue.color , weight:1,fillOpacity:0.6});
+                rect.index=gridcode;
                 rect.data=price.data[rect.index];
                 rect.on('click', function(code){
                     //console.log(rect.code);
                     var json={
                         "collname":"rentout_code",
                         "type":"fang",
-                        "code":this.data.code   //rect.code
+                        "code":this.data.code
                     };
                     $.post("/price",
                             JSON.stringify(json)
@@ -245,7 +247,7 @@
                     )
                 });
                 rects.push(rect);
-                rects[n*3+m].addTo(map);
+                rect.addTo(map);
                 map.fitBounds(bounds);
 
             }
@@ -254,21 +256,9 @@
     }
     function mycolor(n) {
         var r=238,g=99,b=n;
-        var calor="rgb("+r+","+g+","+b+")";
-        return calor;
+        var color="rgb("+r+","+g+","+b+")";
+        return color;
     }
-/*    function makepopupdiv(n) {
-        var mycavas = document.createElement("canvas");
-        mycavas.setAttribute("width", "200");//
-        mycavas.setAttribute("height", "300");//
-        mycavas.setAttribute("id", "myChart");//设置Id属性
-        console.log("create");
-        var popup = L.popup().setContent("<DIV><span class='showpopup' style=\"font-weight:bold;\"></span></DIV><HR/><DIV>"+mycavas.outerHTML+"<span>"+"test"+n + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "beijing" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">时间:	</span><span>" + "2016-07-07" + "<span></DIV>")
-        return popup
-    }
-    $(".showpopup").on("load",function() {
-        console.log("display");
-    },false);*/
 </script>
 </body>
 </html>
