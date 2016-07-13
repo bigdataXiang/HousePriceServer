@@ -11,7 +11,7 @@ public class handler_index implements handler{
 
     @Override
     public String get(String path){
-        File f = new File("view/index.html");
+        File f = new File("view/生态文明/newtest.html");
         return UtilFile.getContent(f);
     }
 }

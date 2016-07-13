@@ -9,17 +9,17 @@
         }
     </style>
 
-    <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
-    <link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="stylesheets/ui.css" rel="stylesheet">
+    <link rel="stylesheet" href="/view/生态文明/lib/leaflet/leaflet.css" />
+    <link href="/view/生态文明/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/view/生态文明/stylesheets/ui.css" rel="stylesheet">
 
 
-    <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/view/生态文明/lib/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/view/生态文明/lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="lib/leaflet/leaflet.js"></script>
 
-    <script type="text/javascript" src='lib/leaflet/leaflet.ChineseTmsProviders.js'></script>
-    <script src="Chart.js-2.1.6/dist/Chart.bundle.js"></script>
+    <script type="text/javascript" src='/view/生态文明/lib/leaflet/leaflet.ChineseTmsProviders.js'></script>
+    <script src="/view/生态文明/Chart.js-2.1.6/dist/Chart.bundle.js"></script>
     <!-- 新 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
@@ -213,19 +213,18 @@
         console.log(price);
         var row;
         var col;
-        var rects=[];
+        var mainbound = [[39.90960456049752,116.3972282409668], [39.91960456049752,115.44007]];//(左下角，右上角)
 
-        for( row=1;row<180;row++){
-            for(col=1;col<180;col++){
+        for( row=30;row<81;row++){
+            for(col=50;col<101;col++){
                 var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
                 var dist_len=(row-1)*length;
                 var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.447286999999996+dist_len,(115.42907+dist_wid)]];//(左下角，右上角)
                 var rect;
-                var gridcode=(col + 179* (row - 1));//计算每个网格的编码值
-
+                var gridcode=(col+50*(row-1));//计算每个网格的编码值
                 var gridvalue=price.data[gridcode];
 
-                rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:gridvalue.color , weight:1,fillOpacity:0.6});
+                rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6});
                 rect.index=gridcode;
                 rect.data=price.data[rect.index];
                 rect.on('click', function(code){
@@ -235,9 +234,7 @@
                         "type":"fang",
                         "code":this.data.code
                     };
-                    $.post("/price",
-                            JSON.stringify(json)
-                            ,
+                    $.post("/price", JSON.stringify(json),
                             function(data,status){
                                 var ctx = document.getElementById("myChart").getContext("2d");
                                 pricedata= JSON.parse(data);
@@ -246,12 +243,11 @@
                             }
                     )
                 });
-                rects.push(rect);
                 rect.addTo(map);
-                map.fitBounds(bounds);
-
             }
         }
+        map.fitBounds(mainbound);
+
 
     }
     function mycolor(n) {
