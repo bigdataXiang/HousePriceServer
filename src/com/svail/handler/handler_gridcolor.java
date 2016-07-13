@@ -27,7 +27,10 @@ public class handler_gridcolor {
        String data=setColor(result,max);
        FileTool.Dump(data,"D:/gridcolor.txt","utf-8");
    }*/
-
+     //北京西南角(115.417284,39.438283)
+    //北京东北角（117.500126,41.059244）
+    //经度差：0.011785999999997188
+    // 纬度差：0.009003999999997347
 
     public String get(String path){
 
@@ -74,7 +77,7 @@ public class handler_gridcolor {
 
         JSONArray resultarray=new JSONArray();
         Iterator it=list.iterator();
-        if(it.hasNext()){
+        while(it.hasNext()){
             resultarray.add(it.next());
         }
         JSONObject resultobj=new JSONObject();

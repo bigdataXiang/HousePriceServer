@@ -208,7 +208,8 @@
     }
     var pricedata;
     function draw(price) {
-        var width=0.01354;
+        var width=0.011785999999997188;
+        var length=0.009003999999997347;
         console.log(price);
         var n;
         var m;
@@ -217,8 +218,8 @@
         for( n=0;n<3;n++){
             var dist_wid=n*width;
             for(m=0;m<3;m++){
-                var dist_len=m*width;
-                var bounds = [[39.8076054918+dist_len,(116.3970109742+dist_wid)], [39.821145+dist_len,(116.41055488416854+dist_wid)]];//(左下角，右上角)
+                var dist_len=m*length;
+                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.447286999999996+dist_len,(115.42907+dist_wid)]];//(左下角，右上角)
                 var rect;
                 var gridecolor=price.data[n*3+m];
 
