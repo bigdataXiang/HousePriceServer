@@ -5,7 +5,9 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import utils.FileTool;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,8 +17,14 @@ import java.util.*;
  * Created by ZhouXiang on 2016/7/10.
  */
 public class handler_gridprice{
-    /*public static void main(String[] args){
-        callDataFromMongo("rentout_code","fang",15275);
+    public static int count=0;
+/*    public static void main(String[] args){
+        for(int i=1;i<32042;i++){
+            String str=callDataFromMongo("rentout_code","fang",i);
+            FileTool.Dump(str,"D:\\gridcurve.txt","utf-8");
+
+        }
+
     }*/
 
     public String get(String path,String body){
@@ -34,35 +42,44 @@ public class handler_gridprice{
         document.put("source",source);
         DBCursor cursor = coll.find(document);
         String poi="";
-        int count=0;
+
         JSONArray array = new JSONArray();
-        while (cursor.hasNext()) {
+        if(cursor.hasNext()){
+            while (cursor.hasNext()) {
+                poi=cursor.next().toString();
+                //System.out.println(poi);
+                JSONObject obj=JSONObject.fromObject(poi);
+                JSONObject result=new JSONObject();
+                try{
+                    if(obj.containsKey("date")){
+                        Object date=obj.get("date");
 
-            poi=cursor.next().toString();
-            //System.out.println(poi);
-            JSONObject obj=JSONObject.fromObject(poi);
-            JSONObject result=new JSONObject();
+                        JSONObject obj_date= JSONObject.fromObject(date);
+                        String year=obj_date.getString("year").replace(" ","");
+                        String month=obj_date.getString("month").replace(" ","");
+                        String day=obj_date.getString("day").replace(" ","");
 
-            Object date=obj.get("date");
-            JSONObject obj_date= JSONObject.fromObject(date);
-            String year=obj_date.getString("year").replace(" ","");
-            String month=obj_date.getString("month").replace(" ","");
-            String day=obj_date.getString("day").replace(" ","");
+                        String dateID=year+"-"+month+"-"+day;
+                        result.put("date",dateID);
 
-//            GregorianCalendar calendar=new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
-            String dateID=year+"-"+month+"-"+day;
-            result.put("date",dateID);
-//            result.put("calendar",calendar);
+                        Object price=obj.get("price");
+                        result.put("price",price);
 
-            Object price=obj.get("price");
-            result.put("price",price);
+                        array.add(result);
 
-            array.add(result);
+                    }
+                }catch(JSONException e){
+                    e.printStackTrace();
+                    System.out.println(poi);
+                }
+
+            }
         }
-        return getTimeSeriesPrice(array.toString());
+
+        return getTimeSeriesPrice(array.toString(),code);
     }
 
-    public static String getTimeSeriesPrice(String arrayresult){
+    public static String getTimeSeriesPrice(String arrayresult,int code){
         String result="";
         JSONArray array=JSONArray.fromObject(arrayresult);
         JSONObject timeprice=new JSONObject();
@@ -121,6 +138,7 @@ public class handler_gridprice{
         }
 
         JSONObject backdata=new JSONObject();
+        backdata.put("code",code);
         backdata.put("data",finalresult);
 
 
