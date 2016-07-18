@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.svail.bean.MultiFieldComparison;
+import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -44,7 +45,8 @@ public class handler_gridcolor {
     //经度差：0.011785999999997188
     // 纬度差：0.009003999999997347
 
-    public String get(String path){
+    public Response get(String path,String zoom){
+
 
         JSONObject date=new JSONObject();
         date.put("year","2016");
@@ -54,7 +56,11 @@ public class handler_gridcolor {
         JSONArray result = getAvenragePrice(result_array );
         String data=setColor(result,max);
         String resultdata=FilledGridData(data);
-        return resultdata;
+
+        Response r= new Response();
+        r.setCode(200);
+        r.setContent(resultdata);
+
     }
     public static String FilledGridData(String data){
         String str="";

@@ -1,5 +1,6 @@
 package com.svail.handler;
 
+import com.svail.bean.Response;
 import utils.UtilFile;
 
 import java.io.File;
@@ -10,10 +11,20 @@ import java.io.File;
 public class handler_static implements handler{
 
     @Override
-    public String get(String path){
+    public Response get(String path){
+        Response r= new Response();
+
+
         File f = new File(path);
-        String s=UtilFile.getContent(f);
-        return s;
+        if(f.exists()) {
+            String s = UtilFile.getContent(f);
+            r.setContent(s);
+            r.setCode(200);
+        }else {
+            r.setContent( "file not found!");
+            r.setCode(404);
+        }
+        return r;
     }
 
 

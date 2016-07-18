@@ -1,6 +1,7 @@
 package com.svail.handler;
 
 import com.mongodb.*;
+import com.svail.bean.*;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -12,8 +13,11 @@ import net.sf.json.JSONObject;
 public class handler_info implements handler{
 
     @Override
-    public String get(String path){
-        return callDataFromMongo("rentout_code","fang",15275);
+    public Response get(String path){
+        Response r= new Response();
+        r.setCode(200);
+        r.setContent(callDataFromMongo("rentout_code","fang",15275));
+        return r;
     }
     public String callDataFromMongo(String collName,String source,int code){
         DBCollection coll = db.getDB().getCollection(collName);

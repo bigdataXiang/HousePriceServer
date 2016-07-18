@@ -1,5 +1,6 @@
 package com.svail.handler;
 
+import com.svail.bean.Response;
 import utils.UtilFile;
 
 import java.io.File;
@@ -10,8 +11,11 @@ import java.io.File;
 public class handler_index implements handler{
 
     @Override
-    public String get(String path){
+    public Response get(String path){
         File f = new File("view/生态文明/newtest.html");
-        return UtilFile.getContent(f);
+        Response r= new Response();
+        r.setCode(200);
+        r.setContent( UtilFile.getContent(f));
+        return r;
     }
 }

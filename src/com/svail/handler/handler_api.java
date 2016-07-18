@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -24,8 +25,11 @@ public class handler_api implements handler{
 
 
     @Override
-    public String get(String path){
-        return setCode(1000,"2015","12","20").toString();
+    public Response get(String path){
+        Response r= new Response();
+        r.setCode(200);
+        r.setContent( setCode(1000,"2015","12","20").toString());
+        return r;
     }
     /**
      * 给网格创建编码

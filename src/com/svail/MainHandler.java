@@ -2,6 +2,7 @@ package com.svail;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.svail.bean.Response;
 import com.svail.handler.*;
 import utils.UtilHttp;
 
@@ -19,8 +20,10 @@ public class MainHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String requestMethod = exchange.getRequestMethod();
         URI url = exchange.getRequestURI();//获取url链接饿信息
+
         String body = UtilHttp.getBody(exchange);
-        String response="";
+
+        Response response;
         switch (url.getPath()){
             case "/api":response=new handler_api().get(url.getPath());
                 break;
@@ -30,11 +33,12 @@ public class MainHandler implements HttpHandler {
                 break;
             case "/price":response=new handler_gridprice().get(url.getPath(),body);
                 break;
-            case "/gridcolor":response=new handler_gridcolor().get(url.getPath());
+            case "/gridcolor":response=new handler_gridcolor().get(url.getPath(),body);
                 break;
             default:response= new handler_static().get(url.getPath().substring(1));
                 break;
         }
-        UtilHttp.setResponse(exchange,200,response);
+        System.out.println(response.getCode()+"\t"+requestMethod+"\t"+ url.getPath()+"\t"+body);
+        UtilHttp.setResponse(exchange,response.getCode(),response.getContent());
     }
 }

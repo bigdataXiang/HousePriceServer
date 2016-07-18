@@ -3,6 +3,7 @@ package com.svail.handler;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -27,13 +28,15 @@ public class handler_gridprice{
 
     }*/
 
-    public String get(String path,String body){
+    public Response get(String path, String body){
         JSONObject content=JSONObject.fromObject(body);
         String collname=content.getString("collname");
         String type=content.getString("type");
         int code=content.getInt("code");
-
-        return callDataFromMongo(collname,type,code);
+        Response r= new Response();
+        r.setCode(200);
+        r.setContent(callDataFromMongo(collname,type,code));
+        return r;
     }
     public static String callDataFromMongo(String collName,String source,int code){
         DBCollection coll = db.getDB().getCollection(collName);

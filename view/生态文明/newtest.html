@@ -87,16 +87,31 @@
         zoomControl:true
     }).setView([39.8, 116.3], 3); /* 39°54'27"，东经116°23'17*/
     map.setView([39.8, 116.3], 3);
+    map.on('zoomstart', function(e) {
+       console.log("zoomstart");
+    });
+    map.on('zoomend', function(e) {
+        console.log("zoomend");
+        //这里先删除旧的layer
+
+        $.post("/gridcolor",""+map.getZoom(), function(result){
+            var price= JSON.parse(result);
+            draw(price);
+        });
+    });
     var layerControl = new L.Control.Layers();
     layerControl.addTo(map);
     resize();
 
     //这个接口是用来传递网格的color和code的
     $(document).ready(function(){
-        $.get("/gridcolor", function(result){
-            var price= JSON.parse(result);
-            draw(price);
-        });
+        var mainbound = [[39.90960456049752,116.3972282409668], [39.91960456049752,115.44007]];//(左下角，右上角)
+        var rect1= L.rectangle(mainbound, {color:mycolor(200),opacity:0.9,fillColor:mycolor(200),weight:1,fillOpacity:0.6});
+
+//        $.post("/gridcolor",""+map.getZoom(), function(result){
+//            var price= JSON.parse(result);
+//            draw(price);
+//        });
     });
 
     //生成随机颜色和尺度
@@ -206,6 +221,7 @@
 
         return config;
     }
+
     var pricedata;
     function draw(price) {
         var width=0.011785999999997188;//每一千米的经度差
