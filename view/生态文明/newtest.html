@@ -92,8 +92,12 @@
     });
     map.on('zoomend', function(e) {
         console.log("zoomend");
+        for (var i in rects){
+            map=map.removeLayer(i);
+        }
+        rects=[];
         //这里先删除旧的layer
-
+        //map.remove();
         $.post("/gridcolor",""+map.getZoom(), function(result){
             var price= JSON.parse(result);
             draw(price);
@@ -105,13 +109,14 @@
 
     //这个接口是用来传递网格的color和code的
     $(document).ready(function(){
-        var mainbound = [[39.90960456049752,116.3972282409668], [39.91960456049752,115.44007]];//(左下角，右上角)
-        var rect1= L.rectangle(mainbound, {color:mycolor(200),opacity:0.9,fillColor:mycolor(200),weight:1,fillOpacity:0.6});
+        $.post("/gridcolor",""+map.getZoom(), function(result){
+            var price= JSON.parse(result);
 
-//        $.post("/gridcolor",""+map.getZoom(), function(result){
-//            var price= JSON.parse(result);
-//            draw(price);
-//        });
+            draw(price);
+            var mainbound = [[39.90960456049752,116.3972282409668], [39.91960456049752,115.44007]];//(左下角，右上角)
+            map.fitBounds(mainbound);
+
+        });
     });
 
     //生成随机颜色和尺度
@@ -221,15 +226,15 @@
 
         return config;
     }
-
+    var rects=[];
     var pricedata;
+
     function draw(price) {
         var width=0.011785999999997188;//每一千米的经度差
         var length=0.009003999999997347;//每一千米的纬度差
         console.log(price);
         var row;
         var col;
-        var mainbound = [[39.90960456049752,116.3972282409668], [39.91960456049752,115.44007]];//(左下角，右上角)
 
         for( row=50;row<51;row++){
             for(col=28;col<36;col++){
@@ -261,10 +266,10 @@
                     )
                 });
                 rect.addTo(map);
+                rects.push(rect);
+
             }
         }
-        map.fitBounds(mainbound);
-
 
     }
     function mycolor(n) {

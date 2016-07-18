@@ -44,7 +44,7 @@ public class handler_api implements handler{
 		 *
 		 */
 
-        List< DBObject> pois=new ArrayList<>();
+        List< DBObject> pois=new ArrayList();
         pois=getPois("fang","2015","12","20");
 
         int rows = (int) Math.ceil((X_MAX - X_MIN) / index);

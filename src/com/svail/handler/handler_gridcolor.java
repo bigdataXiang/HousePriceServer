@@ -60,6 +60,7 @@ public class handler_gridcolor {
         Response r= new Response();
         r.setCode(200);
         r.setContent(resultdata);
+        return r;
 
     }
     public static String FilledGridData(String data){
