@@ -3,7 +3,6 @@ package com.svail.handler;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
-import com.svail.bean.MultiFieldComparison;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
@@ -14,18 +13,18 @@ import utils.FileTool;
 import java.util.*;
 
 /**
- * Created by ZhouXiang on 2016/7/11.
+ * Created by ZhouXiang on 2016/7/19.
  */
-public class handler_gridcolor {
-    public Response get(String path,String zoom){
+public class handler_2000 {
+    public Response get(String path, String zoom){
 
 
         JSONObject date=new JSONObject();
-        date.put("year","2016");
-        date.put("month","06");
-        date.put("day","03");
-        double max = getMaxPrice("rentout_code","fang",date);
-        JSONArray result = getAvenragePrice(result_array );
+        date.put("year","2015");
+        date.put("month","10");
+        date.put("day","12");
+        double max = getMaxPrice("rentout_code_2000","woaiwojia",date);
+        JSONArray result = getAvenragePrice(result_array);
         String data=setColor(result,max);
         String resultdata=FilledGridData(data);
 
@@ -51,7 +50,7 @@ public class handler_gridcolor {
             codekey.put(code,"");
         }
 
-        for(int i=1;i<32041;i++){
+        for(int i=1;i<8101;i++){
             String codeindex=""+i;
             if(!codekey.containsKey(codeindex)){
                 JSONObject obj= new JSONObject();
@@ -99,14 +98,14 @@ public class handler_gridcolor {
 
                 String color="";
                 int [] rgb=new int[3];
-                color=ColorUtils.HSV2StrRGB(120,100,V,rgb);
+                color= ColorUtils.HSV2StrRGB(120,100,V,rgb);
                 obj.put("color",color);
 
                 finalresult.add(obj);
             }
             backdata.put("data",finalresult);
         }
-       return backdata.toString();
+        return backdata.toString();
     }
     static JSONArray result_array = new JSONArray();
 
@@ -144,7 +143,7 @@ public class handler_gridcolor {
             price_max= Collections.max(pricelist);
         }
 
-     return  price_max;
+        return  price_max;
     }
 
     public static JSONArray getAvenragePrice(JSONArray array){
@@ -196,7 +195,7 @@ public class handler_gridcolor {
         return finalresult;
     }
     //根据code进行排序
-    static class CodeComparator implements Comparator{
+    static class CodeComparator implements Comparator {
         public int compare(Object object1, Object object2) {
 
             JSONObject obj1=JSONObject.fromObject(object1);
@@ -223,3 +222,4 @@ public class handler_gridcolor {
         System.out.println("有效的数据一共有"+count);
     }
 }
+

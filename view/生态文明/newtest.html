@@ -92,16 +92,20 @@
     });
     map.on('zoomend', function(e) {
         console.log("zoomend");
-        for (var i in rects){
-            map=map.removeLayer(i);
+        for (var i=0;i<rects.length;i++){
+            map=map.removeLayer(rects[i]);
         }
         rects=[];
         //这里先删除旧的layer
-        //map.remove();
-        $.post("/gridcolor",""+map.getZoom(), function(result){
-            var price= JSON.parse(result);
-            draw(price);
-        });
+        var zoomvalue=map.getZoom();
+        if(zoomvalue==11){
+            $.post("/grid2000",""+map.getZoom(), function(result){
+                var price= JSON.parse(result);
+                redraw_11(price);
+                //draw(price);
+            });
+        }
+
     });
     var layerControl = new L.Control.Layers();
     layerControl.addTo(map);
@@ -114,6 +118,7 @@
 
             draw(price);
             var mainbound = [[39.90960456049752,116.3972282409668], [39.91960456049752,115.44007]];//(左下角，右上角)
+
             map.fitBounds(mainbound);
 
         });
@@ -228,6 +233,53 @@
     }
     var rects=[];
     var pricedata;
+
+    function redraw_11(price) {
+        var width=0.023571999999994375;//每两千米的经度差
+        var length=0.018007999999994695;//每两千米的纬度差
+        /*var width=0.011785999999997188;//每一千米的经度差
+        var length=0.009003999999997347;//每一千米的纬度差*/
+
+        console.log(price);
+        var row;
+        var col;
+
+        for( row=1;row<90;row++){
+            for(col=1;col<90;col++){
+                var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                var dist_len=(row-1)*length;
+                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.45629099999999+dist_len,(115.440856+dist_wid)]];//(左下角，右上角)
+                var rect;
+                var gridcode=(col+90*(row-1));//计算每个网格的编码值，这里的179表示总共的列数，不可改变。
+                var gridvalue=price.data[gridcode];
+                var code=""+gridcode;
+
+                rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
+                rect.index=gridcode;
+                rect.data=price.data[rect.index];
+                rect.on('click', function(code){
+                    //console.log(rect.code);
+                    var json={
+                        "collname":"rentout_code_2000",
+                        "type":"woaiwojia",
+                        "code":this.data.code
+                    };
+                    $.post("/price", JSON.stringify(json),
+                            function(data,status){
+                                var ctx = document.getElementById("myChart").getContext("2d");
+                                pricedata= JSON.parse(data);
+                                window.myLine = new Chart(ctx, dataStruct(pricedata));
+                                $('#myModal').modal()
+                            }
+                    )
+                });
+                rect.addTo(map);
+                rects.push(rect);
+
+            }
+        }
+
+    }
 
     function draw(price) {
         var width=0.011785999999997188;//每一千米的经度差
