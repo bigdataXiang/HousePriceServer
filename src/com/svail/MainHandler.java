@@ -35,7 +35,11 @@ public class MainHandler implements HttpHandler {
                 break;
             case "/gridcolor":response=new handler_gridcolor().get(url.getPath(),body);
                 break;
+            case "/grid1000":response=new handler_1000().get(url.getPath(),body);
+                break;
             case "/grid2000":response=new handler_2000().get(url.getPath(),body);
+                break;
+            case "/grid3000":response=new handler_3000().get(url.getPath(),body);
                 break;
             default:response= new handler_static().get(url.getPath().substring(1));
                 break;

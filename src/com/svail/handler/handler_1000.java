@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * Created by ZhouXiang on 2016/7/19.
  */
-public class handler_2000 {
+public class handler_1000 {
     public Response get(String path, String zoom){
 
 
@@ -23,7 +23,7 @@ public class handler_2000 {
         date.put("year","2015");
         date.put("month","10");
         date.put("day","12");
-        double max = getMaxPrice("rentout_code_2000","woaiwojia",date);
+        double max = getMaxPrice("rentout_code_1000","woaiwojia",date);
         JSONArray result = getAvenragePrice(result_array);
         String data=setColor(result,max);
         String resultdata=FilledGridData(data);
@@ -50,7 +50,7 @@ public class handler_2000 {
             codekey.put(code,"");
         }
 
-        for(int i=1;i<8101;i++){
+        for(int i=1;i<32041;i++){
             String codeindex=""+i;
             if(!codekey.containsKey(codeindex)){
                 JSONObject obj= new JSONObject();
@@ -222,4 +222,5 @@ public class handler_2000 {
         System.out.println("有效的数据一共有"+count);
     }
 }
+
 
