@@ -131,7 +131,6 @@
             var price= JSON.parse(result);
             draw(price);
             var mainbound = [[39.90960456049752,116.3972282409668], [39.91960456049752,115.44007]];//(左下角，右上角)
-
             map.fitBounds(mainbound);
 
         });
@@ -265,7 +264,7 @@
                 var dist_len=(row-1)*length;
                 var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.46529499999999+dist_len,(115.45264199999998+dist_wid)]];//(左下角，右上角)
                 var rect;
-                var gridcode=(col+60*(row-1));//计算每个网格的编码值，这里的179表示总共的列数，不可改变。
+                var gridcode=(col+60*(row-1));//计算每个网格的编码值，这里的60表示总共的列数，不可改变。
                 var gridvalue=price.data[gridcode];
                 var code=""+gridcode;
 

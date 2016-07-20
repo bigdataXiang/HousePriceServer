@@ -6,6 +6,7 @@ import com.mongodb.DBCursor;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import utils.ColorUtils;
 import utils.FileTool;
@@ -16,13 +17,23 @@ import java.util.*;
  * Created by ZhouXiang on 2016/7/19.
  */
 public class handler_3000 {
+    public static void main(String[] args){
+        JSONObject date=new JSONObject();
+        date.put("year","2015");
+        date.put("month","10");
+        double max = getMaxPrice("rentout_code_3000","woaiwojia",date);
+        JSONArray result = getAvenragePrice(result_array);
+        String data=setColor(result,max);
+        String resultdata=FilledGridData(data);
+        FileTool.Dump(resultdata,"D:\\房地产可视化\\gridecode_3000_result.txt","utf-8");
+
+    }
     public Response get(String path, String zoom){
 
 
         JSONObject date=new JSONObject();
         date.put("year","2015");
         date.put("month","10");
-        date.put("day","12");
         double max = getMaxPrice("rentout_code_3000","woaiwojia",date);
         JSONArray result = getAvenragePrice(result_array);
         String data=setColor(result,max);
@@ -107,7 +118,9 @@ public class handler_3000 {
         }
         return backdata.toString();
     }
-    static JSONArray result_array = new JSONArray();
+    //public static JSONArray result_array = new JSONArray();
+    public static List<JSONObject> result_array=new ArrayList<JSONObject>();
+
 
     public static double getMaxPrice(String collName,String source,JSONObject date){
         String str="";
@@ -115,15 +128,22 @@ public class handler_3000 {
         DBCollection coll = db.getDB().getCollection(collName);
         BasicDBObject document = new BasicDBObject();
         document.put("source",source);
-        document.put("date",date);
+        String year=date.getString("year");
+        String month=date.getString("month");
+        document.put("year",year);
+        document.put("month",month);
+
         DBCursor cursor = coll.find(document);
         String poi="";
 
         List<Double> pricelist=new ArrayList<Double>();
         double price_max=0;
+        int count=0;
         if(cursor.hasNext()){
             while (cursor.hasNext()) {
+                count++;
                 poi=cursor.next().toString();
+
 
                 JSONObject obj=JSONObject.fromObject(poi);
                 //System.out.println(obj);
@@ -133,12 +153,31 @@ public class handler_3000 {
                 result.put("code",code);
 
                 double price = obj.getDouble("price");
-                result.put("price",price);
-                pricelist.add(price);
+
+                //确定有几间房然后按照房间算均价
+                JSONObject layout=obj.getJSONObject("layout");
+                int rooms=layout.getInt("rooms");//警惕rooms等于0的情况！
+                double unit_price=0;
+
+                //在做除法运算的时候一定要注意提防除数不要为0！
+                if(rooms!=0){
+                    unit_price=price/rooms;
+                    pricelist.add(unit_price);
+                }else{
+                    unit_price=price;
+                    pricelist.add(unit_price);
+                }
+                result.put("price",unit_price);
 
                 result_array.add(result);
+                System.out.println(count);
             }
-            System.out.println("该天一共有数据"+result_array.size()+"条");
+            try{
+                System.out.println("该月一共有数据"+result_array.size()+"条");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             //求list中的最大价格值
             price_max= Collections.max(pricelist);
         }
@@ -146,7 +185,7 @@ public class handler_3000 {
         return  price_max;
     }
 
-    public static JSONArray getAvenragePrice(JSONArray array){
+    public static JSONArray getAvenragePrice(List<JSONObject> array){
 
         JSONObject codeprice=new JSONObject();
 
