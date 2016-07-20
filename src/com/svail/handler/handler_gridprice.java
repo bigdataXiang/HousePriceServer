@@ -19,9 +19,9 @@ import java.util.*;
  */
 public class handler_gridprice{
     public static int count=0;
-/*    public static void main(String[] args){
-        for(int i=1;i<32042;i++){
-            String str=callDataFromMongo("rentout_code","fang",i);
+    /*public static void main(String[] args){
+        for(int i=1;i<3601;i++){
+            String str=callDataFromMongo("resold_code_3000","woaiwojia",i);
             FileTool.Dump(str,"D:\\gridcurve.txt","utf-8");
 
         }
@@ -67,6 +67,11 @@ public class handler_gridprice{
 
                         Object price=obj.get("price");
                         result.put("price",price);
+
+                        if(collName.equals("resold_code_3000")){
+                            price=obj.get("unit_price");
+                            result.put("price",price);
+                        }
 
                         array.add(result);
 

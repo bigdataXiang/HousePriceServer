@@ -54,6 +54,7 @@
         <!--上一行是调节表格后面的白色模板的-->
         <div class="modal-content" style="width: 90%;height: 90%;width: 90%;height: 90%">
             <!---->
+            <!--<h4 id="charttitle"></h4>-->
             <canvas id="myChart" style="width: 90%;height: 90%;width: 90%;height: 90%"></canvas>
 
         </div>
@@ -99,7 +100,7 @@
         //这里先删除旧的layer
         var zoomvalue=map.getZoom();
         if(zoomvalue==11){
-            $.post("/static/gridcode_3000",""+map.getZoom(), function(result){
+            $.post("/static/gridcode_3000_resold",""+map.getZoom(), function(result){
                 var price= JSON.parse(result);
                 redraw_11(price);
                 //draw(price);
@@ -149,7 +150,8 @@
     };
 
     //表格所需要的数据结构
-    function dataStruct(parameter){
+    function dataStruct(parameter,code){
+        var text=""+code;
         var config = {
             type: 'line',
             data: {
@@ -165,11 +167,11 @@
                     data: [],
                 }]
             },
-            options: {
+            options:{
                 responsive: true,
                 title:{
                     display:true,
-                    text:'Chart.js Line Chart'
+                    text:"房价曲线图"
                 },
                 tooltips: {
                     mode: 'label',
@@ -216,7 +218,7 @@
                         },
                         ticks: {
                             suggestedMin: 0,
-                            suggestedMax: 250,
+                            suggestedMax: 15,
                         }
                     }]
                 }
@@ -231,6 +233,9 @@
         for(var i=0;i<parameter.data.length;i++){
             config.data.datasets[1].data.push(parameter.data[i].average_price);
         }
+        //说明曲线对应的具体网格值
+        //config.data.datasets[0].label=""+code;
+        config.options.title.text="房价曲线图（code:"+code+"）";
         //给曲线随机赋颜色值
         for(var i=0;i<config.data.datasets.length;i++){
             config.data.datasets[i].borderColor = randomColor(0.4);
@@ -274,7 +279,7 @@
                 rect.on('click', function(code){
                     //console.log(rect.code);
                     var json={
-                        "collname":"rentout_code_3000",
+                        "collname":"resold_code_3000",
                         "type":"woaiwojia",
                         "code":this.data.code
                     };
@@ -282,8 +287,9 @@
                             function(data,status){
                                 var ctx = document.getElementById("myChart").getContext("2d");
                                 pricedata= JSON.parse(data);
-                                window.myLine = new Chart(ctx, dataStruct(pricedata));
-                                $('#myModal').modal()
+                                window.myLine = new Chart(ctx, dataStruct(pricedata,pricedata.code));
+                                /*$('#charttitle').text('code:'+pricedata.code);*/
+                                $('#myModal').modal();
                             }
                     )
                 });
