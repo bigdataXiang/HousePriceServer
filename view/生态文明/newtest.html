@@ -99,7 +99,7 @@
         //这里先删除旧的layer
         var zoomvalue=map.getZoom();
         if(zoomvalue==11){
-            $.post("/grid3000",""+map.getZoom(), function(result){
+            $.post("/static/gridcode_3000",""+map.getZoom(), function(result){
                 var price= JSON.parse(result);
                 redraw_11(price);
                 //draw(price);
@@ -125,7 +125,7 @@
     layerControl.addTo(map);
     resize();
 
-    //这个接口是用来传递网格的color和code的
+  /*  //这个接口是用来传递网格的color和code的
     $(document).ready(function(){
         $.post("/gridcolor",""+map.getZoom(), function(result){
             var price= JSON.parse(result);
@@ -134,7 +134,7 @@
             map.fitBounds(mainbound);
 
         });
-    });
+    });*/
 
     //生成随机颜色和尺度
     var randomScalingFactor = function() {

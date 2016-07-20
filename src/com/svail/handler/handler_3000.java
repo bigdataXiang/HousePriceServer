@@ -18,13 +18,19 @@ import java.util.*;
  */
 public class handler_3000 {
     public static void main(String[] args){
-        JSONObject date=new JSONObject();
+        /*JSONObject date=new JSONObject();
         date.put("year","2015");
         date.put("month","10");
         double max = getMaxPrice("rentout_code_3000","woaiwojia",date);
         JSONArray result = getAvenragePrice(result_array);
-        String data=setColor(result,max);
+        FileTool.Dump(result.toString(),"D:\\房地产可视化\\3000_result.txt","utf-8");*/
+
+
+        Vector<String> poi=FileTool.Load("D:\\房地产可视化\\3000_result.txt","utf-8");
+        JSONArray result =JSONArray.fromObject(poi.elementAt(0));
+        String data=setColor(result);
         String resultdata=FilledGridData(data);
+        System.out.println("ok!");
         FileTool.Dump(resultdata,"D:\\房地产可视化\\gridecode_3000_result.txt","utf-8");
 
     }
@@ -36,7 +42,7 @@ public class handler_3000 {
         date.put("month","10");
         double max = getMaxPrice("rentout_code_3000","woaiwojia",date);
         JSONArray result = getAvenragePrice(result_array);
-        String data=setColor(result,max);
+        String data=setColor(result);
         String resultdata=FilledGridData(data);
 
         Response r= new Response();
@@ -46,6 +52,7 @@ public class handler_3000 {
 
     }
     public static String FilledGridData(String data){
+        System.out.println("开始填充值为空的网格的颜色：");
         String str="";
         JSONObject data_obj=JSONObject.fromObject(data);
         JSONArray data_array=data_obj.getJSONArray("data");
@@ -67,7 +74,7 @@ public class handler_3000 {
                 JSONObject obj= new JSONObject();
                 obj.put("code",codeindex);
                 obj.put("average_price",0);
-                obj.put("color","#FFC0CB");
+                obj.put("color","#BFBFBF");
                 list.add(obj);
             }
         }
@@ -92,30 +99,30 @@ public class handler_3000 {
     /**
      * 给每个网格的均价赋予一个颜色值
      * @param array
-     * @param pricemax
      */
-    public static String  setColor(JSONArray array,double pricemax){
+    public static String  setColor(JSONArray array){
         int V=0;
         JSONObject backdata=new JSONObject();
         JSONArray finalresult=new JSONArray();
 
-        if(pricemax!=0){
-            for (int i=0;i<array.size();i++){
-                JSONObject obj= (JSONObject) array.get(i);
-                //System.out.print(obj);
-                double price=obj.getDouble("average_price");
-                float ratio= (float) ((price/pricemax)*100);
+        System.out.println("开始计算每个网格的颜色：");
+        for (int i=0;i<array.size();i++){
+            JSONObject obj= (JSONObject) array.get(i);
+            //System.out.print(obj);
+            double price=obj.getDouble("average_price");
+            String color="";
+
+                /*float ratio= (float) ((price/pricemax)*100);
                 V = Math.round(ratio);
-
-                String color="";
                 int [] rgb=new int[3];
-                color= ColorUtils.HSV2StrRGB(120,100,V,rgb);
-                obj.put("color",color);
+                color= ColorUtils.HSV2StrRGB(0,V,100,rgb);*/
 
-                finalresult.add(obj);
-            }
-            backdata.put("data",finalresult);
+            color=setColorRegion(price);
+            obj.put("color",color);
+
+            finalresult.add(obj);
         }
+        backdata.put("data",finalresult);
         return backdata.toString();
     }
     //public static JSONArray result_array = new JSONArray();
@@ -180,6 +187,8 @@ public class handler_3000 {
 
             //求list中的最大价格值
             price_max= Collections.max(pricelist);
+
+
         }
 
         return  price_max;
@@ -189,7 +198,9 @@ public class handler_3000 {
 
         JSONObject codeprice=new JSONObject();
 
+        System.out.println("开始求每个网格的价格平均值：");
         for (int i=0;i<array.size();i++){
+            //System.out.println(i);
             JSONObject poi= (JSONObject) array.get(i);
             String code=poi.getString("code");
 
@@ -259,6 +270,24 @@ public class handler_3000 {
             }
         }
         System.out.println("有效的数据一共有"+count);
+    }
+
+    public static String setColorRegion(double price){
+        String color="";
+
+        if(price>8000){
+            color="#FF0000";
+        }else if(price>6000&&price<=8000){
+            color="#FF1919";
+        }else if(price>4000&&price<=2000){
+            color="#FF3333";
+        }else if(price>2000&&price<=1000){
+            color="#FF4D4D";
+        }else{
+            color="#FF6666";
+        }
+
+        return color;
     }
 }
 
