@@ -245,7 +245,7 @@ public class handler_3000 {
         return finalresult;
     }
     //根据code进行排序
-    static class CodeComparator implements Comparator {
+    public static class CodeComparator implements Comparator {
         public int compare(Object object1, Object object2) {
 
             JSONObject obj1=JSONObject.fromObject(object1);

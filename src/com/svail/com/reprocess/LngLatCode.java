@@ -16,8 +16,8 @@ public class LngLatCode {
     public static double LNG_MIN = 115.417284;
     public static double width=0.03535799999999156;//每三千米的经度差
     public static double length=0.027011999999992042;//每三千米的纬度差
-    public static int rows;
-    public static int cols;
+    public static int rows=60;
+    public static int cols=60;
     public static Double LNG;
     public static Double LAT;
     public static ArrayList<Code> codes = new ArrayList<Code>();
@@ -25,7 +25,14 @@ public class LngLatCode {
 
     public static void main(String[] args){
         setGridCode();
-        Vector<String> pois= FileTool.Load("","utf-8");
+        Vector<String> pois= FileTool.Load(GRIDFOLDER+"woaiwojia_resold_2016_0428.txt","utf-8");
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            JSONObject jsonObject = JSONObject.fromObject(poi);
+            setPoiCode(jsonObject);
+            FileTool.Dump(jsonObject.toString(),GRIDFOLDER+"woaiwojia_resold_2016_0428_code.txt","utf-8");
+
+        }
     }
     public static void setGridCode(){
         int mm = 1;
@@ -39,15 +46,18 @@ public class LngLatCode {
                 addCode(c);
             }
         }
+        /*for(int k=0;k<codes.size();k++){
+            String str="codes的第"+k+"个数是:"+codes.get(k).row+"行,"+codes.get(k).col+"列,"+codes.get(k).code+"\r\n";
+            FileTool.Dump(str,GRIDFOLDER+"woaiwojia_gridecode_"+3000+".txt","utf-8");
+
+        }*/
     }
     public static void addCode(Code c) {
         codes.add(c);
     }
 
-    public static int setPoiCode(String poi) {
+    public static JSONObject setPoiCode(JSONObject jsonObject) {
 
-        int code;
-        JSONObject jsonObject = JSONObject.fromObject(poi);
         Object lat=jsonObject.get("latitude");
         String type=lat.getClass().getName();
 
@@ -64,12 +74,11 @@ public class LngLatCode {
 
         int row = (int) Math.ceil((latitude - LAT_MIN) / width);
         int col = (int) Math.ceil((longitude - LNG_MIN) / width);
-        int index = (col + cols * (row - 1));
+        int code = (col + cols * (row - 1));
 
-        // 依据行列数算出某行某列对应的编码
-        code = codes.get(index + 1).code; // 由于codes中的第0个数的编码为1，故所有的index需要加1
+        jsonObject.put("gridcode",code);
 
-        return code;
+        return jsonObject;
     }
 
 
