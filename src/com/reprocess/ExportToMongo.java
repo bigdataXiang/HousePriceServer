@@ -21,12 +21,22 @@ import java.util.Vector;
 public class ExportToMongo {
     public static void main(String[] args) throws IOException {
 
-        ToMongoDB("resold_code_3000","fang");
+        ToMongoDB("rentout_code_3000","anjuke");
 
     }
-    public static String path="E:\\房地产可视化\\近一年数据分类汇总\\fang\\resold\\json\\tidy\\fang_resold_tidy\\checked\\";
-    /*E:\房地产可视化\近一年数据分类汇总\fang\resold\json\tidy\fang_resold_tidy\checked\
-    E:\房地产可视化\近一年数据分类汇总\5i5j\resold\tidy\*/
+    public static String path="E:\\房地产可视化\\近一年数据分类汇总\\anjuke\\rentout\\json\\tidy\\";
+    /*
+    E:\房地产可视化\近一年数据分类汇总\fang\resold\json\tidy\fang_resold_tidy\checked\
+    E:\房地产可视化\近一年数据分类汇总\5i5j\resold\tidy\
+    E:\房地产可视化\近一年数据分类汇总\anjuke\resold\tidy\
+
+    E:\房地产可视化\近一年数据分类汇总\anjuke\rentout\json\tidy\
+    */
+
+    //woaiwojia
+    //fang
+    //anjuke
+
 
 
     public static BasicDBObject transfer(JSONObject poi, String source){
@@ -336,6 +346,8 @@ public class ExportToMongo {
             DB db = m.getDB("houseprice");
 
             DBCollection coll = db.getCollection(collName);//coll.drop();
+
+
 
             Vector<String> filenames= FileTool.Load(path+"filename.txt","UTF-8");
 

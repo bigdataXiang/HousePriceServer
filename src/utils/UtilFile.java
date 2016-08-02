@@ -7,9 +7,9 @@ import java.util.Vector;
  * Created by ZhouXiang on 2016/7/2.
  */
 public class UtilFile {
-    public static String path="E:\\房地产可视化\\近一年数据分类汇总\\anjuke\\resold\\tidy\\";
+    public static String path="E:\\房地产可视化\\近一年数据分类汇总\\anjuke\\rentout\\json\\tidy\\";
     public static void main(String[] args) throws IOException {
-        UtilFile.filecut(path+"anjuke_resold_2015_0822.txt");
+        UtilFile.filecut(path+"anjuke_rentout_2015_1015_3.txt");
     }
     public static void filecut(String files){
 
