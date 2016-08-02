@@ -1,4 +1,4 @@
-package com.svail.com.reprocess;
+package com.reprocess;
 
 import com.svail.handler.handler_3000;
 import net.sf.json.JSONArray;

@@ -1,4 +1,4 @@
-package com.svail.com.reprocess;
+package com.reprocess;
 
 import com.svail.bean.Code;
 import net.sf.json.JSONObject;
