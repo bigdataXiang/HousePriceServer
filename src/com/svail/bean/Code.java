@@ -3,7 +3,7 @@ package com.svail.bean;
 public class Code {
 	public int row;
 	public int col;
-	public long code;
+	public int code;
 	public int getRow(){
 		return row;
 	}
@@ -19,7 +19,7 @@ public class Code {
 	public void setCol(int col){
 		this.col=col;
 	}
-	public void setCode(long code){
+	public void setCode(int code){
 		this.code=code;
 	}
 
