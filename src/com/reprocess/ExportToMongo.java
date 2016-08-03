@@ -21,16 +21,19 @@ import java.util.Vector;
 public class ExportToMongo {
     public static void main(String[] args) throws IOException {
 
-        ToMongoDB("rentout_code_3000","anjuke");
+        ToMongoDB("rentout_code_3000","fang");
 
     }
-    public static String path="E:\\房地产可视化\\近一年数据分类汇总\\anjuke\\rentout\\json\\tidy\\";
+    public static String path="E:\\房地产可视化\\近一年数据分类汇总\\fang\\rentout\\json\\fang_rentout_tidy\\";
     /*
     E:\房地产可视化\近一年数据分类汇总\fang\resold\json\tidy\fang_resold_tidy\checked\
     E:\房地产可视化\近一年数据分类汇总\5i5j\resold\tidy\
     E:\房地产可视化\近一年数据分类汇总\anjuke\resold\tidy\
 
     E:\房地产可视化\近一年数据分类汇总\anjuke\rentout\json\tidy\
+    E:\房地产可视化\近一年数据分类汇总\5i5j\rentout\tidy\
+    E:\房地产可视化\近一年数据分类汇总\fang\rentout\json\fang_rentout_tidy\
+
     */
 
     //woaiwojia
