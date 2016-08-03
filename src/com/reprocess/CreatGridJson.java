@@ -48,7 +48,7 @@ public class CreatGridJson {
 
         Vector<String> pois=FileTool.Load(file,"utf-8");
         try{
-            for(i=2199;i<pois.size();i++){
+            for(i=0;i<pois.size();i++){
                 String poi=pois.elementAt(i);
                 obj=JSONObject.fromObject(poi);
                 result=new JSONObject();

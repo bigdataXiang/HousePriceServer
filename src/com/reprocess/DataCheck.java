@@ -16,7 +16,7 @@ public class DataCheck {
     /*E:\房地产可视化\近一年数据分类汇总\fang\resold\json\tidy\fang_resold_tidy\*/
 
     public static void main(String[] args) throws IOException {
-        checkArea(path+"fang_rentout_2015_0725.txt_false.txt");
+        checkArea(path+"fang_rentout_2016_0520.txt_false.txt_ok.txt");
     }
     public static void checkArea(String file){
         Vector<String> filenames= FileTool.Load(file,"UTF-8");
@@ -26,30 +26,10 @@ public class DataCheck {
             try {
                 String element = filenames.elementAt(i);
                 element_obj = JSONObject.fromObject(element);
-
-                String area = element_obj.getString("rent_type");
-                String direction = element_obj.getString("area");
-                String traffic;
-                if(element_obj.containsKey("fitment")){
-                    traffic = element_obj.getString("fitment");
-                }else{
-                    traffic = element_obj.getString("direction");
-                }
-
-
-                element_obj.put("area", area);
-                element_obj.put("direction", direction);
-                element_obj.put("traffic", traffic);
-
-                double price = element_obj.getDouble("price");
-                double aread = element_obj.getDouble("area");
-                double unitprice = price / aread;
-                element_obj.put("unit_price", unitprice);
-
-                element_obj.remove("rent_type");
-                element_obj.remove("fitment");
-
-                FileTool.Dump(element_obj.toString(), file + "_ok.txt", "utf-8");
+                String floor = element_obj.getString("direction").replace("�","");
+                element_obj.put("floor", floor);
+                element_obj.remove("direction");
+            FileTool.Dump(element_obj.toString(), file + "_ok.txt", "utf-8");
             }catch (JSONException e){
                 System.out.println(i);
                 e.printStackTrace();

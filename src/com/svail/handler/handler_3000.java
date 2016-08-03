@@ -18,16 +18,16 @@ import java.util.*;
  */
 public class handler_3000 {
     public static void main(String[] args){
-        /*JSONObject date=new JSONObject();
+        JSONObject date=new JSONObject();
         date.put("year","2015");
         date.put("month","10");
         double max = getMaxPrice("rentout_code_3000","woaiwojia",date);
         JSONArray result = getAvenragePrice(result_array);
-        FileTool.Dump(result.toString(),"D:\\房地产可视化\\3000_result.txt","utf-8");*/
+        FileTool.Dump(result.toString(),"D:\\房地产可视化\\3000_result.txt","utf-8");
 
 
         Vector<String> poi=FileTool.Load("D:\\房地产可视化\\3000_result.txt","utf-8");
-        JSONArray result =JSONArray.fromObject(poi.elementAt(0));
+        result =JSONArray.fromObject(poi.elementAt(0));
         String data=setColor(result);
         String resultdata=FilledGridData(data);
         System.out.println("ok!");

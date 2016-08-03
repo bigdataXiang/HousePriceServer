@@ -21,18 +21,18 @@ import java.util.Vector;
 public class ExportToMongo {
     public static void main(String[] args) throws IOException {
 
-        ToMongoDB("rentout_code_3000","fang");
+        ToMongoDB("rentout_code_3000","woaiwojia");
 
     }
-    public static String path="E:\\房地产可视化\\近一年数据分类汇总\\fang\\rentout\\json\\fang_rentout_tidy\\";
+    public static String path="E:\\房地产可视化\\toMongo\\resold\\woaiwojia\\";
     /*
     E:\房地产可视化\近一年数据分类汇总\fang\resold\json\tidy\fang_resold_tidy\checked\
-    E:\房地产可视化\近一年数据分类汇总\5i5j\resold\tidy\
+    E:\房地产可视化\toMongo\resold\woaiwojia
     E:\房地产可视化\近一年数据分类汇总\anjuke\resold\tidy\
 
     E:\房地产可视化\近一年数据分类汇总\anjuke\rentout\json\tidy\
     E:\房地产可视化\近一年数据分类汇总\5i5j\rentout\tidy\
-    E:\房地产可视化\近一年数据分类汇总\fang\rentout\json\fang_rentout_tidy\
+    E:\房地产可视化\近一年数据分类汇总\fang\rentout\json\fang_rentout_tidy\checked\
 
     */
 
@@ -350,8 +350,6 @@ public class ExportToMongo {
 
             DBCollection coll = db.getCollection(collName);//coll.drop();
 
-
-
             Vector<String> filenames= FileTool.Load(path+"filename.txt","UTF-8");
 
             for(int i=0;i<filenames.size();i++){
@@ -364,7 +362,7 @@ public class ExportToMongo {
                 System.out.println(rds.size());
                 for (int n = 0; n < rds.size(); n ++)
                 {
-                    //System.out.println(n);
+
                     String element="";
                     try{
                         element=rds.elementAt(n);
@@ -373,6 +371,8 @@ public class ExportToMongo {
                         LngLatCode.setPoiCode(element_obj);
 
                         BasicDBObject document = transfer(element_obj,source);
+
+                        System.out.println(document);
                         coll.insert(document);
 
                     }catch(NumberFormatException e){
