@@ -17,9 +17,10 @@ import java.util.*;
  */
 public class GridDataClassify_Resold extends SetPoiCode{
     public static void main(String[] args){
-        initial();
+        initial1();
+        initial2();
     }
-    public static void initial(){
+    public static void initial1(){
 
         for(int i=10;i<=12;i++){
             //1.选定要导出的数据的时间（月份）
@@ -48,6 +49,36 @@ public class GridDataClassify_Resold extends SetPoiCode{
             System.out.println("ok!");
         }
     }
+    public static void initial2(){
+
+        for(int i=1;i<=5;i++){
+            //1.选定要导出的数据的时间（月份）
+            JSONObject condition=new JSONObject();
+            condition.put("year","2016");
+            condition.put("month","0"+i);
+            condition.put("source","woaiwojia");
+
+            //2.从数据库中调出满足condition的数据
+            getCodePrice("resold_code_3000",condition);
+
+            //3.得到每个网格的均价
+            JSONArray result = getAvenragePrice(result_array);
+
+            //4.给有房价值的每个网格赋颜色值
+            String data=setColor(result);
+
+            //5.给无房价值的每个网格统一赋值灰色，并将所有的网格code进行排序
+            String resultdata=FilledGridData(data);
+
+            //6.将处理好的值存于本地
+            String path="E:\\房地产可视化\\toServer\\resold\\woaiwojia\\";
+            FileTool.Dump(resultdata,path+"all_"+"2016_0"+i+".txt","utf-8");
+            FileTool.Dump(data,path+"effective_"+"2016_0"+i+".txt","utf-8");
+
+            System.out.println("ok!");
+        }
+    }
+
     public static List<JSONObject> result_array=new ArrayList<JSONObject>();
 
     /**
