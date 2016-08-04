@@ -25,15 +25,15 @@ public class LngLatCode {
     public static void main(String[] args){
 
         //checkGridCode();
-        setPoiCode(116.6536680729,39.9218031434);
+        setPoiCode(117.53876399999949,41.05900299999952);
 
     }
 
 
     public static void checkGridCode(){
         //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
-        for(int  row=1;row<60;row++){
-            for(int col=1;col<60;col++){
+        for(int  row=1;row<61;row++){
+            for(int col=1;col<61;col++){
                 double dist_wid=(col-1)*width;
                 double dist_len=(row-1)*length;
 
@@ -51,7 +51,7 @@ public class LngLatCode {
     }
     public static void setPoiCode(double longitude,double latitude){
 
-        int row = (int) Math.ceil((latitude - LAT_MIN) / width);
+        int row = (int) Math.ceil((latitude - LAT_MIN) / length);
         int col = (int) Math.ceil((longitude - LNG_MIN) / width);
         int code = (col + cols * (row - 1));
 
@@ -73,7 +73,7 @@ public class LngLatCode {
         }
 
 
-        int row = (int) Math.ceil((latitude - LAT_MIN) / width);
+        int row = (int) Math.ceil((latitude - LAT_MIN) / length);
         int col = (int) Math.ceil((longitude - LNG_MIN) / width);
         int code = (col + cols * (row - 1));
 

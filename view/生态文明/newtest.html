@@ -263,8 +263,8 @@
         var row;
         var col;
 
-        for( row=1;row<60;row++){
-            for(col=1;col<60;col++){
+        for( row=1;row<61;row++){
+            for(col=1;col<61;col++){
                 var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
                 var dist_len=(row-1)*length;
                 var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.46529499999999+dist_len,(115.45264199999998+dist_wid)]];//(左下角，右上角)
@@ -315,8 +315,8 @@
         var row;
         var col;
 
-        for( row=1;row<90;row++){
-            for(col=1;col<90;col++){
+        for( row=1;row<91;row++){
+            for(col=1;col<91;col++){
                 var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
                 var dist_len=(row-1)*length;
                 var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.45629099999999+dist_len,(115.440856+dist_wid)]];//(左下角，右上角)
