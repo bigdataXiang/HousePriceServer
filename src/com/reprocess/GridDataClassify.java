@@ -21,11 +21,11 @@ public class GridDataClassify extends SetPoiCode{
     }
     public static void initial(){
 
-        for(int i=1;i<=5;i++){
+        for(int i=10;i<=12;i++){
             //1.选定要导出的数据的时间（月份）
             JSONObject condition=new JSONObject();
-            condition.put("year","2016");
-            condition.put("month","0"+i);
+            condition.put("year","2015");
+            condition.put("month",i);
             condition.put("source","woaiwojia");
 
             //2.从数据库中调出满足condition的数据
@@ -42,8 +42,8 @@ public class GridDataClassify extends SetPoiCode{
 
             //6.将处理好的值存于本地
             String path="E:\\房地产可视化\\toServer\\resold\\woaiwojia\\";
-            FileTool.Dump(resultdata,path+"all_"+"2016_"+i+".txt","utf-8");
-            FileTool.Dump(data,path+"effective_"+"2016_"+i+".txt","utf-8");
+            FileTool.Dump(resultdata,path+"all_"+"2015_"+i+".txt","utf-8");
+            FileTool.Dump(data,path+"effective_"+"2015_"+i+".txt","utf-8");
 
             System.out.println("ok!");
         }

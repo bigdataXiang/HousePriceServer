@@ -21,12 +21,12 @@ public class GridDataClassify extends SetPoiCode {
     }
     public static void initial(){
 
-        for(int i=1;i<=5;i++){
+        for(int i=8;i<=9;i++){
             //1.选定要导出的数据的时间（月份）
             JSONObject condition=new JSONObject();
-            condition.put("year","2016");
+            condition.put("year","2015");
             condition.put("month","0"+i);
-            condition.put("source","fang");
+            condition.put("source","anjuke");
 
             //2.从数据库中调出满足condition的数据
             getCodePrice("resold_code_3000",condition);
@@ -41,9 +41,9 @@ public class GridDataClassify extends SetPoiCode {
             String resultdata=FilledGridData(data);
 
             //6.将处理好的值存于本地
-            String path="E:\\房地产可视化\\toServer\\resold\\fang\\";
-            FileTool.Dump(resultdata,path+"all_"+"2016_0"+i+".txt","utf-8");
-            FileTool.Dump(data,path+"effective_"+"2016_0"+i+".txt","utf-8");
+            String path="E:\\房地产可视化\\toServer\\resold\\anjuke\\";
+            FileTool.Dump(resultdata,path+"all_"+"2015_0"+i+".txt","utf-8");
+            FileTool.Dump(data,path+"effective_"+"2015_0"+i+".txt","utf-8");
 
             System.out.println("ok!");
         }
@@ -103,22 +103,25 @@ public class GridDataClassify extends SetPoiCode {
 
         JSONObject codeprice = new JSONObject();
         JSONObject poi;
+        double price;
+        List<Double> pricelist_contain;
+        List<Double> pricelist_new ;
         System.out.println("开始求每个网格的价格平均值：");
         for (int i = 0; i < array.size(); i++) {
             poi = (JSONObject) array.get(i);
             String code = poi.getString("code");
 
             if (codeprice.containsKey(code)) {
-                List<Double> pricelist = (List<Double>) codeprice.get(code);
-                double price = poi.getDouble("unit_price");
-                pricelist.add(price);
-                codeprice.put(code, pricelist);
+                pricelist_contain = (List<Double>) codeprice.get(code);
+                price = poi.getDouble("unit_price");
+                pricelist_contain.add(price);
+                codeprice.put(code, pricelist_contain);
 
             } else {
-                List<Double> pricelist = new ArrayList<Double>();
-                double price = poi.getDouble("unit_price");
-                pricelist.add(price);
-                codeprice.put(code, pricelist);
+                pricelist_new = new ArrayList<Double>();
+                price = poi.getDouble("unit_price");
+                pricelist_new.add(price);
+                codeprice.put(code, pricelist_new);
             }
         }
         //计算实际有数据的网格的个数
@@ -143,9 +146,9 @@ public class GridDataClassify extends SetPoiCode {
 
                     int count = 0;//统计pricelist中均价不为0的数目
                     for (int i = 0; i < pricelist.size(); i++) {
-                        double price = pricelist.get(i);
-                        if (price != 0) {
-                            totalprice += price;
+                        double pricetemp = pricelist.get(i);
+                        if (pricetemp != 0) {
+                            totalprice += pricetemp;
                             count++;
                         }
 
