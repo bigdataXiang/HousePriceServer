@@ -25,7 +25,7 @@ public class LngLatCode {
     public static void main(String[] args){
 
         //checkGridCode();
-        setPoiCode(117.53876399999949,41.05900299999952);
+        setPoiCode(116.3451754714,39.9444171656);
 
     }
 
@@ -82,16 +82,7 @@ public class LngLatCode {
         return jsonObject;
     }
 
-    public static void ProcessFile(){
-        Vector<String> pois= FileTool.Load(GRIDFOLDER+"woaiwojia_resold_2016_0428.txt","utf-8");
-        for(int i=0;i<pois.size();i++){
-            String poi=pois.elementAt(i);
-            JSONObject jsonObject = JSONObject.fromObject(poi);
-            setPoiCode(jsonObject);
-            FileTool.Dump(jsonObject.toString(),GRIDFOLDER+"woaiwojia_resold_2016_0428_code.txt","utf-8");
 
-        }
-    }
     public static void setGridCode(){
         int mm = 1;
         for (int rr = 1; rr <= 60; rr++) {
@@ -112,6 +103,16 @@ public class LngLatCode {
     }
     public static void addCode(Code c) {
         codes.add(c);
+    }
+    public static void ProcessFile(){
+        Vector<String> pois= FileTool.Load(GRIDFOLDER+"woaiwojia_resold_2016_0428.txt","utf-8");
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            JSONObject jsonObject = JSONObject.fromObject(poi);
+            setPoiCode(jsonObject);
+            FileTool.Dump(jsonObject.toString(),GRIDFOLDER+"woaiwojia_resold_2016_0428_code.txt","utf-8");
+
+        }
     }
 
 

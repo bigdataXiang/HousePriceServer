@@ -21,12 +21,12 @@ public class GridDataClassify1 extends SetPoiCode {
     }
     public static void initial(){
 
-        for(int i=1;i<=5;i++){
+        for(int i=1;i<=1;i++){
             //1.选定要导出的数据的时间（月份）
             JSONObject condition=new JSONObject();
             condition.put("year","2016");
             condition.put("month","0"+i);
-            condition.put("source","anjuke");
+            condition.put("source","fang");
 
             //2.从数据库中调出满足condition的数据
             getCodePrice("resold_code_3000",condition);
@@ -41,7 +41,7 @@ public class GridDataClassify1 extends SetPoiCode {
             String resultdata=FilledGridData(data);
 
             //6.将处理好的值存于本地
-            String path="E:\\房地产可视化\\toServer\\resold\\anjuke\\";
+            String path="E:\\房地产可视化\\toServer\\resold\\fang\\";
             FileTool.Dump(resultdata,path+"all_"+"2016_0"+i+".txt","utf-8");
             FileTool.Dump(data,path+"effective_"+"2016_0"+i+".txt","utf-8");
 
