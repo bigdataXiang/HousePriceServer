@@ -224,7 +224,7 @@ public class GridDataClassify_RentOut extends SetPoiCode{
             }
         }
 
-        Collections.sort(list, new GridDataClassify.CodeComparator()); // 根据网格code排序
+        Collections.sort(list, new GridDataClassify_Resold.CodeComparator()); // 根据网格code排序
 
         JSONArray resultarray=new JSONArray();
         Iterator it=list.iterator();

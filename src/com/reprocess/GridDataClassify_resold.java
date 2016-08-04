@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * Created by ZhouXiang on 2016/8/3.
  */
-public class GridDataClassify extends SetPoiCode{
+public class GridDataClassify_Resold extends SetPoiCode{
     public static void main(String[] args){
         initial();
     }
@@ -225,7 +225,7 @@ public class GridDataClassify extends SetPoiCode{
             }
         }
 
-        Collections.sort(list, new GridDataClassify.CodeComparator()); // 根据网格code排序
+        Collections.sort(list, new GridDataClassify_Resold.CodeComparator()); // 根据网格code排序
 
         JSONArray resultarray=new JSONArray();
         Iterator it=list.iterator();

@@ -270,32 +270,33 @@
                 var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.46529499999999+dist_len,(115.45264199999998+dist_wid)]];//(左下角，右上角)
                 var rect;
                 var gridcode=(col+60*(row-1));//计算每个网格的编码值，这里的60表示总共的列数，不可改变。
-                var gridvalue=price.data[gridcode];
+                var gridvalue=price.data[gridcode-1];
                 var code=""+gridcode;
 
-                rect= L.rectangle(bounds, {color:mycolor(200),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
-                rect.index=gridcode;
-                rect.data=price.data[rect.index];
-                rect.on('click', function(code){
-                    //console.log(rect.code);
-                    var json={
-                        "collname":"resold_code_3000",
-                        "type":"woaiwojia",
-                        "code":this.data.code
-                    };
-                    $.post("/price", JSON.stringify(json),
-                            function(data,status){
-                                var ctx = document.getElementById("myChart").getContext("2d");
-                                pricedata= JSON.parse(data);
-                                window.myLine = new Chart(ctx, dataStruct(pricedata,pricedata.code));
-                                /*$('#charttitle').text('code:'+pricedata.code);*/
-                                $('#myModal').modal();
-                            }
-                    )
-                });
-                rect.addTo(map);
-                rects.push(rect);
-
+                var averageprice=gridvalue.average_price;
+                if(averageprice!=0){
+                    rect= L.rectangle(bounds, {color:mycolor(255),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
+                    rect.index=gridcode;
+                    rect.data=price.data[rect.index];
+                    rect.on('click', function(code){
+                        //console.log(rect.code);
+                        var json={
+                            "collname":"resold_code_3000",
+                            "type":"woaiwojia",
+                            "code":this.data.code
+                        };
+                        $.post("/price", JSON.stringify(json),
+                                function(data,status){
+                                    var ctx = document.getElementById("myChart").getContext("2d");
+                                    pricedata= JSON.parse(data);
+                                    window.myLine = new Chart(ctx, dataStruct(pricedata,pricedata.code));
+                                    $('#myModal').modal();
+                                }
+                        )
+                    });
+                    rect.addTo(map);
+                    rects.push(rect);
+                }
             }
         }
 
@@ -398,7 +399,7 @@
 
     }
     function mycolor(n) {
-        var r=238,g=99,b=n;
+        var r=255,g=255,b=n;
         var color="rgb("+r+","+g+","+b+")";
         return color;
     }
