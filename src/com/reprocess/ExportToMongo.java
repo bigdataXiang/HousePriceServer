@@ -360,6 +360,7 @@ public class ExportToMongo {
                 List<DBObject> dbList = new ArrayList<DBObject>();
 
                 System.out.println(rds.size());
+                int code;
                 for (int n = 0; n < rds.size(); n ++)
                 {
 
@@ -368,9 +369,10 @@ public class ExportToMongo {
                         element=rds.elementAt(n);
                         JSONObject element_obj=JSONObject.fromObject(element);
 
-                        LngLatCode.setPoiCode(element_obj);
+//                       code =LngLatCode.setPoiCode(element_obj);
 
                         BasicDBObject document = transfer(element_obj,source);
+//                        document.put("code",code);
 
                         System.out.println(document);
                         coll.insert(document);

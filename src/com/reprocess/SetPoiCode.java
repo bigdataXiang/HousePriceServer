@@ -28,8 +28,8 @@ public class SetPoiCode {
         }
 
 
-        int row = (int) Math.ceil((latitude - LAT_MIN) / width);
-        int col = (int) Math.ceil((longitude - LNG_MIN) / length);
+        int row = (int) Math.ceil((latitude - LAT_MIN) / length);
+        int col = (int) Math.ceil((longitude - LNG_MIN) / width);
         int code = (col + 60 * (row - 1));
 
         return code;
@@ -54,8 +54,8 @@ public class SetPoiCode {
         }
 
 
-        int row = (int) Math.ceil((latitude - LAT_MIN) / width);
-        int col = (int) Math.ceil((longitude - LNG_MIN) / length);
+        int row = (int) Math.ceil((latitude - LAT_MIN) / length);
+        int col = (int) Math.ceil((longitude - LNG_MIN) / width);
         int code = (col + 90 * (row - 1));
 
         return code;
@@ -81,8 +81,8 @@ public class SetPoiCode {
         }
 
 
-        int row = (int) Math.ceil((latitude - LAT_MIN) / width);
-        int col = (int) Math.ceil((longitude - LNG_MIN) / length);
+        int row = (int) Math.ceil((latitude - LAT_MIN) / length);
+        int col = (int) Math.ceil((longitude - LNG_MIN) / width);
         int code = (col + 179 * (row - 1));
 
         return code;

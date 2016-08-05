@@ -25,7 +25,7 @@ public class LngLatCode {
     public static void main(String[] args){
 
         //checkGridCode();
-        setPoiCode(116.3451754714,39.9444171656);
+        setPoiCode(116.41062,39.96986);
 
     }
 
@@ -53,11 +53,11 @@ public class LngLatCode {
 
         int row = (int) Math.ceil((latitude - LAT_MIN) / length);
         int col = (int) Math.ceil((longitude - LNG_MIN) / width);
-        int code = (col + cols * (row - 1));
+        int code = (col + 60 * (row - 1));
 
         System.out.println(code);
     }
-    public static JSONObject setPoiCode(JSONObject jsonObject) {
+    public static int setPoiCode(JSONObject jsonObject) {
 
         Object lat=jsonObject.get("latitude");
         String type=lat.getClass().getName();
@@ -77,9 +77,7 @@ public class LngLatCode {
         int col = (int) Math.ceil((longitude - LNG_MIN) / width);
         int code = (col + cols * (row - 1));
 
-        jsonObject.put("gridcode",code);
-
-        return jsonObject;
+        return code;
     }
 
 
