@@ -274,7 +274,7 @@
                 var code=""+gridcode;
 
                 var averageprice=gridvalue.average_price;
-               // if(averageprice!=0){
+                if(averageprice!=0){
                     rect= L.rectangle(bounds, {color:mycolor(255),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
                     rect.index=gridcode-1;//这里忘记减1啦！！！
                     rect.data=price.data[rect.index];
@@ -297,7 +297,7 @@
                     });
                     rect.addTo(map);
                     rects.push(rect);
-               // }
+                }
             }
         }
 
