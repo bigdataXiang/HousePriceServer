@@ -88,6 +88,55 @@
         zoomControl:true
     }).setView([39.8, 116.3], 3); /* 39°54'27"，东经116°23'17*/
     map.setView([39.8, 116.3], 3);
+
+    map.on('dragend',function(e){
+        console.log("dragend");
+        var bounds=map.getBounds();
+        console.log(bounds);
+        var zoom=map.getZoom();
+        console.log(zoom);
+        if(zoom==13){
+            draw_13(bounds);
+        }
+    });
+    function draw_13(bounds) {
+        var west=bounds.getWest();
+        var east=bounds.getEast();
+        var south=bounds.getSouth();
+        var north=bounds.getNorth();
+        console.log("west"+west+"east"+east+"south"+south+"north"+north);
+
+        var width=0.023571999999994375;//每两千米的经度差
+        var length=0.018007999999994695;//每两千米的纬度差
+
+        var col_left=Math.ceil((west-115.417284)/width);
+        var col_right=Math.ceil((east-115.417284)/width);
+        var row_bottom=Math.ceil((south-39.438283)/length);
+        var row_top=Math.ceil((north-39.438283)/length);
+        var row;
+        var col;
+        if(rects.length!=0){
+            for (var i=0;i<rects.length;i++){
+                map=map.removeLayer(rects[i]);
+            }
+            rects=[];
+        }
+
+        for( row=row_bottom;row<row_top;row++){
+            for(col=col_left;col<col_right;col++){
+                var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                var dist_len=(row-1)*length;
+                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.45629099999999+dist_len,(115.440856+dist_wid)]];//(左下角，右上角)
+                var rect;
+                rect= L.rectangle(bounds, {color:mycolor(0),opacity:0.9,fillColor:mycolor(99),weight:1,fillOpacity:0.6});
+                rect.addTo(map);
+                rects.push(rect);
+            }
+        }
+
+    }
+
+
     map.on('zoomstart', function(e) {
        console.log("zoomstart");
     });
@@ -102,19 +151,21 @@
         if(zoomvalue==11){
             $.post("/static/gridcode_3000_resold",""+map.getZoom(), function(result){
                 var price= JSON.parse(result);
+                //console.log(map.getBounds());
                 redraw_11(price);
-                //draw(price);
+
+
             });
         }else if(zoomvalue==13){
             $.post("/grid2000",""+map.getZoom(), function(result){
                 var price= JSON.parse(result);
                 redraw_13(price);
-                //draw(price);
             });
 
         }else if(zoomvalue==15){
             $.post("/grid1000",""+map.getZoom(), function(result){
                 var price= JSON.parse(result);
+               // console.log(map.getPixelBounds());
                 redraw_15(price);
                 //draw(price);
             });
@@ -126,16 +177,6 @@
     layerControl.addTo(map);
     resize();
 
-  /*  //这个接口是用来传递网格的color和code的
-    $(document).ready(function(){
-        $.post("/gridcolor",""+map.getZoom(), function(result){
-            var price= JSON.parse(result);
-            draw(price);
-            var mainbound = [[39.90960456049752,116.3972282409668], [39.91960456049752,115.44007]];//(左下角，右上角)
-            map.fitBounds(mainbound);
-
-        });
-    });*/
 
     //生成随机颜色和尺度
     var randomScalingFactor = function() {
@@ -309,8 +350,6 @@
     function redraw_13(price) {
         var width=0.023571999999994375;//每两千米的经度差
         var length=0.018007999999994695;//每两千米的纬度差
-        /*var width=0.011785999999997188;//每一千米的经度差
-        var length=0.009003999999997347;//每一千米的纬度差*/
 
         console.log(price);
         var row;
@@ -400,7 +439,7 @@
 
     }
     function mycolor(n) {
-        var r=255,g=255,b=n;
+        var r=235,g=21,b=n;
         var color="rgb("+r+","+g+","+b+")";
         return color;
     }

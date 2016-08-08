@@ -14,7 +14,7 @@ import static utils.UtilFile.JSONArrayToList;
  */
 public class CompareGridPrice {
     public static void main(String[] args){
-        sortGridCode("E:\\房地产可视化\\toServer\\resold\\fang\\effective_2015_12.txt");
+        sortGridCode("E:\\房地产可视化\\toServer\\resold\\fang\\effective_2016_05.txt");
     }
 
     /**

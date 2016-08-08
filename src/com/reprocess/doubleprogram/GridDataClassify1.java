@@ -17,8 +17,8 @@ import java.util.*;
  */
 public class GridDataClassify1 extends SetPoiCode {
     public static void main(String[] args){
-        initial1();
-        initial2();
+
+
         initial3();
     }
     public static void initial1(){
@@ -52,7 +52,7 @@ public class GridDataClassify1 extends SetPoiCode {
     }
     public static void initial2(){
 
-        for(int i=7;i<=9;i++){
+        for(int i=9;i<=9;i++){
             //1.选定要导出的数据的时间（月份）
             JSONObject condition=new JSONObject();
             condition.put("year","2015");
