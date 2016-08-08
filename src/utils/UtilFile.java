@@ -15,6 +15,16 @@ public class UtilFile {
         UtilFile.filecut(path+"anjuke_rentout_2015_1015_3.txt");
     }
 
+    public static void printArray(int[] array){
+        for(int i=0;i<array.length;i++){
+           System.out.println(array[i]);
+        }
+    }
+    public static void printArray(List array){
+        for(int i=0;i<array.size();i++){
+            System.out.println(array.get(i));
+        }
+    }
     public static class CodeComparator implements Comparator {
         public int compare(Object object1, Object object2) {
 
