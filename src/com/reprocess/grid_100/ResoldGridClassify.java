@@ -44,11 +44,6 @@ public class ResoldGridClassify extends GridMerge{
         }
     }
 
-    public static List<JSONObject> result_array=new ArrayList<JSONObject>();
-    public static ArrayList<Code_Price_RowCol> codes = new ArrayList<Code_Price_RowCol>();
-    public static void addCode(Code_Price_RowCol c) {
-        codes.add(c);
-    }
 
     /**
      * 2.从数据库中调出满足condition的数据,并存于result_array中
@@ -93,7 +88,8 @@ public class ResoldGridClassify extends GridMerge{
 
                 if (map.containsKey(code)) {
 
-                    pricelist = (List<Double>) map.get(code);
+                    cpr = map.get(code);
+                    pricelist=cpr.getPricelist();
                     pricelist.add(unit_price);
                     cpr.setPricelist(pricelist);
                     map.put(code,cpr);
@@ -101,11 +97,13 @@ public class ResoldGridClassify extends GridMerge{
                     pricelist = new ArrayList<Double>();
                     pricelist.add(unit_price);
 
+                    cpr=new Code_Price_RowCol();
                     cpr.setCode(code);
                     cpr.setCol(col);
                     cpr.setRow(row);
                     cpr.setPricelist(pricelist);
                     map.put(code,cpr);
+
 
                 }
             }
@@ -136,11 +134,11 @@ public class ResoldGridClassify extends GridMerge{
 
         try{
             while (codekeys.hasNext()) {
-
                 code = (String) codekeys.next();
-                code_averagePrice.put("code", code);
 
                 cpr=map.get(code);
+                /*String code1=cpr.getCode();
+                System.out.println(code+"  "+code1);*/
                 pricelist = cpr.getPricelist();
                 double totalprice = 0;
                 double average_price = 0;
@@ -164,7 +162,7 @@ public class ResoldGridClassify extends GridMerge{
                 }else{
                     average_price=0;
                 }
-
+                code_averagePrice.put("code", code);
                 code_averagePrice.put("average_price", average_price);
                 String color=setColorRegion(average_price);
                 code_averagePrice.put("color",color);
@@ -204,10 +202,48 @@ public class ResoldGridClassify extends GridMerge{
         }
     }
 
+
+    public static String setColorRegion(double price){
+        String color="";
+
+        if(price>10){
+            color="#FF0000";
+        }else if(price>9&&price<=10){
+            color="#FF0D0D";
+        }else if(price>8&&price<=9){
+            color="#FF1919";
+        }else if(price>7&&price<=8){
+            color="#FF2626";
+        }else if(price>6&&price<=7){
+            color="#FF3333";
+        }else if(price>5&&price<=6){
+            color="#FF4040";
+        }else if(price>4&&price<=5){
+            color="#FF4D4D";
+        }else if(price>3&&price<=4){
+            color="#FF6666";
+        }else if(price>2&&price<=3){
+            color="#FF8080";
+        }else if(price>1&&price<=2){
+            color="#FF9999";
+        }else{
+            color="#FFB3B3";
+        }
+        return color;
+    }
     /**
      * 4.给有房价值的每个网格的均价赋予一个颜色值
      * @param array
      */
+
+
+
+
+
+
+
+
+
     public static String  setColor(JSONArray array){
         JSONObject backdata=new JSONObject();
         JSONArray finalresult=new JSONArray();
@@ -226,7 +262,11 @@ public class ResoldGridClassify extends GridMerge{
         backdata.put("data",finalresult);
         return backdata.toString();
     }
-
+    public static List<JSONObject> result_array=new ArrayList<JSONObject>();
+    public static ArrayList<Code_Price_RowCol> codes = new ArrayList<Code_Price_RowCol>();
+    public static void addCode(Code_Price_RowCol c) {
+        codes.add(c);
+    }
     public static void importToMongo(JSONObject condition,List<BasicDBObject> dbList){
         String collName=condition.getString("import_collName");
         DBCollection coll = db.getDB().getCollection(collName);
@@ -259,35 +299,6 @@ public class ResoldGridClassify extends GridMerge{
         }
 
     }
-    public static String setColorRegion(double price){
-        String color="";
-
-        if(price>10){
-            color="#FF0000";
-        }else if(price>9&&price<=10){
-            color="#FF0D0D";
-        }else if(price>8&&price<=9){
-            color="#FF1919";
-        }else if(price>7&&price<=8){
-            color="#FF2626";
-        }else if(price>6&&price<=7){
-            color="#FF3333";
-        }else if(price>5&&price<=6){
-            color="#FF4040";
-        }else if(price>4&&price<=5){
-            color="#FF4D4D";
-        }else if(price>3&&price<=4){
-            color="#FF6666";
-        }else if(price>2&&price<=3){
-            color="#FF8080";
-        }else if(price>1&&price<=2){
-            color="#FF9999";
-        }else{
-            color="#FFB3B3";
-        }
-        return color;
-    }
-
 
     /**
      * 5.填充房价值为空的网格的颜色，并对所有网格进行排序
@@ -338,7 +349,6 @@ public class ResoldGridClassify extends GridMerge{
         Collections.sort(list, new UtilFile.CodeComparator()); // 根据网格code排序
         importToMongo(condition,list);
     }
-
     /**
      * 获取obj中的unitprice
      * @param obj
@@ -367,7 +377,6 @@ public class ResoldGridClassify extends GridMerge{
         }
         return unit_price;
     }
-
      /**
      * 比较两个poi中对应的两个code的大小，并对这两个poi进行排序
      */
