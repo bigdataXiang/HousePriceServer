@@ -1,10 +1,6 @@
 package com.reprocess.grid_100;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.reprocess.GridDataClassify_Resold;
+import com.mongodb.*;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -14,7 +10,6 @@ import utils.UtilFile;
 
 import java.util.*;
 
-import static utils.UtilFile.printArray;
 
 /**
  * Created by ZhouXiang on 2016/8/8.
@@ -36,68 +31,32 @@ public class ResoldGridClassify extends GridMerge{
             condition.put("year","2015");
             condition.put("month",i);
             condition.put("source","woaiwojia");
-            condition.put("collName","BasicData_Rentout_100");
+            condition.put("export_collName","BasicData_Rentout_100");
+            condition.put("import_collName","GridData_Rentout_100");
 
-            //2.从数据库中调出满足condition的数据
-            getCodePrice(condition);
+            //2.从数据库中调出满足condition的数据,并且将每个网格的数据存入以key-value形式存入map中
+            Map<String,Code_Price_RowCol> map=getCodePrice(condition);
 
-            //3.得到每个网格的均价
-            JSONArray result = getAvenragePrice(result_array);
-
-            //4.给有房价值的每个网格赋颜色值
-            String data=setColor(result);
-
-            //5.给无房价值的每个网格统一赋值灰色，并将所有的网格code进行排序
-            String resultdata=FilledGridData(data);
-
-            //6.将处理好的值存于本地
-            String path="E:\\房地产可视化\\toServer\\resold\\woaiwojia\\";
-            FileTool.Dump(resultdata,path+"all_"+"2015_"+i+".txt","utf-8");
-            FileTool.Dump(data,path+"effective_"+"2015_"+i+".txt","utf-8");
-
-            System.out.println("ok!");
-        }
-    }
-    public static void initial2(){
-
-        for(int i=1;i<=5;i++){
-            //1.选定要导出的数据的时间（月份）
-            JSONObject condition=new JSONObject();
-            condition.put("year","2016");
-            condition.put("month","0"+i);
-            condition.put("source","woaiwojia");
-
-            //2.从数据库中调出满足condition的数据
-            getCodePrice(condition);
-
-            //3.得到每个网格的均价
-            JSONArray result = getAvenragePrice(result_array);
-
-            //4.给有房价值的每个网格赋颜色值
-            String data=setColor(result);
-
-            //5.给无房价值的每个网格统一赋值灰色，并将所有的网格code进行排序
-            String resultdata=FilledGridData(data);
-
-            //6.将处理好的值存于本地
-            String path="E:\\房地产可视化\\toServer\\resold\\woaiwojia\\";
-            FileTool.Dump(resultdata,path+"all_"+"2016_0"+i+".txt","utf-8");
-            FileTool.Dump(data,path+"effective_"+"2016_0"+i+".txt","utf-8");
+            //3.得到每个网格的均价,并将其存入数据库中
+            getAvenragePrice(map,condition);
 
             System.out.println("ok!");
         }
     }
 
     public static List<JSONObject> result_array=new ArrayList<JSONObject>();
+    public static ArrayList<Code_Price_RowCol> codes = new ArrayList<Code_Price_RowCol>();
+    public static void addCode(Code_Price_RowCol c) {
+        codes.add(c);
+    }
 
     /**
      * 2.从数据库中调出满足condition的数据,并存于result_array中
      * @param condition
      */
-    public static void getCodePrice(JSONObject condition){
-        String collName=condition.getString("collName");
+    public static Map getCodePrice(JSONObject condition){
+        String collName=condition.getString("export_collName");
         DBCollection coll = db.getDB().getCollection(collName);
-        BasicDBList condList = new BasicDBList();
 
         BasicDBObject document = new BasicDBObject();
         Iterator<String> it=condition.keys();
@@ -107,93 +66,86 @@ public class ResoldGridClassify extends GridMerge{
             if(key.equals("year")||key.equals("month")||key.equals("source")){
                 document.put(key,value);
             }
-
         }
 
-        List code_array=new ArrayList<>();
-        BasicDBObject cond=new BasicDBObject();
-        cond.put("$gte",590);
-        cond.put("$lte",592);
-        document.put("row",cond);
-        cond=new BasicDBObject();
-        cond.put("$gte",835);
-        cond.put("$lte",837);
-        document.put("col",cond);
-        code_array=coll.find(document).toArray();
-        int size=code_array.size();
-        System.out.println(size);
-        printArray(code_array);
+        DBCursor cursor = coll.find(document);
 
         String poi="";
-        int count=0;
         JSONObject obj;
         JSONObject result;
         double unit_price=0;
-        int code =0;
+        String code ;
+        int row;
+        int col;
+        List<Double> pricelist;
+        Code_Price_RowCol cpr= new Code_Price_RowCol();
+        Map<String,Code_Price_RowCol> map=new HashMap<>();
 
-        for(int i=0;i<code_array.size();i++){
-            obj=(JSONObject) code_array.get(i);
+        if(cursor.hasNext()) {
+            while (cursor.hasNext()) {
+                poi=cursor.next().toString();
+                obj=JSONObject.fromObject(poi);
 
-            result=new JSONObject();
+                code = obj.getString("code");
+                row=obj.getInt("row");
+                col=obj.getInt("col");
+                unit_price=getUnitPrice(obj);
 
-            code = obj.getInt("code");
-            result.put("code",code);
+                if (map.containsKey(code)) {
 
-            unit_price=getUnitPrice(obj);
-            result.put("unit_price",unit_price);
+                    pricelist = (List<Double>) map.get(code);
+                    pricelist.add(unit_price);
+                    cpr.setPricelist(pricelist);
+                    map.put(code,cpr);
+                }else{
+                    pricelist = new ArrayList<Double>();
+                    pricelist.add(unit_price);
 
-            result_array.add(result);
+                    cpr.setCode(code);
+                    cpr.setCol(col);
+                    cpr.setRow(row);
+                    cpr.setPricelist(pricelist);
+                    map.put(code,cpr);
+
+                }
+            }
         }
-
+        System.out.println("共有" + map.size() + "个网格有数据");
+        return map;
     }
 
     /**
      * 3.求每个网格的房价平均值
-     * @param array
      * @return
      */
-    public static JSONArray getAvenragePrice(List<JSONObject> array) {
-
-        JSONObject codeprice = new JSONObject();
-        JSONObject poi;
-        System.out.println("开始求每个网格的价格平均值：");
-        for (int i = 0; i < array.size(); i++) {
-            poi = (JSONObject) array.get(i);
-            String code = poi.getString("code");
-
-            if (codeprice.containsKey(code)) {
-                List<Double> pricelist = (List<Double>) codeprice.get(code);
-                double price = poi.getDouble("unit_price");
-                pricelist.add(price);
-                codeprice.put(code, pricelist);
-
-            } else {
-                List<Double> pricelist = new ArrayList<Double>();
-                double price = poi.getDouble("unit_price");
-                pricelist.add(price);
-                codeprice.put(code, pricelist);
-            }
-        }
-        //计算实际有数据的网格的个数
-        System.out.println("共有" + codeprice.size() + "个网格有数据");
+    public static void getAvenragePrice(Map<String,Code_Price_RowCol> map,JSONObject condition) {
 
         //遍历codeprice中的元素，求每个网格的价格均值
-        JSONArray finalresult = new JSONArray();
-        Iterator codekeys = codeprice.keys();
+        Iterator codekeys = map.keySet().iterator();
         List<Double> pricelist;
+        BasicDBObject code_averagePrice = new BasicDBObject();
+        Code_Price_RowCol cpr;
+        String code;
+        int row;
+        int col;
+        int importcount=0;
 
-        while (codekeys.hasNext()) {
+        String collName=condition.getString("import_collName");
+        DBCollection coll = db.getDB().getCollection(collName);
 
-            JSONObject code_averagePrice = new JSONObject();
-            String code = (String) codekeys.next();
-            code_averagePrice.put("code", code);
 
-            pricelist = (List<Double>) codeprice.get(code);
-            double totalprice = 0;
-            double average_price = 0;
-            try{
+        try{
+            while (codekeys.hasNext()) {
+
+                code = (String) codekeys.next();
+                code_averagePrice.put("code", code);
+
+                cpr=map.get(code);
+                pricelist = cpr.getPricelist();
+                double totalprice = 0;
+                double average_price = 0;
+
                 if (pricelist.size() != 0) {
-
                     int count = 0;//统计pricelist中均价不为0的数目
                     for (int i = 0; i < pricelist.size(); i++) {
                         double price = pricelist.get(i);
@@ -205,21 +157,51 @@ public class ResoldGridClassify extends GridMerge{
                     }
                     if(count!=0){
                         average_price = totalprice / count;
+                    }else{
+                        average_price=0;
                     }
 
+                }else{
+                    average_price=0;
                 }
+
                 code_averagePrice.put("average_price", average_price);
+                String color=setColorRegion(average_price);
+                code_averagePrice.put("color",color);
 
-            }catch (JSONException e){
-                System.out.println(e.getMessage());
-                e.printStackTrace();
+                row=cpr.getRow();
+                col=cpr.getCol();
+                code_averagePrice.put("row",row);
+                code_averagePrice.put("col",col);
+
+                String year=condition.getString("year");
+                String month=condition.getString("month");
+                String source=condition.getString("source");
+                code_averagePrice.put("year",year);
+                code_averagePrice.put("month",month);
+                code_averagePrice.put("source",source);
+
+                DBCursor rls =coll.find(code_averagePrice);
+                if(rls == null || rls.size() == 0){
+                    coll.insert(code_averagePrice);
+                    importcount++;
+                }else{
+                    System.out.println("该数据已经存在!");
+                }
+                code_averagePrice.clear();
             }
-
-            finalresult.add(code_averagePrice);
-
+            System.out.println("共导入"+importcount+"条数据");
+        }catch (JSONException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }catch (MongoException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch (NullPointerException e) {
+            // TODO Auto-generated catch block
+            System.out.println("发生异常的原因为 :"+e.getMessage());
+            e.printStackTrace();
         }
-
-        return finalresult;
     }
 
     /**
@@ -245,52 +227,116 @@ public class ResoldGridClassify extends GridMerge{
         return backdata.toString();
     }
 
+    public static void importToMongo(JSONObject condition,List<BasicDBObject> dbList){
+        String collName=condition.getString("import_collName");
+        DBCollection coll = db.getDB().getCollection(collName);
+
+        try {
+            if(dbList.size()!=0){
+                int count=0;
+                for(int i=0;i<dbList.size();i++){
+                    BasicDBObject obj=dbList.get(i);
+
+                    DBCursor rls =coll.find(obj);
+
+                    if(rls == null || rls.size() == 0){
+                        coll.insert(obj);
+                        count++;
+                    }else{
+                        System.out.println("该数据已经存在!");
+                    }
+                }
+                System.out.println("共导入"+count+"条数据");
+            }
+
+        }catch (MongoException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch (NullPointerException e) {
+            // TODO Auto-generated catch block
+            System.out.println("发生异常的原因为 :"+e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+    public static String setColorRegion(double price){
+        String color="";
+
+        if(price>10){
+            color="#FF0000";
+        }else if(price>9&&price<=10){
+            color="#FF0D0D";
+        }else if(price>8&&price<=9){
+            color="#FF1919";
+        }else if(price>7&&price<=8){
+            color="#FF2626";
+        }else if(price>6&&price<=7){
+            color="#FF3333";
+        }else if(price>5&&price<=6){
+            color="#FF4040";
+        }else if(price>4&&price<=5){
+            color="#FF4D4D";
+        }else if(price>3&&price<=4){
+            color="#FF6666";
+        }else if(price>2&&price<=3){
+            color="#FF8080";
+        }else if(price>1&&price<=2){
+            color="#FF9999";
+        }else{
+            color="#FFB3B3";
+        }
+        return color;
+    }
+
+
     /**
      * 5.填充房价值为空的网格的颜色，并对所有网格进行排序
      * @param data
      * @return
      */
-    public static String FilledGridData(String data){
+    public static void FilledGridData(String data,JSONObject condition){
         System.out.println("开始填充值为空的网格的颜色：");
         String str="";
         JSONObject data_obj=JSONObject.fromObject(data);
         JSONArray data_array=data_obj.getJSONArray("data");
-        JSONArray result_obj=new JSONArray();
 
-        List<JSONObject> list = new ArrayList<JSONObject>(); //对时间进行排序的list
+        List<BasicDBObject> list = new ArrayList<BasicDBObject>(); //对时间进行排序的list
+        BasicDBObject obj=new BasicDBObject();
         JSONObject codekey=new JSONObject();
         for(int i=0;i<data_array.size();i++){
-            JSONObject obj= (JSONObject) data_array.get(i);
+            obj= (BasicDBObject) data_array.get(i);
             list.add(obj);
 
-            String code=obj.getString("code");
+            String code=obj.get("code").toString();
             codekey.put(code,"");
         }
 
-        for(int i=1;i<3601;i++){
-            String codeindex=""+i;
-            if(!codekey.containsKey(codeindex)){
-                JSONObject obj= new JSONObject();
-                obj.put("code",codeindex);
-                obj.put("average_price",0);
-                obj.put("color","#BFBFBF");
-                list.add(obj);
+
+        String year=condition.getString("year");
+        String month=condition.getString("month");
+        String source=condition.getString("source");
+        for(int row=1;row<=2000;row++){
+            for(int col=1;col<=2000;col++){
+                String codeindex=""+(col + 2000 * (row - 1));
+                if(!codekey.containsKey(codeindex)){
+                    obj.clear();
+                    obj.put("code",codeindex);
+                    obj.put("average_price",0);
+                    obj.put("color","#BFBFBF");
+                    obj.put("row",row);
+                    obj.put("col",col);
+                    obj.put("time","");
+                    obj.put("year",year);
+                    obj.put("month",month);
+                    obj.put("source",source);
+                    list.add(obj);
+                    obj.clear();
+                }
             }
         }
 
         Collections.sort(list, new UtilFile.CodeComparator()); // 根据网格code排序
-
-        JSONArray resultarray=new JSONArray();
-        Iterator it=list.iterator();
-        while(it.hasNext()){
-            JSONObject poi= (JSONObject) it.next();
-            resultarray.add(poi);
-        }
-        JSONObject resultobj=new JSONObject();
-        resultobj.put("data",resultarray);
-        str=resultobj.toString();
-
-        return str;
+        importToMongo(condition,list);
     }
 
     /**
@@ -321,35 +367,8 @@ public class ResoldGridClassify extends GridMerge{
         }
         return unit_price;
     }
-    public static String setColorRegion(double price){
-        String color="";
 
-        if(price>10){
-            color="#FF0000";
-        }else if(price>9&&price<=10){
-            color="#FF0D0D";
-        }else if(price>8&&price<=9){
-            color="#FF1919";
-        }else if(price>7&&price<=8){
-            color="#FF2626";
-        }else if(price>6&&price<=7){
-            color="#FF3333";
-        }else if(price>5&&price<=6){
-            color="#FF4040";
-        }else if(price>4&&price<=5){
-            color="#FF4D4D";
-        }else if(price>3&&price<=4){
-            color="#FF6666";
-        }else if(price>2&&price<=3){
-            color="#FF8080";
-        }else if(price>1&&price<=2){
-            color="#FF9999";
-        }else{
-            color="#FFB3B3";
-        }
-        return color;
-    }
-    /**
+     /**
      * 比较两个poi中对应的两个code的大小，并对这两个poi进行排序
      */
     static class CodeComparator implements Comparator {
