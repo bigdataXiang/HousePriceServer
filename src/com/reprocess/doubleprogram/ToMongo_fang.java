@@ -1,4 +1,4 @@
-package com.reprocess.grid_100;
+package com.reprocess.doubleprogram;
 
 import com.mongodb.*;
 import net.sf.json.JSONObject;
@@ -8,17 +8,16 @@ import utils.UtilFile;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Vector;
 
 import static com.reprocess.grid_100.PoiCode.setPoiCode_100;
 
 /**
- * Created by ZhouXiang on 2016/8/8.
+ * Created by ZhouXiang on 2016/8/10.
  */
-public class ToMongo {
+public class ToMongo_fang {
+
 
     /*
     resold:
@@ -31,10 +30,10 @@ public class ToMongo {
     //fang
     //anjuke
 
-    public static String path="E:\\房地产可视化\\toMongo\\resold\\woaiwojia\\";
+    public static String path="E:\\房地产可视化\\toMongo\\resold\\fang\\";
     public static void main(String[] args) throws IOException {
 
-        ToMongoDB("BasicData_Resold_100","woaiwojia");
+        ToMongoDB("BasicData_Resold_100","fang");
 
     }
 
@@ -407,7 +406,7 @@ public class ToMongo {
                 System.out.println(rds.size());
                 for (int n = 0; n < rds.size(); n ++)
                 {
-                   // System.out.println(n);
+                    // System.out.println(n);
 
                     String element="";
                     try{
@@ -417,7 +416,6 @@ public class ToMongo {
                         BasicDBObject document = transfer(element_obj,source);
                         document=setPoiCode_100(document,element_obj,2000);//将网格设置成2000行2000列
 
-                        //System.out.println(document);
                         coll.insert(document);
 
                     }catch(NumberFormatException e){

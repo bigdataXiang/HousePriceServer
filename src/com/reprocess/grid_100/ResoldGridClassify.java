@@ -6,9 +6,13 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import utils.FileTool;
+import utils.Tool;
 import utils.UtilFile;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -16,21 +20,121 @@ import java.util.*;
  */
 public class ResoldGridClassify extends GridMerge{
     public static void main(String[] args){
-        initial1();
+        timingRun("03:00:00");
 
+    }
+    public static void timingRun(String time){
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(4);
+        long oneDay = 24 * 60 * 60 * 1000;
+        long timemillis= Tool.getTimeMillis(time);
+        long timenow=System.currentTimeMillis();
+        long initDelay = timemillis - timenow;
+        initDelay = initDelay > 0 ? initDelay : oneDay + initDelay;
+
+        Runnable task = new Runnable(){
+            public void run() {
+                System.out.println("定期导入数据");
+                timeRun();
+            }
+        };
+        service.scheduleAtFixedRate(task, initDelay, 24* 60 * 60 * 1000, TimeUnit.MILLISECONDS);//scheduleAtFixedRate(TimerTask task,long delay,long period) 方法用于安排指定的任务进行重复的固定速率执行，在指定的延迟后开始。
+
+    }
+    public static void timeRun(){
+        initial1();
+        initial2();
+        initial3();
+        initial4();
+        initial5();
     }
     public static void initial1(){
 
-        for(int i=10;i<=10;i++){
+        for(int i=10;i<=12;i++){
             //1.选定要导出的数据的时间（月份）
             JSONObject condition=new JSONObject();
-            condition.put("rowmax",592);
-            condition.put("rowmin",590);
-            condition.put("colmax",837);
-            condition.put("colmin",835);
             condition.put("year","2015");
             condition.put("month",i);
             condition.put("source","woaiwojia");
+            condition.put("export_collName","BasicData_Resold_100");
+            condition.put("import_collName","GridData_Resold_100");
+
+            //2.从数据库中调出满足condition的数据,并且将每个网格的数据存入以key-value形式存入map中
+            Map<String,Code_Price_RowCol> map=getCodePrice(condition);
+
+            //3.得到每个网格的均价,并将其存入数据库中
+            getAvenragePrice(map,condition);
+
+            System.out.println("ok!");
+        }
+    }
+    public static void initial2(){
+
+        for(int i=1;i<=5;i++){
+            //1.选定要导出的数据的时间（月份）
+            JSONObject condition=new JSONObject();
+            condition.put("year","2016");
+            condition.put("month","0"+i);
+            condition.put("source","woaiwojia");
+            condition.put("export_collName","BasicData_Resold_100");
+            condition.put("import_collName","GridData_Resold_100");
+
+            //2.从数据库中调出满足condition的数据,并且将每个网格的数据存入以key-value形式存入map中
+            Map<String,Code_Price_RowCol> map=getCodePrice(condition);
+
+            //3.得到每个网格的均价,并将其存入数据库中
+            getAvenragePrice(map,condition);
+
+            System.out.println("ok!");
+        }
+    }
+    public static void initial3(){
+
+        for(int i=10;i<=12;i++){
+            //1.选定要导出的数据的时间（月份）
+            JSONObject condition=new JSONObject();
+            condition.put("year","2015");
+            condition.put("month",i);
+            condition.put("source","fang");
+            condition.put("export_collName","BasicData_Resold_100");
+            condition.put("import_collName","GridData_Resold_100");
+
+            //2.从数据库中调出满足condition的数据,并且将每个网格的数据存入以key-value形式存入map中
+            Map<String,Code_Price_RowCol> map=getCodePrice(condition);
+
+            //3.得到每个网格的均价,并将其存入数据库中
+            getAvenragePrice(map,condition);
+
+            System.out.println("ok!");
+        }
+    }
+    public static void initial4(){
+
+        for(int i=1;i<=5;i++){
+            //1.选定要导出的数据的时间（月份）
+            JSONObject condition=new JSONObject();
+            condition.put("year","2016");
+            condition.put("month","0"+i);
+            condition.put("source","fang");
+            condition.put("export_collName","BasicData_Resold_100");
+            condition.put("import_collName","GridData_Resold_100");
+
+            //2.从数据库中调出满足condition的数据,并且将每个网格的数据存入以key-value形式存入map中
+            Map<String,Code_Price_RowCol> map=getCodePrice(condition);
+
+            //3.得到每个网格的均价,并将其存入数据库中
+            getAvenragePrice(map,condition);
+
+            System.out.println("ok!");
+        }
+    }
+    public static void initial5(){
+
+        for(int i=7;i<=9;i++){
+            //1.选定要导出的数据的时间（月份）
+            JSONObject condition=new JSONObject();
+            condition.put("year","2015");
+            condition.put("month","0"+i);
+            condition.put("source","fang");
             condition.put("export_collName","BasicData_Resold_100");
             condition.put("import_collName","GridData_Resold_100");
 
@@ -173,7 +277,14 @@ public class ResoldGridClassify extends GridMerge{
                 String month=condition.getString("month");
                 String source=condition.getString("source");
                 code_averagePrice.put("year",Integer.parseInt(year));
-                code_averagePrice.put("month",Integer.parseInt(month));
+
+                String mon="";
+                if(month.startsWith("0")){
+                    mon=month.substring(1);
+                }else{
+                    mon=month;
+                }
+                code_averagePrice.put("month",Integer.parseInt(mon));
                 code_averagePrice.put("source",source);
 
                 DBCursor rls =coll.find(code_averagePrice);

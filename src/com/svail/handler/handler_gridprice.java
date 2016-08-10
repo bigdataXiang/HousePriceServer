@@ -28,7 +28,7 @@ public class handler_gridprice{
 
     }*/
 
-    public Response get(String path, String body){
+    public Response get(String body){
         JSONObject content=JSONObject.fromObject(body);
         String collname=content.getString("collname");
         String type=content.getString("type");

@@ -32,9 +32,9 @@ public class MainHandler implements HttpHandler {
                 break;
             case "/info":response=new handler_info().get(url.getPath());
                 break;
-            case "/price":response=new handler_gridprice().get(url.getPath(),body);
+            case "/price":response=new handler_gridprice().get(body);
                 break;
-            case "/gridcolor":response=new CallInterestGrid().get(url.getPath(),body);
+            case "/gridcolor":response=new CallInterestGrid().get(body);
                 break;
             case "/grid1000":response=new handler_1000().get(url.getPath(),body);
                 break;

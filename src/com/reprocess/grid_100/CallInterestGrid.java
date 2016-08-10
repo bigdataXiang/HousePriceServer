@@ -49,7 +49,7 @@ public class CallInterestGrid {
 
         CallMongo(condition,5);
     }
-    public Response get(String path, String body){
+    public Response get(String body){
         JSONObject obj=JSONObject.fromObject(body);
 
         double west=obj.getDouble("west");
