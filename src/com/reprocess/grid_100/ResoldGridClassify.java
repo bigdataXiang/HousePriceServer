@@ -31,8 +31,8 @@ public class ResoldGridClassify extends GridMerge{
             condition.put("year","2015");
             condition.put("month",i);
             condition.put("source","woaiwojia");
-            condition.put("export_collName","BasicData_Rentout_100");
-            condition.put("import_collName","GridData_Rentout_100");
+            condition.put("export_collName","BasicData_Resold_100");
+            condition.put("import_collName","GridData_Resold_100");
 
             //2.从数据库中调出满足condition的数据,并且将每个网格的数据存入以key-value形式存入map中
             Map<String,Code_Price_RowCol> map=getCodePrice(condition);
@@ -67,13 +67,12 @@ public class ResoldGridClassify extends GridMerge{
 
         String poi="";
         JSONObject obj;
-        JSONObject result;
         double unit_price=0;
         String code ;
         int row;
         int col;
         List<Double> pricelist;
-        Code_Price_RowCol cpr= new Code_Price_RowCol();
+        Code_Price_RowCol cpr;
         Map<String,Code_Price_RowCol> map=new HashMap<>();
 
         if(cursor.hasNext()) {
@@ -103,8 +102,6 @@ public class ResoldGridClassify extends GridMerge{
                     cpr.setRow(row);
                     cpr.setPricelist(pricelist);
                     map.put(code,cpr);
-
-
                 }
             }
         }
@@ -162,7 +159,7 @@ public class ResoldGridClassify extends GridMerge{
                 }else{
                     average_price=0;
                 }
-                code_averagePrice.put("code", code);
+                code_averagePrice.put("code", Integer.parseInt(code));
                 code_averagePrice.put("average_price", average_price);
                 String color=setColorRegion(average_price);
                 code_averagePrice.put("color",color);
@@ -175,19 +172,26 @@ public class ResoldGridClassify extends GridMerge{
                 String year=condition.getString("year");
                 String month=condition.getString("month");
                 String source=condition.getString("source");
-                code_averagePrice.put("year",year);
-                code_averagePrice.put("month",month);
+                code_averagePrice.put("year",Integer.parseInt(year));
+                code_averagePrice.put("month",Integer.parseInt(month));
                 code_averagePrice.put("source",source);
 
                 DBCursor rls =coll.find(code_averagePrice);
                 if(rls == null || rls.size() == 0){
                     coll.insert(code_averagePrice);
+                    System.out.println(code_averagePrice);
                     importcount++;
                 }else{
                     System.out.println("该数据已经存在!");
                 }
                 code_averagePrice.clear();
             }
+
+            coll.createIndex(new BasicDBObject("code", 1));
+            coll.createIndex(new BasicDBObject("row", 1));
+            coll.createIndex(new BasicDBObject("col", 1));
+            coll.createIndex(new BasicDBObject("year", 1));
+            coll.createIndex(new BasicDBObject("month", 1));
             System.out.println("共导入"+importcount+"条数据");
         }catch (JSONException e){
             System.out.println(e.getMessage());
@@ -206,44 +210,44 @@ public class ResoldGridClassify extends GridMerge{
     public static String setColorRegion(double price){
         String color="";
 
-        if(price>10){
-            color="#FF0000";
-        }else if(price>9&&price<=10){
-            color="#FF0D0D";
+        if(price>9){
+            color="#BA0000";
         }else if(price>8&&price<=9){
-            color="#FF1919";
+            color="#C70000";
         }else if(price>7&&price<=8){
-            color="#FF2626";
+            color="#ED0000";
         }else if(price>6&&price<=7){
-            color="#FF3333";
+            color="#FF0000";
         }else if(price>5&&price<=6){
-            color="#FF4040";
+            color="#FF4000";
         }else if(price>4&&price<=5){
-            color="#FF4D4D";
+            color="#FC5800";
         }else if(price>3&&price<=4){
-            color="#FF6666";
-        }else if(price>2&&price<=3){
-            color="#FF8080";
+            color="#FF5900";
+        }else if(price>2.5&&price<=3){
+            color="#FF9D14";
+        }else if(price>2&&price<=2.5){
+            color="#FFD900";
         }else if(price>1&&price<=2){
-            color="#FF9999";
+            color="#CCFF00";
         }else{
-            color="#FFB3B3";
+            color="#CFFC5D";
         }
         return color;
     }
+
+
+
+
+
+
+
+
+
     /**
      * 4.给有房价值的每个网格的均价赋予一个颜色值
      * @param array
      */
-
-
-
-
-
-
-
-
-
     public static String  setColor(JSONArray array){
         JSONObject backdata=new JSONObject();
         JSONArray finalresult=new JSONArray();

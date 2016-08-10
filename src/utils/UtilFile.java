@@ -1,5 +1,6 @@
 package utils;
 
+import com.mongodb.BasicDBObject;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -22,6 +23,8 @@ public class UtilFile {
     }
     public static void printArray(List array){
         for(int i=0;i<array.size();i++){
+            BasicDBObject document= (BasicDBObject) array.get(i);
+            document.remove("_id");
             System.out.println(array.get(i));
         }
     }

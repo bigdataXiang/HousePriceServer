@@ -92,11 +92,28 @@
     map.on('dragend',function(e){
         console.log("dragend");
         var bounds=map.getBounds();
+
         console.log(bounds);
+        var west=bounds.getWest();
+        var east=bounds.getEast();
+        var south=bounds.getSouth();
+        var north=bounds.getNorth();
+
+        var json={
+            "west":west,
+            "east":east,
+            "south":south,
+            "north":north
+        };
+
         var zoom=map.getZoom();
         console.log(zoom);
         if(zoom==13){
-            draw_13(bounds);
+
+            $.post("/gridcolor",""+JSON.stringify(json), function(result){
+                var price= JSON.parse(result);
+                draw_13(price);
+            });
         }
     });
     function draw_13(bounds) {

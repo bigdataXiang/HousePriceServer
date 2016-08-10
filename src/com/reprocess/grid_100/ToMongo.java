@@ -34,7 +34,7 @@ public class ToMongo {
     public static String path="E:\\房地产可视化\\toMongo\\resold\\woaiwojia\\";
     public static void main(String[] args) throws IOException {
 
-        ToMongoDB("BasicData_Rentout_100","woaiwojia");
+        ToMongoDB("BasicData_Resold_100","woaiwojia");
 
     }
 
@@ -397,7 +397,7 @@ public class ToMongo {
 
             Vector<String> filenames= FileTool.Load(path+"filename.txt","UTF-8");
 
-            for(int i=0;i<filenames.size();i++){
+            for(int i=3;i<filenames.size();i++){
                 String filename=filenames.elementAt(i);
 
                 System.out.println("开始导入第"+i+"个文件");
