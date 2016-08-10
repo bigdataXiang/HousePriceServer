@@ -23,9 +23,9 @@
 
 网格分辨率（index）：1000m*1000m
 
-网格行数：rows = (int) Math.ceil((X_MAX - X_MIN) / index);
+网格行数：rows = (int) Math.ceil((double)(X_MAX - X_MIN) / index);
 
-网格列数：cols = (int) Math.ceil((Y_MAX - Y_MIN) / index);
+网格列数：cols = (int) Math.ceil((double)(Y_MAX - Y_MIN) / index);
 
 网格编码规则：从第一行第一列开始编码，第一行编码完再接着编码第二行，呈Z字形的编码方式。
 

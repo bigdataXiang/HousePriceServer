@@ -108,23 +108,22 @@
 
         var zoom=map.getZoom();
         console.log(zoom);
-        if(zoom==13){
+        if(zoom==16){
 
             $.post("/gridcolor",""+JSON.stringify(json), function(result){
                 var price= JSON.parse(result);
-                draw_13(price);
+                draw_13(bounds,price);
             });
         }
     });
-    function draw_13(bounds) {
+    function draw_13(bounds,price) {
         var west=bounds.getWest();
         var east=bounds.getEast();
         var south=bounds.getSouth();
         var north=bounds.getNorth();
-        console.log("west"+west+"east"+east+"south"+south+"north"+north);
 
-        var width=0.023571999999994375;//每两千米的经度差
-        var length=0.018007999999994695;//每两千米的纬度差
+        var width=0.005892999999998594;//每500m的经度差
+        var length=0.004501999999998674;//每500m的纬度差
 
         var col_left=Math.ceil((west-115.417284)/width);
         var col_right=Math.ceil((east-115.417284)/width);
@@ -132,6 +131,8 @@
         var row_top=Math.ceil((north-39.438283)/length);
         var row;
         var col;
+
+        //将之前的图层删除
         if(rects.length!=0){
             for (var i=0;i<rects.length;i++){
                 map=map.removeLayer(rects[i]);
@@ -139,15 +140,35 @@
             rects=[];
         }
 
-        for( row=row_bottom;row<row_top;row++){
-            for(col=col_left;col<col_right;col++){
+        var count=0;
+        for( row=row_bottom;row<=row_top;row++){
+            for(col=col_left;col<=col_right;col++){
+
                 var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
                 var dist_len=(row-1)*length;
-                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.45629099999999+dist_len,(115.440856+dist_wid)]];//(左下角，右上角)
+                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.442785+dist_len,(115.423177+dist_wid)]];//(左下角，右上角)
                 var rect;
-                rect= L.rectangle(bounds, {color:mycolor(0),opacity:0.9,fillColor:mycolor(99),weight:1,fillOpacity:0.6});
-                rect.addTo(map);
-                rects.push(rect);
+
+                var gridcode_js=(col+400*(row-1));
+
+                var gridvalue=price.data[count];
+                //var gridcode_java=gridvalue.code;
+                var gridcolor=gridvalue.color;
+                var averageprice=gridvalue.average_price;
+
+                if(averageprice!=0){
+                    rect= L.rectangle(bounds, {color:mycolor(255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6});
+                    rect.index=count;
+                    rect.data=price.data[rect.index];
+
+                    rect.on('click', function(code){
+                        $('#myModal').modal();
+                    });
+
+                    rect.addTo(map);
+                    rects.push(rect);
+                }
+                count++;
             }
         }
 
@@ -456,7 +477,7 @@
 
     }
     function mycolor(n) {
-        var r=235,g=21,b=n;
+        var r=255,g=255,b=n;
         var color="rgb("+r+","+g+","+b+")";
         return color;
     }

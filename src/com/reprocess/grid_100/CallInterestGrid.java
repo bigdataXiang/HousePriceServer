@@ -7,29 +7,47 @@ import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import utils.FileTool;
+import utils.UtilFile;
 
 import java.util.*;
 
 import static com.reprocess.grid_100.GridMerge.codeMapping100toN00;
 import static com.reprocess.grid_100.ResoldGridClassify.setColorRegion;
 import static utils.UtilFile.printArray;
+import static utils.UtilFile.printArray_BasicDB;
+import static utils.UtilFile.printArray_JSON;
 
 /**
  * Created by ZhouXiang on 2016/8/9.
  */
 public class CallInterestGrid {
     public static void main(String[] args){
+        double width=0.0011785999999997187;//每100m的经度差
+        double length=9.003999999997348E-4;//每100m的纬度差
+        System.out.println(0.0011785999999997187*5);
+        System.out.println(9.003999999997348E-4*5);
+
+        System.out.println(115.417284+0.0011785999999997187*5);
+        System.out.println(39.438283+9.003999999997348E-4*5);
+
+
+        int colmin=(int)Math.ceil((116.21629714965819-115.417284)/width);
+        int colmax=(int)Math.ceil((116.5458869934082-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.91473966049243-39.438283)/length);
+        int rowmax=(int)Math.ceil((40.03274067972939-39.438283)/length);
+
         JSONObject condition=new JSONObject();
-        condition.put("rowmax",520);
-        condition.put("rowmin",499);
-        condition.put("colmax",840);
-        condition.put("colmin",830);
+        condition.put("rowmax",rowmax);
+        condition.put("rowmin",rowmin);
+        condition.put("colmax",colmax);
+        condition.put("colmin",colmin);
         condition.put("year",2015);
         condition.put("month",10);
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
-        CallMongo(condition);
+        CallMongo(condition,5);
     }
     public Response get(String path, String body){
         JSONObject obj=JSONObject.fromObject(body);
@@ -39,8 +57,8 @@ public class CallInterestGrid {
         double south=obj.getDouble("south");
         double north=obj.getDouble("north");
 
-        double width=0.023571999999994375;//每两千米的经度差
-        double length=0.018007999999994695;//每两千米的纬度差
+        double width=0.0011785999999997187;//每100m的经度差
+        double length=9.003999999997348E-4;//每100m的纬度差
 
         int colmin=(int) Math.ceil((west-115.417284)/width);
         int colmax=(int)Math.ceil((east-115.417284)/width);
@@ -57,7 +75,7 @@ public class CallInterestGrid {
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
-        String resultdata=CallMongo(condition);
+        String resultdata=CallMongo(condition,5);
 
         Response r= new Response();
         r.setCode(200);
@@ -65,7 +83,7 @@ public class CallInterestGrid {
         return r;
 
     }
-    public static String CallMongo(JSONObject condition){
+    public static String CallMongo(JSONObject condition,int N){
 
         String collName=condition.getString("export_collName");
         DBCollection coll = db.getDB().getCollection(collName);
@@ -80,20 +98,21 @@ public class CallInterestGrid {
         document.put("source",source);
         List code_array=new ArrayList<>();
         BasicDBObject cond=new BasicDBObject();
-        cond.put("$gte",condition.getInt("rowmin"));
-        cond.put("$lte",condition.getInt("rowmax"));
+        int rowmin=condition.getInt("rowmin");
+        int rowmax=condition.getInt("rowmax");
+        int colmin=condition.getInt("colmin");
+        int colmax=condition.getInt("colmax");
+        cond.put("$gte",rowmin);
+        cond.put("$lte",rowmax);
         document.put("row",cond);
 
         cond=new BasicDBObject();
-        cond.put("$gte",condition.getInt("colmin"));
-        cond.put("$lte",condition.getInt("colmax"));
+        cond.put("$gte",colmin);
+        cond.put("$lte",colmax);
         document.put("col",cond);
 
-        System.out.println(document);
+        //System.out.println(document);
         code_array=coll.find(document).toArray();
-        int size=code_array.size();
-        System.out.println(size);
-        printArray(code_array);
 
         BasicDBObject doc;
         int row_doc;
@@ -115,7 +134,7 @@ public class CallInterestGrid {
             row_doc=doc.getInt("row");
             col_doc=doc.getInt("col");
 
-            result_doc=codeMapping100toN00(row_doc,col_doc,5);
+            result_doc=codeMapping100toN00(row_doc,col_doc,N);
             row=result_doc[0];
             doc.put("row",row);
             col=result_doc[1];
@@ -123,6 +142,9 @@ public class CallInterestGrid {
             code=result_doc[2];
             doc.put("code",code);
             code_array_after.add(doc);
+
+//            String str="("+row_doc+","+col_doc+")"+"   "+"("+row+","+col+")";
+//            FileTool.Dump(str,"E:\\房地产可视化\\to100\\test1.txt","utf-8");
 
             average_price=doc.getDouble("average_price");
             if (map.containsKey(code)) {
@@ -147,20 +169,21 @@ public class CallInterestGrid {
 
 
 
-        System.out.println(code_array_after.size());
-        printArray(code_array_after);
+        //System.out.println(code_array_after.size());
+        //printArray_BasicDB(code_array_after);
 
         Iterator it=map.keySet().iterator();
         String color;
-        JSONArray jsonArray=new JSONArray();
+        List< JSONObject> jsonArray=new ArrayList<>();
         JSONObject jsonObject;
+        JSONObject codekey=new JSONObject();
         if(it.hasNext()){
             while (it.hasNext()){
                 double totalprice=0;
                 code=(int)it.next();
                 cpr=map.get(code);
                 pricelist=cpr.getPricelist();
-                System.out.println(pricelist);
+                //System.out.println(pricelist);
                 if (pricelist.size() != 0) {
                     int count = 0;//统计pricelist中均价不为0的数目
                     for (int i = 0; i < pricelist.size(); i++) {
@@ -191,13 +214,39 @@ public class CallInterestGrid {
                 jsonObject.put("col",col);
                 jsonArray.add(jsonObject);
 
-                System.out.println(jsonObject);
+               // System.out.println(jsonObject);
+                codekey.put(""+code,"");
+            }
+        }
+//        printArray_JSON(jsonArray);
+
+        JSONObject nullobj;
+        int r_min=(int) Math.ceil((double)rowmin/N);
+        int r_max=(int) Math.ceil((double)rowmax/N);
+        int c_min=(int) Math.ceil((double)colmin/N);
+        int c_max=(int) Math.ceil((double)colmax/N);
+        for(int i=r_min;i<=r_max;i++) {
+            for (int j =c_min; j<=c_max; j++) {
+                String codeindex=""+(j + (2000/N) * (i - 1));
+                if(!codekey.containsKey(codeindex)){
+                    nullobj=new JSONObject();
+                    nullobj.put("code",Integer.parseInt(codeindex));
+                    nullobj.put("average_price",0);
+                    nullobj.put("row",i);
+                    nullobj.put("col",j);
+                    nullobj.put("color","");
+                    jsonArray.add(nullobj);
+                }
+
             }
         }
 
+        Collections.sort(jsonArray, new UtilFile.CodeComparator()); // 根据网格code排序
         JSONObject object= new JSONObject();
         object.put("data",jsonArray);
-        System.out.println(object);
+
+//        printArray_JSON(jsonArray);
+        System.out.println(object.toString());
 
         return object.toString();
     }

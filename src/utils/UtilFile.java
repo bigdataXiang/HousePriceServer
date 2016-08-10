@@ -1,6 +1,7 @@
 package utils;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -21,11 +22,18 @@ public class UtilFile {
            System.out.println(array[i]);
         }
     }
-    public static void printArray(List array){
+    public static void printArray_JSON(List<JSONObject> array){
+        for(int i=0;i<array.size();i++){
+            JSONObject document= (JSONObject) array.get(i);
+            System.out.println(array.get(i));
+            FileTool.Dump(array.get(i).toString(),"E:\\房地产可视化\\to100\\test.txt","utf-8");
+        }
+    }
+    public static void printArray_BasicDB(List<BasicDBObject> array){
         for(int i=0;i<array.size();i++){
             BasicDBObject document= (BasicDBObject) array.get(i);
-            document.remove("_id");
             System.out.println(array.get(i));
+            FileTool.Dump(array.get(i).toString(),"E:\\房地产可视化\\to100\\test.txt","utf-8");
         }
     }
     public static class CodeComparator implements Comparator {
