@@ -1,5 +1,6 @@
 package com.svail;
 
+import com.reprocess.grid_100.CallGridCurve;
 import com.reprocess.grid_100.CallInterestGrid;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -32,7 +33,7 @@ public class MainHandler implements HttpHandler {
                 break;
             case "/info":response=new handler_info().get(url.getPath());
                 break;
-            case "/price":response=new handler_gridprice().get(body);
+            case "/price":response=new CallGridCurve().get(body);
                 break;
             case "/gridcolor":response=new CallInterestGrid().get(body);
                 break;

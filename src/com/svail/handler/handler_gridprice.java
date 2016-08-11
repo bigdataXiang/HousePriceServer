@@ -19,14 +19,14 @@ import java.util.*;
  */
 public class handler_gridprice{
     public static int count=0;
-    /*public static void main(String[] args){
+    public static void main(String[] args){
         for(int i=1;i<3601;i++){
             String str=callDataFromMongo("resold_code_3000","woaiwojia",i);
             FileTool.Dump(str,"D:\\gridcurve.txt","utf-8");
 
         }
 
-    }*/
+    }
 
     public Response get(String body){
         JSONObject content=JSONObject.fromObject(body);

@@ -152,17 +152,36 @@
                 var gridcode_js=(col+400*(row-1));
 
                 var gridvalue=price.data[count];
-                //var gridcode_java=gridvalue.code;
+                var gridcode_java=gridvalue.code;
                 var gridcolor=gridvalue.color;
+                var gridrow=gridvalue.row;
+                var gridcol=gridvalue.col;
                 var averageprice=gridvalue.average_price;
 
                 if(averageprice!=0){
-                    rect= L.rectangle(bounds, {color:mycolor(255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6});
+                    rect= L.rectangle(bounds, {color:mycolor(255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_java});//,className:gridcode_java
                     rect.index=count;
                     rect.data=price.data[rect.index];
 
                     rect.on('click', function(code){
-                        $('#myModal').modal();
+                        var json={
+                            "row":this.data.row,
+                            "col":this.data.col,
+                            "code":this.data.code
+                        };
+
+                        $.post("/price", JSON.stringify(json),
+                                function(data){
+                                    var ctx = document.getElementById("myChart").getContext("2d");
+                                    pricedata= JSON.parse(data);
+
+                                    var grid=JSON.stringify(json);
+                                    var gridinfo=JSON.parse(grid);
+                                    var info="编码："+gridinfo.code+","+gridinfo.row+"行"+gridinfo.col+"列";
+                                    window.myLine = new Chart(ctx, dataStruct(pricedata,info));
+                                    $('#myModal').modal();
+                                }
+                        )
                     });
 
                     rect.addTo(map);
@@ -314,7 +333,7 @@
         }
         //说明曲线对应的具体网格值
         //config.data.datasets[0].label=""+code;
-        config.options.title.text="房价曲线图（code:"+code+"）";
+        config.options.title.text="房价曲线图（:"+code+"）";
         //给曲线随机赋颜色值
         for(var i=0;i<config.data.datasets.length;i++){
             config.data.datasets[i].borderColor = randomColor(0.4);

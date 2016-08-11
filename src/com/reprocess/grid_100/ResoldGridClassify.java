@@ -20,7 +20,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ResoldGridClassify extends GridMerge{
     public static void main(String[] args){
-        timingRun("03:00:00");
+       // timingRun("03:00:00");
+        initial4();
 
     }
     public static void timingRun(String time){

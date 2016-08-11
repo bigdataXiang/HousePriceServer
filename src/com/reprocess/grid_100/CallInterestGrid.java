@@ -47,7 +47,7 @@ public class CallInterestGrid {
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
-        CallMongo(condition,5);
+        System.out.println(CallMongo(condition,5));
     }
     public Response get(String body){
         JSONObject obj=JSONObject.fromObject(body);
