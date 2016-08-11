@@ -1,6 +1,7 @@
 package com.reprocess.doubleprogram;
 
 import com.mongodb.*;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import utils.FileTool;
 import utils.UtilFile;
@@ -288,49 +289,67 @@ public class ToMongo_fang {
             }
 
         }
-        if(poi.containsKey("layout")){
-            if(!poi.get("layout").equals("null")){
-                JSONObject layout=poi.getJSONObject("layout");
-                if(!layout.isEmpty()){
-                    int rooms;
-                    if(layout.getString("rooms").length()!=0){
-                        rooms=layout.getInt("rooms");
-                    }else{
-                        rooms=0;
-                    }
-                    document.put("rooms",rooms);
+        try{
+            if(poi.containsKey("layout")){
+                if(!poi.get("layout").equals("null")){
+                    JSONObject layout=poi.getJSONObject("layout");
+                    if(!layout.isEmpty()){
+                        int rooms;
+                        if(layout.containsKey("rooms")){
+                            if(layout.getString("rooms").length()!=0){
+                                rooms=layout.getInt("rooms");
+                            }else{
+                                rooms=0;
+                            }
+                            document.put("rooms",rooms);
+                        }
 
 
-                    int halls;
-                    if(layout.getString("halls").length()!=0){
-                        halls=layout.getInt("halls");
-                    }else{
-                        halls=0;
-                    }
-                    document.put("halls",halls);
 
-                    int kitchen;
-                    if(layout.getString("kitchen").length()!=0){
-                        kitchen=layout.getInt("kitchen");
-                    }else{
-                        kitchen=0;
-                    }
-                    document.put("kitchen",kitchen);
+                        int halls;
+                        if(layout.containsKey("halls")){
+                            if(layout.getString("halls").length()!=0){
+                                halls=layout.getInt("halls");
+                            }else{
+                                halls=0;
+                            }
+                            document.put("halls",halls);
+                        }
 
-                    int bathrooms;
-                    if(layout.getString("bathrooms").length()!=0){
-                        bathrooms=layout.getInt("bathrooms");
-                    }else{
-                        bathrooms=0;
+
+                        int kitchen;
+                        if(layout.containsKey("kitchen")){
+                            if(layout.getString("kitchen").length()!=0){
+                                kitchen=layout.getInt("kitchen");
+                            }else{
+                                kitchen=0;
+                            }
+                            document.put("kitchen",kitchen);
+                        }
+
+
+                        int bathrooms;
+                        if(layout.containsKey("bathrooms")){
+                            if(layout.getString("bathrooms").length()!=0){
+                                bathrooms=layout.getInt("bathrooms");
+                            }else{
+                                bathrooms=0;
+                            }
+                            document.put("bathrooms",bathrooms);
+                        }
+
                     }
-                    document.put("bathrooms",bathrooms);
+
+
                 }
 
 
             }
-
-
+        }catch (JSONException e){
+            System.out.println(poi);
+            FileTool.Dump(poi.toString(),"E:\\房地产可视化\\toMongo\\resold\\fang\\problemJSON.txt","utf-8");
         }
+
         if(poi.containsKey("storeys")){
             if(!poi.get("storeys").equals("null")){
                 JSONObject storeys=poi.getJSONObject("storeys");
@@ -396,7 +415,7 @@ public class ToMongo_fang {
 
             Vector<String> filenames= FileTool.Load(path+"filename.txt","UTF-8");
 
-            for(int i=0;i<filenames.size();i++){
+            for(int i=27;i<filenames.size();i++){
                 String filename=filenames.elementAt(i);
 
                 System.out.println("开始导入第"+i+"个文件");
