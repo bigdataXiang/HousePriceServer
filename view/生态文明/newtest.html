@@ -108,38 +108,63 @@
 
         var zoom=map.getZoom();
         console.log(zoom);
-        if(zoom==16){
-            //draw_multiPolyline();
-            draw_circle();
+       // if(zoom==16){
+            draw_multiPolyline();
+            /*draw_circle();
             $.post("/gridcolor",""+JSON.stringify(json), function(result){
                 var price= JSON.parse(result);
                 draw_rectangle(bounds,price);
-            });
-        }
+            });*/
+        //}
     });
-    
+
+    var polygon_array=[];
     function  draw_multiPolyline() {
-        var latlng1 = L.latLng(39.906985851984146, 116.39055488416854);
-        var latlng2 = L.latLng(39.90422, 116.3572);
-        var latlng3 = L.latLng(39.907256871267336, 116.37405681098376);
-        var latlng4 = L.latLng(39.906985851984146, 116.39055488416854);
-        //latlng1,latlng2,latlng3,latlng4
-        var polygon=L.multiPolyline([[39.906985851984146, 116.39055488416854],[39.90422, 116.3572],[39.907256871267336, 116.37405681098376],[39.906985851984146, 116.39055488416854]],{color:mycolor(220,20,60),stroke:true,weight:10});
+        var poly_points = [];//区域
+        var poly_line=new L.Polyline([],{color:mycolor(220,20,60),fillColor:mycolor(220,20,60),stroke:true,weight:1});//折线
+        var latlng1 = L.latLng(39.906985851984146,116.39055488416854);
+        var latlng2 = L.latLng(39.905779,116.319274);
+        var latlng3 = L.latLng(39.88311876796353,116.30383565962735);
+        var latlng4 = L.latLng(39.872028939237744,116.36803340806715);
+        var latlng6 = L.latLng(39.906985851984146,116.39055488416854);
+        //将坐标点加入到poly_points数组中去
+        poly_points.push(latlng1);
+        poly_points.push(latlng2);
+        poly_points.push(latlng3);
+        poly_points.push(latlng4);
+        //poly_points.push(latlng5);
+        poly_points.push(latlng6);
+        //显示折线
+        poly_line.addLatLng(latlng1);
+        poly_line.addLatLng(latlng2);
+        poly_line.addLatLng(latlng3);
+        poly_line.addLatLng(latlng4);
+        poly_line.addLatLng(latlng6);
+
         var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +"北京天安门"+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
         var popup = L.popup()
                 .setLatLng(latlng1)
-                .setContent(content)
-                .openOn(map);
-        polygon.addTo(map);
-        //polygon.bindPopup(popup);
-        
+                .setContent(content);
+        //.openOn(map);
+
+        map.addLayer(poly_line);
+
+        var latlngs = [];
+        latlngs.push(latlng1);
+        latlngs.push(latlng2);
+        latlngs.push(latlng3);
+        latlngs.push(latlng4);
+        latlngs.push(latlng6);
+        var poly = new L.Polygon(latlngs,{color:mycolor(0,245,255),fillColor:mycolor(0,245,255),stroke:true,weight:1});
+        map.addLayer(poly);
+
     }
     function draw_circle(){
         var title="北京第二实验小学";
         var location="北京市西城区新文化街111号";
         var type="[市重点][科技类][其他类]";
         var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
-        var latlng = L.latLng(39.90422, 116.3572,200);
+        var latlng = L.latLng(39.90422,116.3572,200);
         var popup = L.popup()
                 .setLatLng(latlng)
                 .setContent(content);
@@ -239,7 +264,7 @@
         rects=[];
         //这里先删除旧的layer
         var zoomvalue=map.getZoom();
-        if(zoomvalue==11){
+       /* if(zoomvalue==11){
             $.post("/static/gridcode_3000_resold",""+map.getZoom(), function(result){
                 var price= JSON.parse(result);
                 //console.log(map.getBounds());
@@ -261,7 +286,7 @@
                 //draw(price);
             });
 
-        }
+        }*/
 
     });
     var layerControl = new L.Control.Layers();
