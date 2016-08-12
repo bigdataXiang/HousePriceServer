@@ -119,7 +119,25 @@
     });
 
     var polygon_array=[];
+    var polyline_array=[];
     function  draw_multiPolyline() {
+
+        //将之前的多线图层删除
+        if(polyline_array.length!=0){
+            for (var i=0;i<polyline_array.length;i++){
+                map=map.removeLayer(polyline_array[i]);
+            }
+            polyline_array=[];
+        }
+        //将之前的多边形图层删除
+        if(polygon_array.length!=0){
+            for (var i=0;i<polygon_array.length;i++){
+                map=map.removeLayer(polygon_array[i]);
+            }
+            polygon_array=[];
+        }
+
+
         var poly_points = [];//区域
         var poly_line=new L.Polyline([],{color:mycolor(220,20,60),fillColor:mycolor(220,20,60),stroke:true,weight:1});//折线
         var latlng1 = L.latLng(39.906985851984146,116.39055488416854);
@@ -140,14 +158,8 @@
         poly_line.addLatLng(latlng3);
         poly_line.addLatLng(latlng4);
         poly_line.addLatLng(latlng6);
-
-        var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +"北京天安门"+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
-        var popup = L.popup()
-                .setLatLng(latlng1)
-                .setContent(content);
-        //.openOn(map);
-
         map.addLayer(poly_line);
+        polyline_array.push(poly_line);
 
         var latlngs = [];
         latlngs.push(latlng1);
@@ -156,7 +168,14 @@
         latlngs.push(latlng4);
         latlngs.push(latlng6);
         var poly = new L.Polygon(latlngs,{color:mycolor(0,245,255),fillColor:mycolor(0,245,255),stroke:true,weight:1});
+        var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +"北京天安门"+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
+        var popup = L.popup()
+                .setLatLng(latlng1)
+                .setContent(content);
+        //.openOn(map);
         map.addLayer(poly);
+        poly.bindPopup(popup);
+        polygon_array.push(poly);
 
     }
     function draw_circle(){
