@@ -13,10 +13,16 @@
     <link href="/view/生态文明/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="/view/生态文明/stylesheets/ui.css" rel="stylesheet">
 
+    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
 
     <script type="text/javascript" src="/view/生态文明/lib/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/view/生态文明/lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="lib/leaflet/leaflet.js"></script>
+
+  <!--  <script src="lib/leaflet/images/marker-icon.png"></script>
+    <script src="lib/leaflet/images/marker-icon-2x.png"></script>
+    <script src="lib/leaflet/images/marker-shadow.png"></script>
+    <script src="lib/leaflet/images/marker-shadow@2x.png"></script>-->
 
     <script type="text/javascript" src='/view/生态文明/lib/leaflet/leaflet.ChineseTmsProviders.js'></script>
     <script src="/view/生态文明/Chart.js-2.1.6/dist/Chart.bundle.js"></script>
@@ -73,9 +79,9 @@
         resize();
     });
     resize();
-    var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map',{maxZoom:18,minZoom:5});
-    var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map',{maxZoom:18,minZoom:5});
-    var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:5});
+    var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map',{maxZoom:18,minZoom:10});
+    var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map',{maxZoom:18,minZoom:10});
+    var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:10});
     var normal = L.layerGroup([normalm]),
             image = L.layerGroup([imgm,imga]);
     var baseLayers = {
@@ -86,8 +92,8 @@
     map = L.map("map",{
         layers:[normal],
         zoomControl:true
-    }).setView([39.8, 116.3], 3); /* 39°54'27"，东经116°23'17*/
-    map.setView([39.8, 116.3], 3);
+    }).setView([39.906985851984146, 116.39055488416854], 3);
+    map.setView([39.906985851984146, 116.39055488416854], 3);
 
     map.on('dragend',function(e){
         console.log("dragend");
@@ -108,14 +114,16 @@
 
         var zoom=map.getZoom();
         console.log(zoom);
-       // if(zoom==16){
-            draw_multiPolyline();
-            /*draw_circle();
+        draw_multiPolyline();
+        draw_circle();
+
+        if(zoom==15){
+
             $.post("/gridcolor",""+JSON.stringify(json), function(result){
                 var price= JSON.parse(result);
                 draw_rectangle(bounds,price);
-            });*/
-        //}
+            });
+        }
     });
 
     var polygon_array=[];
@@ -139,7 +147,7 @@
 
 
         var poly_points = [];//区域
-        var poly_line=new L.Polyline([],{color:mycolor(220,20,60),fillColor:mycolor(220,20,60),stroke:true,weight:5,smoothFactor:5,fillOpacity:1,opacity:1});//折线
+        var poly_line=new L.Polyline([],{color:mycolor(0,0,205),fillColor:mycolor(0,0,205),stroke:true,weight:5,smoothFactor:5,fillOpacity:1,opacity:1});//折线
         var latlng1 = L.latLng(39.906985851984146,116.39055488416854);
         var latlng2 = L.latLng(39.905779,116.319274);
         var latlng3 = L.latLng(39.88311876796353,116.30383565962735);
@@ -167,7 +175,7 @@
         latlngs.push(latlng3);
         latlngs.push(latlng4);
         latlngs.push(latlng6);
-        var poly = new L.Polygon(latlngs,{color:mycolor(0,245,255),fillColor:mycolor(0,245,255),stroke:true,weight:1});
+        var poly = new L.Polygon(latlngs,{color:mycolor(0,0,205),fillColor:mycolor(0,0,205),stroke:true,weight:1});
         var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +"北京天安门"+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
         var popup = L.popup()
                 .setLatLng(latlng1)
@@ -179,6 +187,21 @@
 
     }
     function draw_circle(){
+        var myIcon = L.icon({
+            iconUrl: 'http://ico.ooopic.com/iconset01/vista-map-markers-icons/gif/158722.gif',
+            iconRetinaUrl: 'marker-icon-2x.png',
+            iconSize: [38, 95],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76],
+            shadowUrl: 'marker-shadow.png',
+            shadowRetinaUrl: 'marker-shadow@2x.png',//"lib/leaflet/images/"
+            shadowSize: [68, 95],
+            shadowAnchor: [22, 94]
+        });
+        var marker =L.marker([39.906985851984146,116.39055488416854],{icon: myIcon});//,{icon: myIcon}
+        map.addLayer(marker);
+
+
         var title="北京第二实验小学";
         var location="北京市西城区新文化街111号";
         var type="[市重点][科技类][其他类]";
@@ -188,7 +211,6 @@
                 .setLatLng(latlng)
                 .setContent(content);
                 //.openOn(map);
-
         var circle=L.circle(latlng, 50,{color:mycolor(220,20,60),opacity:0.9,fillColor:mycolor(220,20,60),weight:1,fillOpacity:0.6,className:""+title});
         circle.addTo(map);
         circle.bindPopup(popup);
