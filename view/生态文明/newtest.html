@@ -109,14 +109,48 @@
         var zoom=map.getZoom();
         console.log(zoom);
         if(zoom==16){
-
+            //draw_multiPolyline();
+            draw_circle();
             $.post("/gridcolor",""+JSON.stringify(json), function(result){
                 var price= JSON.parse(result);
-                draw_13(bounds,price);
+                draw_rectangle(bounds,price);
             });
         }
     });
-    function draw_13(bounds,price) {
+    
+    function  draw_multiPolyline() {
+        var latlng1 = L.latLng(39.906985851984146, 116.39055488416854);
+        var latlng2 = L.latLng(39.90422, 116.3572);
+        var latlng3 = L.latLng(39.907256871267336, 116.37405681098376);
+        var latlng4 = L.latLng(39.906985851984146, 116.39055488416854);
+        //latlng1,latlng2,latlng3,latlng4
+        var polygon=L.multiPolyline([[39.906985851984146, 116.39055488416854],[39.90422, 116.3572],[39.907256871267336, 116.37405681098376],[39.906985851984146, 116.39055488416854]],{color:mycolor(220,20,60),stroke:true,weight:10});
+        var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +"北京天安门"+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
+        var popup = L.popup()
+                .setLatLng(latlng1)
+                .setContent(content)
+                .openOn(map);
+        polygon.addTo(map);
+        //polygon.bindPopup(popup);
+        
+    }
+    function draw_circle(){
+        var title="北京第二实验小学";
+        var location="北京市西城区新文化街111号";
+        var type="[市重点][科技类][其他类]";
+        var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
+        var latlng = L.latLng(39.90422, 116.3572,200);
+        var popup = L.popup()
+                .setLatLng(latlng)
+                .setContent(content);
+                //.openOn(map);
+
+        var circle=L.circle(latlng, 50,{color:mycolor(220,20,60),opacity:0.9,fillColor:mycolor(220,20,60),weight:1,fillOpacity:0.6,className:""+title});
+        circle.addTo(map);
+        circle.bindPopup(popup);
+
+    }
+    function draw_rectangle(bounds,price) {
         var west=bounds.getWest();
         var east=bounds.getEast();
         var south=bounds.getSouth();
@@ -159,7 +193,7 @@
                 var averageprice=gridvalue.average_price;
 
                 if(averageprice!=0){
-                    rect= L.rectangle(bounds, {color:mycolor(255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_java});//,className:gridcode_java
+                    rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_java});//,className:gridcode_java
                     rect.index=count;
                     rect.data=price.data[rect.index];
 
@@ -373,7 +407,7 @@
 
                 var averageprice=gridvalue.average_price;
                 if(averageprice!=0){
-                    rect= L.rectangle(bounds, {color:mycolor(255),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
+                    rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
                     rect.index=gridcode-1;//这里忘记减1啦！！！
                     rect.data=price.data[rect.index];
                     rect.on('click', function(code){
@@ -422,7 +456,7 @@
                 var gridvalue=price.data[gridcode];
                 var code=""+gridcode;
 
-                rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
+                rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
                 rect.index=gridcode;
                 rect.data=price.data[rect.index];
                 rect.on('click', function(code){
@@ -469,7 +503,7 @@
                 var gridvalue=price.data[gridcode];
                 var code=""+gridcode;
 
-                rect= L.rectangle(bounds, {color:mycolor(100),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
+                rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
                 rect.index=gridcode;
                 rect.data=price.data[rect.index];
                 rect.on('click', function(code){
@@ -495,8 +529,7 @@
         }
 
     }
-    function mycolor(n) {
-        var r=255,g=255,b=n;
+    function mycolor(r,g,b) {
         var color="rgb("+r+","+g+","+b+")";
         return color;
     }
