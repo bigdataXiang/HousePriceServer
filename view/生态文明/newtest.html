@@ -139,7 +139,7 @@
 
 
         var poly_points = [];//区域
-        var poly_line=new L.Polyline([],{color:mycolor(220,20,60),fillColor:mycolor(220,20,60),stroke:true,weight:1});//折线
+        var poly_line=new L.Polyline([],{color:mycolor(220,20,60),fillColor:mycolor(220,20,60),stroke:true,weight:5,smoothFactor:5,fillOpacity:1,opacity:1});//折线
         var latlng1 = L.latLng(39.906985851984146,116.39055488416854);
         var latlng2 = L.latLng(39.905779,116.319274);
         var latlng3 = L.latLng(39.88311876796353,116.30383565962735);
@@ -173,8 +173,8 @@
                 .setLatLng(latlng1)
                 .setContent(content);
         //.openOn(map);
-        map.addLayer(poly);
-        poly.bindPopup(popup);
+        //map.addLayer(poly);
+        poly_line.bindPopup(popup);
         polygon_array.push(poly);
 
     }
