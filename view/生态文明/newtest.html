@@ -206,7 +206,7 @@
         var popup;
 
         gradeOptions.radius=10;
-        gradeOptions.color=gradeOptions.fillColor= 'hsl(' +  285+ ',100%,70%)';
+        gradeOptions.color=gradeOptions.fillColor= 'hsl(' +  359+ ',100%,70%)';
 
         for(var i=0;i<size;i++){
             info=school.data[i];
@@ -254,11 +254,15 @@
         var content;
         var latlng;
         var popup;
+        gradeOptions.radius=10;
+        gradeOptions.color=gradeOptions.fillColor= 'hsl(' +  285+ ',100%,70%)';
         for(var i=0;i<size;i++){
             info=school.data[i];
             lng=info.longitude;
             lat=info.latitude;
-            var marker =L.marker([lat,lng,100],{icon: myIcon});
+
+            /*var marker =L.marker([lat,lng,100],{icon: myIcon});*/
+            var marker =L.mapMarker([lat,lng,100], gradeOptions);
             map.addLayer(marker);
 
             title=info.school;
@@ -298,11 +302,15 @@
         var content;
         var latlng;
         var popup;
+        gradeOptions.radius=10;
+        gradeOptions.color=gradeOptions.fillColor= 'hsl(' +  240+ ',100%,70%)';
+
         for(var i=0;i<size;i++){
             info=school.data[i];
             lng=info.longitude;
             lat=info.latitude;
-            var marker =L.marker([lat,lng,100],{icon: myIcon});
+            /*var marker =L.marker([lat,lng,100],{icon: myIcon});*/
+            var marker =L.mapMarker([lat,lng,100], gradeOptions);
             map.addLayer(marker);
 
             title=info.school;
@@ -831,16 +839,16 @@
     legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
-                color = [360, 330,300, 270, 240, 210, 180, 150, 120,90],
+                color = ['#BA0000', '#C70000','#ED0000', '#FF0000', '#FF4000', '#FC5800', '#FF5900', '#FF9D14', '#FFD900','#CCFF00','#CFFC5D'],
                 labels =[],
-                grades=["一级甲等","一级乙等","一级丙等","二级甲等","二级乙等","二级丙等",
-                    "三级甲等","三级乙等","三级丙等","无等级",],
+                grades=["[9,+∞]","[8,9]","[7,8]","[6,7]","[5,6]","[4,5]",
+                    "[3,4]","[2.5,3]","[2,2.5]","[1,2]","[0,1]"],
                 from, to;
 
         for (var i = 0; i < color.length; i++) {
 
             labels.push(
-                    '<i style=\"background:' +  'hsl(' +  color[i]+ ',100%,50%)' + '\"></i> ' +grades[i]);
+                    '<i style=\"background:' +  color[i] + '\"></i> ' +grades[i]);
         }
 
         div.innerHTML = labels.join('<br>');
@@ -860,7 +868,6 @@
         },
         offset: 0,
         innerRadius: 0,
-        /*imageCircleUrl :"/view/生态文明/marker.svg"*/
     };
 </script>
 </body>
