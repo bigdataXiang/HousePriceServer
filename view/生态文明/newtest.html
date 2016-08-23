@@ -19,10 +19,6 @@
     <script type="text/javascript" src="/view/生态文明/lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="lib/leaflet/leaflet.js"></script>
 
-  <!--  <script src="lib/leaflet/images/marker-icon.png"></script>
-    <script src="lib/leaflet/images/marker-icon-2x.png"></script>
-    <script src="lib/leaflet/images/marker-shadow.png"></script>
-    <script src="lib/leaflet/images/marker-shadow@2x.png"></script>-->
 
     <script type="text/javascript" src='/view/生态文明/lib/leaflet/leaflet.ChineseTmsProviders.js'></script>
     <script src="/view/生态文明/Chart.js-2.1.6/dist/Chart.bundle.js"></script>
@@ -34,6 +30,17 @@
 <body>
 
 <div class="navbar navbar-inverse">
+
+    <form>
+        选择你最喜欢的水果:
+        <select id="mySelect">
+            <option>Apple</option>
+            <option>Orange</option>
+            <option>Pineapple</option>
+            <option>Banana</option>
+        </select>
+    </form>
+
     <div class="navbar-inner">
         <div class="container">
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -66,7 +73,16 @@
         </div>
     </div>
 </div>
+
+
 <script type="text/javascript">
+
+    function displayResult(){
+        var x=document.getElementById("mySelect").selectedIndex;
+        var y=document.getElementById("mySelect").options;
+        alert("索引: " + y[x].index + " is " + y[x].text);
+    }
+
     var map;
     var resize = function () {
         var $map = $('#map');
@@ -115,7 +131,12 @@
         var zoom=map.getZoom();
         console.log(zoom);
         draw_multiPolyline();
-        draw_circle();
+
+        $.post("/static/city_focused",""+map.getZoom(), function(result){
+            var school= JSON.parse(result);
+            draw_circle(school);
+        });
+
 
         if(zoom==15){
 
@@ -186,7 +207,7 @@
         polygon_array.push(poly);
 
     }
-    function draw_circle(){
+    function draw_circle(school){
         var myIcon = L.icon({
             iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
             iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
@@ -198,9 +219,15 @@
             shadowSize: [68, 95],
             shadowAnchor: [22, 94]
         });
-        var marker =L.marker([39.90422,116.3572,200],{icon: myIcon});//,{icon: myIcon}
-        map.addLayer(marker);
-
+        var size=school.data.length;
+        var lng;
+        var lat;
+        for(var i=0;i<size;i++){
+            lng=school.data[i].longitude;
+            lat=school.data[i].latitude;
+            var marker =L.marker([lat,lng,200],{icon: myIcon});
+            map.addLayer(marker);
+        }
 
         var title="北京第二实验小学";
         var location="北京市西城区新文化街111号";
