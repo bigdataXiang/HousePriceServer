@@ -11,15 +11,16 @@
 
     <link rel="stylesheet" href="/view/生态文明/lib/leaflet/leaflet.css" />
     <link href="/view/生态文明/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <script type="text/javascript" src="./bootstrap/dist/js/bootstrap.min.js"></script>
+    <!--<script type="text/javascript" src="./bootstrap/dist/js/bootstrap.min.js"></script>-->
     <link href="/view/生态文明/stylesheets/ui.css" rel="stylesheet">
 
     <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
 
-    <script type="text/javascript" src="/view/dist/leaflet-dvf.js"></script>
     <script type="text/javascript" src="/view/生态文明/lib/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/view/生态文明/lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="lib/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="/view/dist/leaflet-dvf.js"></script>
+
 
 
     <script type="text/javascript" src='/view/生态文明/lib/leaflet/leaflet.ChineseTmsProviders.js'></script>
@@ -28,6 +29,12 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<style>.legend i{
+    height: 18px;
+    width:18px;
+    float: left;
+    margin-right: 8px;
+}</style>
 </head>
 <body>
 
@@ -42,15 +49,38 @@
                 <span class="icon-bar"></span>
             </a>
             <form>
-                选择你最喜欢的水果:
-                <select id="mySelect">
-                    <option>Apple</option>
-                    <option>Orange</option>
-                    <option>Pineapple</option>
-                    <option>Banana</option>
+            数据来源:
+                <select id="source">
+                    <option>房天下</option>
+                    <option>我爱我家</option>
+                    <option>安居客</option>
+                    <option>链家</option>
+                    <option>全部</option>
+                </select>
+
+                房源类型:
+                <select id="type">
+                    <option>新房</option>
+                    <option>二手房</option>
+                    <option>租房</option>
+                    <option>求租</option>
+                </select>
+
+                网格颜色意义:
+                <select id="gridValue">
+                    <option>房价加速度</option>
+                    <option>房价</option>
+                </select>
+
+                小学类型:
+                <select id="schoolType">
+                    <option>市重点小学</option>
+                    <option>区重点小学</option>
+                    <option>普通小学</option>
                 </select>
             </form>
-            <!--<a class="brand" href="#">房地产曲线图</a>-->
+            <!--用来显示索引<button type="button" onclick="displayResult()">显示索引</button>-->
+
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     <li class="active">中国科学院地理科学与资源研究所</li>
@@ -82,8 +112,8 @@
 <script type="text/javascript">
 
     function displayResult(){
-        var x=document.getElementById("mySelect").selectedIndex;
-        var y=document.getElementById("mySelect").options;
+        var x=document.getElementById("schoolType").selectedIndex;
+        var y=document.getElementById("schoolType").options;
         alert("索引: " + y[x].index + " is " + y[x].text);
     }
 
@@ -136,25 +166,6 @@
         console.log(zoom);
         draw_multiPolyline();
 
-        //市重点
-        $.post("/static/city_focused",""+map.getZoom(), function(result){
-            var school= JSON.parse(result);
-            draw_circle_cityfocus(school);
-        });
-
-        //区重点
-        $.post("/static/region_focused",""+map.getZoom(), function(result){
-            var school= JSON.parse(result);
-            //draw_circle_regionfocus(school);
-        });
-
-        //普通小学
-        $.post("/static/ordinary_primary_school",""+map.getZoom(), function(result){
-            var school= JSON.parse(result);
-            //draw_circle_ordinary(school);
-        });
-
-
         if(zoom==15){
 
             $.post("/gridcolor",""+JSON.stringify(json), function(result){
@@ -166,6 +177,9 @@
 
     var polygon_array=[];
     var polyline_array=[];
+    var cityfocus=[];
+    var regionfocus=[];
+    var ordinary=[];
 
     function draw_circle_cityfocus(school){
         var myIcon = L.icon({
@@ -190,11 +204,16 @@
         var content;
         var latlng;
         var popup;
+
+        gradeOptions.radius=10;
+        gradeOptions.color=gradeOptions.fillColor= 'hsl(' +  285+ ',100%,70%)';
+
         for(var i=0;i<size;i++){
             info=school.data[i];
             lng=info.longitude;
             lat=info.latitude;
-            var marker =L.marker([lat,lng,100],{icon: myIcon});
+            /*var marker =L.marker([lat,lng,100],{icon: myIcon});*/
+            var marker =L.mapMarker([lat,lng,100], gradeOptions);
             map.addLayer(marker);
 
             title=info.school;
@@ -207,20 +226,9 @@
                     .setLatLng(latlng)
                     .setContent(content);
             marker.bindPopup(popup);
-        }
 
-        /* var title="北京第二实验小学";
-         var location="北京市西城区新文化街111号";
-         var type="[市重点][科技类][其他类]";
-         var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
-         var latlng = L.latLng(39.90422,116.3572,200);
-         var popup = L.popup()
-         .setLatLng(latlng)
-         .setContent(content);
-         //.openOn(map);
-         var circle=L.circle(latlng, 50,{color:mycolor(220,20,60),opacity:0.9,fillColor:mycolor(220,20,60),weight:1,fillOpacity:0.6,className:""+title});
-         circle.addTo(map);
-         circle.bindPopup(popup);*/
+            cityfocus.push(marker);
+        }
 
     }
     function draw_circle_regionfocus(school){
@@ -263,6 +271,8 @@
                     .setLatLng(latlng)
                     .setContent(content);
             marker.bindPopup(popup);
+
+            regionfocus.push(marker);
         }
     }
     function draw_circle_ordinary(school){
@@ -305,6 +315,8 @@
                     .setLatLng(latlng)
                     .setContent(content);
             marker.bindPopup(popup);
+
+            ordinary.push(marker);
         }
     }
 
@@ -445,10 +457,73 @@
     }
 
 
+    map.on('dragstart',function(e){
+        var x=document.getElementById("schoolType").selectedIndex;
+        var y=document.getElementById("schoolType").options;
+        var schoolType=y[x].text;
+
+        if(schoolType=="市重点小学"){
+            for(var i=0;i<cityfocus.length;i++){
+                map.removeLayer(cityfocus[i]);
+            }
+            for(var i=0;i<regionfocus.length;i++){
+                map.removeLayer(regionfocus[i]);
+            }
+            for(var i=0;i<ordinary.length;i++){
+                map.removeLayer(ordinary[i]);
+            }
+            //市重点
+            $.post("/static/city_focused",""+map.getZoom(), function(result){
+                var school= JSON.parse(result);
+                draw_circle_cityfocus(school);
+            });
+
+        }else if(schoolType=="区重点小学"){
+            for(var i=0;i<cityfocus.length;i++){
+                map.removeLayer(cityfocus[i]);
+            }
+            for(var i=0;i<regionfocus.length;i++){
+                map.removeLayer(regionfocus[i]);
+            }
+            for(var i=0;i<ordinary.length;i++){
+                map.removeLayer(ordinary[i]);
+            }
+            //区重点
+            $.post("/static/region_focused",""+map.getZoom(), function(result){
+                var school= JSON.parse(result);
+                draw_circle_regionfocus(school);
+            });
+        }else{
+            for(var i=0;i<cityfocus.length;i++){
+                map.removeLayer(cityfocus[i]);
+            }
+            for(var i=0;i<regionfocus.length;i++){
+                map.removeLayer(regionfocus[i]);
+            }
+            for(var i=0;i<ordinary.length;i++){
+                map.removeLayer(ordinary[i]);
+            }
+            //普通小学
+            $.post("/static/ordinary_primary_school",""+map.getZoom(), function(result){
+                var school= JSON.parse(result);
+                draw_circle_ordinary(school);
+            });
+        }
+    });
+
+
+
+
     map.on('zoomstart', function(e) {
        console.log("zoomstart");
     });
     map.on('zoomend', function(e) {
+
+
+
+
+
+
         console.log("zoomend");
         for (var i=0;i<rects.length;i++){
             map=map.removeLayer(rects[i]);
@@ -750,6 +825,43 @@
         var color="rgb("+r+","+g+","+b+")";
         return color;
     }
+
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (map) {
+
+        var div = L.DomUtil.create('div', 'info legend'),
+                color = [360, 330,300, 270, 240, 210, 180, 150, 120,90],
+                labels =[],
+                grades=["一级甲等","一级乙等","一级丙等","二级甲等","二级乙等","二级丙等",
+                    "三级甲等","三级乙等","三级丙等","无等级",],
+                from, to;
+
+        for (var i = 0; i < color.length; i++) {
+
+            labels.push(
+                    '<i style=\"background:' +  'hsl(' +  color[i]+ ',100%,50%)' + '\"></i> ' +grades[i]);
+        }
+
+        div.innerHTML = labels.join('<br>');
+        return div;
+    };
+
+    legend.addTo(map);
+
+    var gradeOptions = {
+
+        weight: 1,
+        fillOpacity: 0.7,
+        rotation: 0.0,
+        position: {
+            x: 0,
+            y: 0
+        },
+        offset: 0,
+        innerRadius: 0,
+        /*imageCircleUrl :"/view/生态文明/marker.svg"*/
+    };
 </script>
 </body>
 </html>
