@@ -11,10 +11,12 @@
 
     <link rel="stylesheet" href="/view/生态文明/lib/leaflet/leaflet.css" />
     <link href="/view/生态文明/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <script type="text/javascript" src="./bootstrap/dist/js/bootstrap.min.js"></script>
     <link href="/view/生态文明/stylesheets/ui.css" rel="stylesheet">
 
     <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
 
+    <script type="text/javascript" src="/view/dist/leaflet-dvf.js"></script>
     <script type="text/javascript" src="/view/生态文明/lib/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/view/生态文明/lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="lib/leaflet/leaflet.js"></script>
@@ -29,26 +31,26 @@
 </head>
 <body>
 
-<div class="navbar navbar-inverse">
+<div class="navbar navbar-default">
 
-    <form>
-        选择你最喜欢的水果:
-        <select id="mySelect">
-            <option>Apple</option>
-            <option>Orange</option>
-            <option>Pineapple</option>
-            <option>Banana</option>
-        </select>
-    </form>
 
-    <div class="navbar-inner">
+  <div class="navbar-inner">
         <div class="container">
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="#">房地产曲线图</a>
+            <form>
+                选择你最喜欢的水果:
+                <select id="mySelect">
+                    <option>Apple</option>
+                    <option>Orange</option>
+                    <option>Pineapple</option>
+                    <option>Banana</option>
+                </select>
+            </form>
+            <!--<a class="brand" href="#">房地产曲线图</a>-->
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     <li class="active">中国科学院地理科学与资源研究所</li>
@@ -57,6 +59,8 @@
         </div>
     </div>
 </div>
+
+
 <div class="container-fluid">
     <div class="row-fluid">
         <div id="map" class="span9"></div>
@@ -132,9 +136,22 @@
         console.log(zoom);
         draw_multiPolyline();
 
+        //市重点
         $.post("/static/city_focused",""+map.getZoom(), function(result){
             var school= JSON.parse(result);
-            draw_circle(school);
+            draw_circle_cityfocus(school);
+        });
+
+        //区重点
+        $.post("/static/region_focused",""+map.getZoom(), function(result){
+            var school= JSON.parse(result);
+            //draw_circle_regionfocus(school);
+        });
+
+        //普通小学
+        $.post("/static/ordinary_primary_school",""+map.getZoom(), function(result){
+            var school= JSON.parse(result);
+            //draw_circle_ordinary(school);
         });
 
 
@@ -149,6 +166,149 @@
 
     var polygon_array=[];
     var polyline_array=[];
+
+    function draw_circle_cityfocus(school){
+        var myIcon = L.icon({
+            iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
+            iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
+            iconSize: [50, 94],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76],
+            shadowUrl: 'http://a.hiphotos.baidu.com/image/w%3D310/sign=99ae3420bb19ebc4c0787098b227cf79/7af40ad162d9f2d3b7b32faaa1ec8a136227ccd1.jpg',
+            shadowRetinaUrl: 'http://d.hiphotos.baidu.com/image/w%3D310/sign=2dd97543a4af2eddd4f14fe8bd110102/8cb1cb13495409238684683b9a58d109b2de4981.jpg',
+            shadowSize: [68, 95],
+            shadowAnchor: [22, 94]
+        });
+        var size=school.data.length;
+        var lng;
+        var lat;
+        var info;
+        var title;
+        var address;
+        var location;
+        var type;
+        var content;
+        var latlng;
+        var popup;
+        for(var i=0;i<size;i++){
+            info=school.data[i];
+            lng=info.longitude;
+            lat=info.latitude;
+            var marker =L.marker([lat,lng,100],{icon: myIcon});
+            map.addLayer(marker);
+
+            title=info.school;
+            location=info.region;
+            address=info.address;
+            type=info.type;
+            content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">区域:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">地址:	</span> <span>" +address+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
+            latlng = L.latLng(lat,lng,100);
+            popup = L.popup()
+                    .setLatLng(latlng)
+                    .setContent(content);
+            marker.bindPopup(popup);
+        }
+
+        /* var title="北京第二实验小学";
+         var location="北京市西城区新文化街111号";
+         var type="[市重点][科技类][其他类]";
+         var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
+         var latlng = L.latLng(39.90422,116.3572,200);
+         var popup = L.popup()
+         .setLatLng(latlng)
+         .setContent(content);
+         //.openOn(map);
+         var circle=L.circle(latlng, 50,{color:mycolor(220,20,60),opacity:0.9,fillColor:mycolor(220,20,60),weight:1,fillOpacity:0.6,className:""+title});
+         circle.addTo(map);
+         circle.bindPopup(popup);*/
+
+    }
+    function draw_circle_regionfocus(school){
+        var myIcon = L.icon({
+            iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
+            iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
+            iconSize: [50, 94],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76],
+            shadowUrl: 'http://a.hiphotos.baidu.com/image/w%3D310/sign=99ae3420bb19ebc4c0787098b227cf79/7af40ad162d9f2d3b7b32faaa1ec8a136227ccd1.jpg',
+            shadowRetinaUrl: 'http://d.hiphotos.baidu.com/image/w%3D310/sign=2dd97543a4af2eddd4f14fe8bd110102/8cb1cb13495409238684683b9a58d109b2de4981.jpg',
+            shadowSize: [68, 95],
+            shadowAnchor: [22, 94]
+        });
+        var size=school.data.length;
+        var lng;
+        var lat;
+        var info;
+        var title;
+        var address;
+        var location;
+        var type;
+        var content;
+        var latlng;
+        var popup;
+        for(var i=0;i<size;i++){
+            info=school.data[i];
+            lng=info.longitude;
+            lat=info.latitude;
+            var marker =L.marker([lat,lng,100],{icon: myIcon});
+            map.addLayer(marker);
+
+            title=info.school;
+            location=info.region;
+            address=info.address;
+            type=info.type;
+            content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">区域:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">地址:	</span> <span>" +address+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
+            latlng = L.latLng(lat,lng,100);
+            popup = L.popup()
+                    .setLatLng(latlng)
+                    .setContent(content);
+            marker.bindPopup(popup);
+        }
+    }
+    function draw_circle_ordinary(school){
+        var myIcon = L.icon({
+            iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
+            iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
+            iconSize: [50, 94],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76],
+            shadowUrl: 'http://a.hiphotos.baidu.com/image/w%3D310/sign=99ae3420bb19ebc4c0787098b227cf79/7af40ad162d9f2d3b7b32faaa1ec8a136227ccd1.jpg',
+            shadowRetinaUrl: 'http://d.hiphotos.baidu.com/image/w%3D310/sign=2dd97543a4af2eddd4f14fe8bd110102/8cb1cb13495409238684683b9a58d109b2de4981.jpg',
+            shadowSize: [68, 95],
+            shadowAnchor: [22, 94]
+        });
+        var size=school.data.length;
+        var lng;
+        var lat;
+        var info;
+        var title;
+        var address;
+        var location;
+        var type;
+        var content;
+        var latlng;
+        var popup;
+        for(var i=0;i<size;i++){
+            info=school.data[i];
+            lng=info.longitude;
+            lat=info.latitude;
+            var marker =L.marker([lat,lng,100],{icon: myIcon});
+            map.addLayer(marker);
+
+            title=info.school;
+            location=info.region;
+            address=info.address;
+            type=info.type;
+            content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">区域:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">地址:	</span> <span>" +address+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
+            latlng = L.latLng(lat,lng,100);
+            popup = L.popup()
+                    .setLatLng(latlng)
+                    .setContent(content);
+            marker.bindPopup(popup);
+        }
+    }
+
+
     function  draw_multiPolyline() {
 
         //将之前的多线图层删除
@@ -205,42 +365,6 @@
         //map.addLayer(poly);
         poly_line.bindPopup(popup);
         polygon_array.push(poly);
-
-    }
-    function draw_circle(school){
-        var myIcon = L.icon({
-            iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
-            iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
-            iconSize: [50, 94],
-            iconAnchor: [22, 94],
-            popupAnchor: [-3, -76],
-            shadowUrl: 'http://a.hiphotos.baidu.com/image/w%3D310/sign=99ae3420bb19ebc4c0787098b227cf79/7af40ad162d9f2d3b7b32faaa1ec8a136227ccd1.jpg',
-            shadowRetinaUrl: 'http://d.hiphotos.baidu.com/image/w%3D310/sign=2dd97543a4af2eddd4f14fe8bd110102/8cb1cb13495409238684683b9a58d109b2de4981.jpg',
-            shadowSize: [68, 95],
-            shadowAnchor: [22, 94]
-        });
-        var size=school.data.length;
-        var lng;
-        var lat;
-        for(var i=0;i<size;i++){
-            lng=school.data[i].longitude;
-            lat=school.data[i].latitude;
-            var marker =L.marker([lat,lng,200],{icon: myIcon});
-            map.addLayer(marker);
-        }
-
-        var title="北京第二实验小学";
-        var location="北京市西城区新文化街111号";
-        var type="[市重点][科技类][其他类]";
-        var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
-        var latlng = L.latLng(39.90422,116.3572,200);
-        var popup = L.popup()
-                .setLatLng(latlng)
-                .setContent(content);
-                //.openOn(map);
-        var circle=L.circle(latlng, 50,{color:mycolor(220,20,60),opacity:0.9,fillColor:mycolor(220,20,60),weight:1,fillOpacity:0.6,className:""+title});
-        circle.addTo(map);
-        circle.bindPopup(popup);
 
     }
     function draw_rectangle(bounds,price) {
