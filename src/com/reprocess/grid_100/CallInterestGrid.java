@@ -57,7 +57,21 @@ public class CallInterestGrid {
         double south=obj.getDouble("south");
         double north=obj.getDouble("north");
         int zoom=obj.getInt("zoom");
+        String time=obj.getString("gridTime");
+        //2016年01月
+        int year=Integer.parseInt(time.substring(0,time.indexOf("年")));
+        int month=Integer.parseInt(time.substring(time.indexOf("年")+"年".length(),time.indexOf("月")));
         int N=getResolution(zoom);
+        String source=obj.getString("source");
+        if(source.equals("我爱我家")){
+            source="woaiwojia";
+        }else if(source.equals("房天下")){
+            source="fang";
+        }else if(source.equals("安居客")){
+            source="anjuke";
+        }else if(source.equals("链家")){
+            source="lianjia";
+        }
 
         double width=0.0011785999999997187;//每100m的经度差
         double length=9.003999999997348E-4;//每100m的纬度差
@@ -72,9 +86,9 @@ public class CallInterestGrid {
         condition.put("rowmin",rowmin);
         condition.put("colmax",colmax);
         condition.put("colmin",colmin);
-        condition.put("year",2015);
-        condition.put("month",10);
-        condition.put("source","woaiwojia");
+        condition.put("year",year);
+        condition.put("month",month);
+        condition.put("source",source);
         condition.put("export_collName","GridData_Resold_100");
 
         String resultdata=CallMongo(condition,N);

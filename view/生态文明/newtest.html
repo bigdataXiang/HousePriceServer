@@ -49,8 +49,8 @@
             <form>
             数据来源:
                 <select id="source">
-                    <option>房天下</option>
                     <option>我爱我家</option>
+                    <option>房天下</option>
                     <option>安居客</option>
                     <option>链家</option>
                     <option>全部</option>
@@ -70,8 +70,25 @@
                     <option>房价</option>
                 </select>
 
+                网格房价时间:
+                <select id="gridTime">
+                    <option>2015年07月</option>
+                    <option>2015年08月</option>
+                    <option>2015年09月</option>
+                    <option>2015年10月</option>
+                    <option>2015年11月</option>
+                    <option>2015年12月</option>
+                    <option>2016年01月</option>
+                    <option>2016年02月</option>
+                    <option>2016年03月</option>
+                    <option>2016年04月</option>
+                    <option>2016年05月</option>
+                    <option>2016年06月</option>
+                </select>
+
                 小学类型:
                 <select id="schoolType">
+                    <option>无</option>
                     <option>市重点小学</option>
                     <option>区重点小学</option>
                     <option>普通小学</option>
@@ -180,7 +197,7 @@
                 var school= JSON.parse(result);
                 draw_circle_regionfocus(school);
             });
-        }else{
+        }else if(schoolType=="普通小学"){
             for(var i=0;i<cityfocus.length;i++){
                 map.removeLayer(cityfocus[i]);
             }
@@ -210,12 +227,22 @@
         var north=bounds.getNorth();
         var zoom=map.getZoom();
         console.log(zoom);
+        var x=document.getElementById("gridTime").selectedIndex;
+        var y=document.getElementById("gridTime").options;
+        var gridTime=y[x].text;
+
+        x=document.getElementById("source").selectedIndex;
+        y=document.getElementById("source").options;
+        var source=y[x].text;
+
         var json={
             "west":west,
             "east":east,
             "south":south,
             "north":north,
-            "zoom":zoom
+            "zoom":zoom,
+            "gridTime":gridTime,
+            "source":source
         };
         $.post("/gridcolor",""+JSON.stringify(json), function(result){
             var price= JSON.parse(result);
@@ -243,12 +270,24 @@
         var north=bounds.getNorth();
         var zoom=map.getZoom();
         console.log(zoom);
+
+        var x=document.getElementById("gridTime").selectedIndex;
+        var y=document.getElementById("gridTime").options;
+        var gridTime=y[x].text;
+
+
+        x=document.getElementById("source").selectedIndex;
+        y=document.getElementById("source").options;
+        var source=y[x].text;
+
         var json={
             "west":west,
             "east":east,
             "south":south,
             "north":north,
-            "zoom":zoom
+            "zoom":zoom,
+            "gridTime":gridTime,
+            "source":source
         };
         $.post("/gridcolor",""+JSON.stringify(json), function(result){
             var price= JSON.parse(result);
