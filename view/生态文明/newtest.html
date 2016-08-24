@@ -48,7 +48,7 @@
             </a>
             <form>
             数据来源:
-                <select id="source">
+                <select id="source" style='width:110px;'>
                     <option>我爱我家</option>
                     <option>房天下</option>
                     <option>安居客</option>
@@ -57,7 +57,7 @@
                 </select>
 
                 房源类型:
-                <select id="type">
+                <select id="type" style='width:110px;'>
                     <option>新房</option>
                     <option>二手房</option>
                     <option>租房</option>
@@ -65,13 +65,44 @@
                 </select>
 
                 网格颜色意义:
-                <select id="gridValue">
+                <select id="gridValue" style='width:110px;'>
                     <option>房价加速度</option>
                     <option>房价</option>
                 </select>
 
                 网格房价时间:
-                <select id="gridTime">
+                <select id="gridTime" style='width:110px;'>
+                    <option id="201507">2015年07月</option>
+                    <option id="201508">2015年08月</option>
+                    <option id="201509">2015年09月</option>
+                    <option id="201510">2015年10月</option>
+                    <option id="201511">2015年11月</option>
+                    <option id="201512">2015年12月</option>
+                    <option id="201601">2016年01月</option>
+                    <option id="201602">2016年02月</option>
+                    <option id="201603">2016年03月</option>
+                    <option id="201604">2016年04月</option>
+                    <option id="201605">2016年05月</option>
+                    <option id="201606">2016年06月</option>
+                </select>
+
+                网格房价加速度起始时间:
+                <select id="startTime" style='width:110px;'>
+                    <option>2015年07月</option>
+                    <option>2015年08月</option>
+                    <option>2015年09月</option>
+                    <option>2015年10月</option>
+                    <option>2015年11月</option>
+                    <option>2015年12月</option>
+                    <option>2016年01月</option>
+                    <option>2016年02月</option>
+                    <option>2016年03月</option>
+                    <option>2016年04月</option>
+                    <option>2016年05月</option>
+                    <option>2016年06月</option>
+                </select>
+                网格房价加速度终止时间:
+                <select id="endTime" style='width:110px;'>
                     <option>2015年07月</option>
                     <option>2015年08月</option>
                     <option>2015年09月</option>
@@ -87,7 +118,7 @@
                 </select>
 
                 小学类型:
-                <select id="schoolType">
+                <select id="schoolType" style='width:110px;'>
                     <option>无</option>
                     <option>市重点小学</option>
                     <option>区重点小学</option>
@@ -131,6 +162,41 @@
         var y=document.getElementById("schoolType").options;
         alert("索引: " + y[x].index + " is " + y[x].text);
     }
+
+    /*var index=document.getElementById("schoolType").selectedIndex;
+    var option=document.getElementById("schoolType").options;
+    var time=option[index].text;
+    document.getElementById(time).onclick = function(){
+        var bounds=map.getBounds();
+        console.log(bounds);
+        var west=bounds.getWest();
+        var east=bounds.getEast();
+        var south=bounds.getSouth();
+        var north=bounds.getNorth();
+        var zoom=map.getZoom();
+        console.log(zoom);
+        var x=document.getElementById("gridTime").selectedIndex;
+        var y=document.getElementById("gridTime").options;
+        var gridTime=y[x].text;
+
+        x=document.getElementById("source").selectedIndex;
+        y=document.getElementById("source").options;
+        var source=y[x].text;
+
+        var json={
+            "west":west,
+            "east":east,
+            "south":south,
+            "north":north,
+            "zoom":zoom,
+            "gridTime":gridTime,
+            "source":source
+        };
+        $.post("/gridcolor",""+JSON.stringify(json), function(result){
+            var price= JSON.parse(result);
+            draw_rectangle(bounds,price);
+        });
+    };*/
 
     var map;
     var resize = function () {
@@ -219,7 +285,6 @@
     map.on('dragend',function(e){
         console.log("dragend");
         var bounds=map.getBounds();
-
         console.log(bounds);
         var west=bounds.getWest();
         var east=bounds.getEast();
@@ -248,8 +313,6 @@
             var price= JSON.parse(result);
             draw_rectangle(bounds,price);
         });
-
-
         //draw_multiPolyline();画多线
     });
 
@@ -625,7 +688,7 @@
                     fill: false,
                     borderDash: [5, 5],
                 }, {
-                    hidden: true,
+                    //hidden: true,
                     label: 'form two',
                     data: [],
                 }]
