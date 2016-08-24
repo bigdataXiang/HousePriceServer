@@ -138,12 +138,22 @@ public class CallGridCurve {
             }
         }
 
+        //将list数组按照价格排序
+        Collections.sort(time_price_list, new UtilFile.Average_PriceComparator());
+        //System.out.println(time_price_list);
+        int suggestedMin=time_price_list.get(0).getInt("average_price");
+        int suggestedMax=time_price_list.get(time_price_list.size()-1).getInt("average_price")+1;
+        //System.out.println(suggestedMin);
+        //System.out.println(suggestedMax);
+
+        //将list数组按照时间排序
         Collections.sort(time_price_list, new UtilFile.TimeComparator());
 
-        System.out.println(time_price_list);
-
         JSONObject result=new JSONObject();
+        result.put("suggestedMin",suggestedMin);
+        result.put("suggestedMax",suggestedMax);
         result.put("data",time_price_list);
+        System.out.println(result.toString());
 
         return result.toString();
 

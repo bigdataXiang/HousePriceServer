@@ -574,10 +574,13 @@
                                     var ctx = document.getElementById("myChart").getContext("2d");
                                     pricedata= JSON.parse(data);
 
+                                    var max=pricedata.suggestedMax;
+                                    var min=pricedata.suggestedMin;
+
                                     var grid=JSON.stringify(json);
                                     var gridinfo=JSON.parse(grid);
                                     var info="编码："+gridinfo.code+","+gridinfo.row+"行"+gridinfo.col+"列";
-                                    window.myLine = new Chart(ctx, dataStruct(pricedata,info));
+                                    window.myLine = new Chart(ctx, dataStruct(pricedata,info,max,min));
                                     $('#myModal').modal();
                                 }
                         )
@@ -610,7 +613,7 @@
     };
 
     //表格所需要的数据结构
-    function dataStruct(parameter,code){
+    function dataStruct(parameter,code,max,min){
         var text=""+code;
         var config = {
             type: 'line',
@@ -693,8 +696,10 @@
         for(var i=0;i<parameter.data.length;i++){
             config.data.datasets[1].data.push(parameter.data[i].average_price);
         }
-        //说明曲线对应的具体网格值
-        //config.data.datasets[0].label=""+code;
+        //设置曲线的最大和最小值
+        config.options.scales.yAxes[0].ticks.suggestedMin=min;
+        config.options.scales.yAxes[0].ticks.suggestedMax=max;
+        //展示曲线对应的具体网格值
         config.options.title.text="房价曲线图（:"+code+"）";
         //给曲线随机赋颜色值
         for(var i=0;i<config.data.datasets.length;i++){
