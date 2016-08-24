@@ -56,6 +56,8 @@ public class CallInterestGrid {
         double east=obj.getDouble("east");
         double south=obj.getDouble("south");
         double north=obj.getDouble("north");
+        int zoom=obj.getInt("zoom");
+        int N=getResolution(zoom);
 
         double width=0.0011785999999997187;//每100m的经度差
         double length=9.003999999997348E-4;//每100m的纬度差
@@ -75,13 +77,37 @@ public class CallInterestGrid {
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
-        String resultdata=CallMongo(condition,5);
+        String resultdata=CallMongo(condition,N);
 
         Response r= new Response();
         r.setCode(200);
         r.setContent(resultdata);
         return r;
 
+    }
+    public static int getResolution(int zoom){
+        int N;
+        switch(zoom){
+            case 18:N=1;
+                break;
+            case 17:N=2;
+                break;
+            case 16:N=3;
+                break;
+            case 15:N=5;
+                break;
+            case 14:N=10;
+                break;
+            case 13:N=20;
+                break;
+            case 12:N=30;
+                break;
+            case 11:N=40;
+                break;
+            default:N=50;
+                break;
+        }
+        return N;
     }
     public static String CallMongo(JSONObject condition,int N){
 
@@ -143,9 +169,6 @@ public class CallInterestGrid {
             doc.put("code",code);
             code_array_after.add(doc);
 
-//            String str="("+row_doc+","+col_doc+")"+"   "+"("+row+","+col+")";
-//            FileTool.Dump(str,"E:\\房地产可视化\\to100\\test1.txt","utf-8");
-
             average_price=doc.getDouble("average_price");
             if (map.containsKey(code)) {
 
@@ -167,10 +190,6 @@ public class CallInterestGrid {
             }
         }
 
-
-
-        //System.out.println(code_array_after.size());
-        //printArray_BasicDB(code_array_after);
 
         Iterator it=map.keySet().iterator();
         String color;
@@ -243,9 +262,14 @@ public class CallInterestGrid {
 
         Collections.sort(jsonArray, new UtilFile.CodeComparator()); // 根据网格code排序
         JSONObject object= new JSONObject();
+        object.put("r_min",r_min);
+        object.put("r_max",r_max);
+        object.put("c_min",c_min);
+        object.put("c_max",c_max);
+        object.put("N",N);
         object.put("data",jsonArray);
 
-//        printArray_JSON(jsonArray);
+
         System.out.println(object.toString());
 
         return object.toString();

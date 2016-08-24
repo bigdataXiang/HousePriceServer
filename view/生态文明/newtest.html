@@ -39,8 +39,6 @@
 <body>
 
 <div class="navbar navbar-default">
-
-
   <div class="navbar-inner">
         <div class="container">
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -154,25 +152,22 @@
         var east=bounds.getEast();
         var south=bounds.getSouth();
         var north=bounds.getNorth();
-
+        var zoom=map.getZoom();
+        console.log(zoom);
         var json={
             "west":west,
             "east":east,
             "south":south,
-            "north":north
+            "north":north,
+            "zoom":zoom
         };
+        $.post("/gridcolor",""+JSON.stringify(json), function(result){
+            var price= JSON.parse(result);
+            draw_rectangle(bounds,price);
+        });
 
-        var zoom=map.getZoom();
-        console.log(zoom);
-        draw_multiPolyline();
 
-        if(zoom==15){
-
-            $.post("/gridcolor",""+JSON.stringify(json), function(result){
-                var price= JSON.parse(result);
-                draw_rectangle(bounds,price);
-            });
-        }
+        //draw_multiPolyline();画多线
     });
 
     var polygon_array=[];
@@ -327,8 +322,6 @@
             ordinary.push(marker);
         }
     }
-
-
     function  draw_multiPolyline() {
 
         //将之前的多线图层删除
@@ -392,14 +385,14 @@
         var east=bounds.getEast();
         var south=bounds.getSouth();
         var north=bounds.getNorth();
+        var N=price.N;
+        var width=0.0011785999999997187*N;//每N00m的经度差
+        var length=9.003999999997348E-4*N;//每N00m的纬度差
+        var r_min=price.r_min;
+        var r_max=price.r_max;
+        var c_min=price.c_min;
+        var c_max=price.c_max;
 
-        var width=0.005892999999998594;//每500m的经度差
-        var length=0.004501999999998674;//每500m的纬度差
-
-        var col_left=Math.ceil((west-115.417284)/width);
-        var col_right=Math.ceil((east-115.417284)/width);
-        var row_bottom=Math.ceil((south-39.438283)/length);
-        var row_top=Math.ceil((north-39.438283)/length);
         var row;
         var col;
 
@@ -412,16 +405,14 @@
         }
 
         var count=0;
-        for( row=row_bottom;row<=row_top;row++){
-            for(col=col_left;col<=col_right;col++){
+        for( row=r_min;row<=r_max;row++){
+            for(col=c_min;col<=c_max;col++){
 
-                var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                var dist_wid=(col-1)*width;
                 var dist_len=(row-1)*length;
-                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.442785+dist_len,(115.423177+dist_wid)]];//(左下角，右上角)
+                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [(39.438283+length)+dist_len,((115.417284+width)+dist_wid)]];//(左下角，右上角)
                 var rect;
-
-                var gridcode_js=(col+400*(row-1));
-
                 var gridvalue=price.data[count];
                 var gridcode_java=gridvalue.code;
                 var gridcolor=gridvalue.color;
