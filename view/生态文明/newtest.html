@@ -143,6 +143,62 @@
     }).setView([39.906985851984146, 116.39055488416854], 3);
     map.setView([39.906985851984146, 116.39055488416854], 3);
 
+    //开始移动地图时就生成学校poi的点
+    map.on('dragstart',function(e){
+        var x=document.getElementById("schoolType").selectedIndex;
+        var y=document.getElementById("schoolType").options;
+        var schoolType=y[x].text;
+
+        if(schoolType=="市重点小学"){
+            for(var i=0;i<cityfocus.length;i++){
+                map.removeLayer(cityfocus[i]);
+            }
+            for(var i=0;i<regionfocus.length;i++){
+                map.removeLayer(regionfocus[i]);
+            }
+            for(var i=0;i<ordinary.length;i++){
+                map.removeLayer(ordinary[i]);
+            }
+            //市重点
+            $.post("/static/city_focused",""+map.getZoom(), function(result){
+                var school= JSON.parse(result);
+                draw_circle_cityfocus(school);
+            });
+
+        }else if(schoolType=="区重点小学"){
+            for(var i=0;i<cityfocus.length;i++){
+                map.removeLayer(cityfocus[i]);
+            }
+            for(var i=0;i<regionfocus.length;i++){
+                map.removeLayer(regionfocus[i]);
+            }
+            for(var i=0;i<ordinary.length;i++){
+                map.removeLayer(ordinary[i]);
+            }
+            //区重点
+            $.post("/static/region_focused",""+map.getZoom(), function(result){
+                var school= JSON.parse(result);
+                draw_circle_regionfocus(school);
+            });
+        }else{
+            for(var i=0;i<cityfocus.length;i++){
+                map.removeLayer(cityfocus[i]);
+            }
+            for(var i=0;i<regionfocus.length;i++){
+                map.removeLayer(regionfocus[i]);
+            }
+            for(var i=0;i<ordinary.length;i++){
+                map.removeLayer(ordinary[i]);
+            }
+            //普通小学
+            $.post("/static/ordinary_primary_school",""+map.getZoom(), function(result){
+                var school= JSON.parse(result);
+                draw_circle_ordinary(school);
+            });
+        }
+    });
+
+    //拖动地图时能实现不同网格的生成
     map.on('dragend',function(e){
         console.log("dragend");
         var bounds=map.getBounds();
@@ -169,6 +225,44 @@
 
         //draw_multiPolyline();画多线
     });
+
+    //缩放地图时能实现不同分辨率下网格的生成
+    map.on('zoomend', function(e) {
+        console.log("zoomend");
+        //这里先删除旧的layer
+        for (var i=0;i<rects.length;i++){
+            map=map.removeLayer(rects[i]);
+        }
+        rects=[];
+
+        var bounds=map.getBounds();
+        console.log(bounds);
+        var west=bounds.getWest();
+        var east=bounds.getEast();
+        var south=bounds.getSouth();
+        var north=bounds.getNorth();
+        var zoom=map.getZoom();
+        console.log(zoom);
+        var json={
+            "west":west,
+            "east":east,
+            "south":south,
+            "north":north,
+            "zoom":zoom
+        };
+        $.post("/gridcolor",""+JSON.stringify(json), function(result){
+            var price= JSON.parse(result);
+            draw_rectangle(bounds,price);
+        });
+
+    });
+
+
+    map.on('zoomstart', function(e) {
+        console.log("zoomstart");
+    });
+
+
 
     var polygon_array=[];
     var polyline_array=[];
@@ -220,6 +314,7 @@
             popup = L.popup()
                     .setLatLng(latlng)
                     .setContent(content);
+                   // .openOn(map);
             marker.bindPopup(popup);
 
             cityfocus.push(marker);
@@ -269,6 +364,7 @@
             popup = L.popup()
                     .setLatLng(latlng)
                     .setContent(content);
+                    //.openOn(map);
             marker.bindPopup(popup);
 
             regionfocus.push(marker);
@@ -317,6 +413,7 @@
             popup = L.popup()
                     .setLatLng(latlng)
                     .setContent(content);
+                   // .openOn(map);
             marker.bindPopup(popup);
 
             ordinary.push(marker);
@@ -425,11 +522,12 @@
                     rect.index=count;
                     rect.data=price.data[rect.index];
 
-                    rect.on('click', function(code){
+                    rect.on('click', function(e){
                         var json={
                             "row":this.data.row,
                             "col":this.data.col,
-                            "code":this.data.code
+                            "code":this.data.code,
+                            "N":N
                         };
 
                         $.post("/price", JSON.stringify(json),
@@ -455,106 +553,6 @@
 
     }
 
-
-    map.on('dragstart',function(e){
-        var x=document.getElementById("schoolType").selectedIndex;
-        var y=document.getElementById("schoolType").options;
-        var schoolType=y[x].text;
-
-        if(schoolType=="市重点小学"){
-            for(var i=0;i<cityfocus.length;i++){
-                map.removeLayer(cityfocus[i]);
-            }
-            for(var i=0;i<regionfocus.length;i++){
-                map.removeLayer(regionfocus[i]);
-            }
-            for(var i=0;i<ordinary.length;i++){
-                map.removeLayer(ordinary[i]);
-            }
-            //市重点
-            $.post("/static/city_focused",""+map.getZoom(), function(result){
-                var school= JSON.parse(result);
-                draw_circle_cityfocus(school);
-            });
-
-        }else if(schoolType=="区重点小学"){
-            for(var i=0;i<cityfocus.length;i++){
-                map.removeLayer(cityfocus[i]);
-            }
-            for(var i=0;i<regionfocus.length;i++){
-                map.removeLayer(regionfocus[i]);
-            }
-            for(var i=0;i<ordinary.length;i++){
-                map.removeLayer(ordinary[i]);
-            }
-            //区重点
-            $.post("/static/region_focused",""+map.getZoom(), function(result){
-                var school= JSON.parse(result);
-                draw_circle_regionfocus(school);
-            });
-        }else{
-            for(var i=0;i<cityfocus.length;i++){
-                map.removeLayer(cityfocus[i]);
-            }
-            for(var i=0;i<regionfocus.length;i++){
-                map.removeLayer(regionfocus[i]);
-            }
-            for(var i=0;i<ordinary.length;i++){
-                map.removeLayer(ordinary[i]);
-            }
-            //普通小学
-            $.post("/static/ordinary_primary_school",""+map.getZoom(), function(result){
-                var school= JSON.parse(result);
-                draw_circle_ordinary(school);
-            });
-        }
-    });
-
-
-
-
-    map.on('zoomstart', function(e) {
-       console.log("zoomstart");
-    });
-    map.on('zoomend', function(e) {
-
-
-
-
-
-
-        console.log("zoomend");
-        for (var i=0;i<rects.length;i++){
-            map=map.removeLayer(rects[i]);
-        }
-        rects=[];
-        //这里先删除旧的layer
-        var zoomvalue=map.getZoom();
-       /* if(zoomvalue==11){
-            $.post("/static/gridcode_3000_resold",""+map.getZoom(), function(result){
-                var price= JSON.parse(result);
-                //console.log(map.getBounds());
-                redraw_11(price);
-
-
-            });
-        }else if(zoomvalue==13){
-            $.post("/grid2000",""+map.getZoom(), function(result){
-                var price= JSON.parse(result);
-                redraw_13(price);
-            });
-
-        }else if(zoomvalue==15){
-            $.post("/grid1000",""+map.getZoom(), function(result){
-                var price= JSON.parse(result);
-               // console.log(map.getPixelBounds());
-                redraw_15(price);
-                //draw(price);
-            });
-
-        }*/
-
-    });
     var layerControl = new L.Control.Layers();
     layerControl.addTo(map);
     resize();
@@ -674,152 +672,6 @@
     var rects=[];
     var pricedata;
 
-    /**
-     * 分辨率为3000*3000时,zoom为11时
-     * @param price
-     */
-    function redraw_11(price) {
-        var width=0.03535799999999156;//每三千米的经度差
-        var length=0.027011999999992042;//每三千米的纬度差
-
-        console.log(price);
-        var row;
-        var col;
-
-        for( row=1;row<61;row++){
-            for(col=1;col<61;col++){
-                var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
-                var dist_len=(row-1)*length;
-                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.46529499999999+dist_len,(115.45264199999998+dist_wid)]];//(左下角，右上角)
-                var rect;
-                var gridcode=(col+60*(row-1));//计算每个网格的编码值，这里的60表示总共的列数，不可改变。
-                var gridvalue=price.data[gridcode-1];
-                var code=""+gridcode;
-
-                var averageprice=gridvalue.average_price;
-                if(averageprice!=0){
-                    rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
-                    rect.index=gridcode-1;//这里忘记减1啦！！！
-                    rect.data=price.data[rect.index];
-                    rect.on('click', function(code){
-                        //console.log(rect.code);
-                        var json={
-                            "collname":"resold_code_3000",
-                            "type":"woaiwojia",
-                            "code":this.data.code
-                        };
-                        $.post("/price", JSON.stringify(json),
-                                function(data,status){
-                                    var ctx = document.getElementById("myChart").getContext("2d");
-                                    pricedata= JSON.parse(data);
-                                    var info=pricedata.code;
-                                    window.myLine = new Chart(ctx, dataStruct(pricedata,info));
-                                    $('#myModal').modal();
-                                }
-                        )
-                    });
-                    rect.addTo(map);
-                    rects.push(rect);
-                }
-            }
-        }
-
-    }
-    /**
-     * 分辨率为2000*2000,zoom为13时
-     * @param price
-     */
-    function redraw_13(price) {
-        var width=0.023571999999994375;//每两千米的经度差
-        var length=0.018007999999994695;//每两千米的纬度差
-
-        console.log(price);
-        var row;
-        var col;
-
-        for( row=1;row<91;row++){
-            for(col=1;col<91;col++){
-                var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
-                var dist_len=(row-1)*length;
-                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.45629099999999+dist_len,(115.440856+dist_wid)]];//(左下角，右上角)
-                var rect;
-                var gridcode=(col+90*(row-1));//计算每个网格的编码值，这里的179表示总共的列数，不可改变。
-                var gridvalue=price.data[gridcode];
-                var code=""+gridcode;
-
-                rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
-                rect.index=gridcode;
-                rect.data=price.data[rect.index];
-                rect.on('click', function(code){
-                    //console.log(rect.code);
-                    var json={
-                        "collname":"rentout_code_2000",
-                        "type":"woaiwojia",
-                        "code":this.data.code
-                    };
-                    $.post("/price", JSON.stringify(json),
-                            function(data,status){
-                                var ctx = document.getElementById("myChart").getContext("2d");
-                                pricedata= JSON.parse(data);
-                                window.myLine = new Chart(ctx, dataStruct(pricedata));
-                                $('#myModal').modal()
-                            }
-                    )
-                });
-                rect.addTo(map);
-                rects.push(rect);
-
-            }
-        }
-
-    }
-    /**
-     * 分辨率为1000*1000,zoom为15时
-     * @param price
-     */
-    function redraw_15(price) {
-        var width=0.011785999999997188;//每一千米的经度差
-        var length=0.009003999999997347;//每一千米的纬度差
-        console.log(price);
-        var row;
-        var col;
-
-        for( row=1;row<180;row++){
-            for(col=1;col<180;col++){
-                var dist_wid=(col-1)*width;//网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
-                var dist_len=(row-1)*length;
-                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [39.447286999999996+dist_len,(115.42907+dist_wid)]];//(左下角，右上角)
-                var rect;
-                var gridcode=(col+179*(row-1));//计算每个网格的编码值，这里的179表示总共的列数，不可改变。
-                var gridvalue=price.data[gridcode];
-                var code=""+gridcode;
-
-                rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridvalue.color,weight:1,fillOpacity:0.6,className:code});
-                rect.index=gridcode;
-                rect.data=price.data[rect.index];
-                rect.on('click', function(code){
-                    //console.log(rect.code);
-                    var json={
-                        "collname":"rentout_code_1000",
-                        "type":"woaiwojia",
-                        "code":this.data.code
-                    };
-                    $.post("/price", JSON.stringify(json),
-                            function(data,status){
-                                var ctx = document.getElementById("myChart").getContext("2d");
-                                pricedata= JSON.parse(data);
-                                window.myLine = new Chart(ctx, dataStruct(pricedata));
-                                $('#myModal').modal()
-                            }
-                    )
-                });
-                rect.addTo(map);
-                rects.push(rect);
-
-            }
-        }
-
-    }
     function mycolor(r,g,b) {
         var color="rgb("+r+","+g+","+b+")";
         return color;

@@ -31,7 +31,6 @@ public class CallGridCurve {
     public Response get(String body){
 
         JSONObject condition= JSONObject.fromObject(body);
-        condition.put("N",5);
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
