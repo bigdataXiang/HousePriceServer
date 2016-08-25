@@ -251,8 +251,9 @@ public class CallInterestGrid {
                 codekey.put(""+code,"");
             }
         }
-//        printArray_JSON(jsonArray);
 
+
+        //将小网格合并成大网格
         JSONObject nullobj;
         int r_min=(int) Math.ceil((double)rowmin/N);
         int r_max=(int) Math.ceil((double)rowmax/N);
