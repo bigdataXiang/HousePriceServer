@@ -121,12 +121,28 @@ public class Tool {
 	}
 	return args[max];
 	}
+	public static double getMaxNum(double args[]){
+		int max=0;
+		for(int i=0;i<args.length;i++){
+			if(args[i]>args[max])
+				max=i;
+		}
+		return args[max];
+	}
 	/**
 	 * 判断数组中的最大数对应的序号
 	 * @param args
 	 * @return
 	 */
-	public static int getMaxNum(double args[]){
+	public static int getMaxNum_Index(int args[]){
+		int max=0;
+		for(int i=0;i<args.length;i++){
+			if(args[i]>args[max])
+				max=i;
+		}
+		return max;
+	}
+	public static int getMaxNum_Index(double args[]){
 		int max=0;
 		for(int i=0;i<args.length;i++){
 		if(args[i]>args[max])
@@ -140,19 +156,35 @@ public class Tool {
 	 * @return
 	 */
 	public static int getMinNum(int args[]){
-	int min=0;
-	for(int i=0;i<args.length;i++){
-	if(args[i]<args[min])
-	min=i;
+		int min=0;
+		for(int i=0;i<args.length;i++){
+			if(args[i]<args[min])
+				min=i;
+		}
+		return args[min];
 	}
-	return args[min];
+	public static double getMinNum(double args[]){
+		int min=0;
+		for(int i=0;i<args.length;i++){
+			if(args[i]<args[min])
+				min=i;
+		}
+		return args[min];
 	}
 	/**
 	 * 判断数组中的最小数对应的序号
 	 * @param args
 	 * @return
 	 */
-	public static int getMinNum(double args[]){
+	public static int getMinNum_Index(int args[]){
+		int min=0;
+		for(int i=0;i<args.length;i++){
+			if(args[i]<args[min])
+				min=i;
+		}
+		return min;
+	}
+	public static int getMinNum_Index(double args[]){
 	int min=0;
 	for(int i=0;i<args.length;i++){
 	if(args[i]<args[min])

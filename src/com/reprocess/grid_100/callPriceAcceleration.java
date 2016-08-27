@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONObject;
+import utils.Tool;
 
 import java.util.*;
 
@@ -49,8 +50,8 @@ public class callPriceAcceleration {
         condition.put("colmin",colmin);
         condition.put("startyear",2015);
         condition.put("startmonth",10);
-        condition.put("endyear",2015);
-        condition.put("endmonth",12);
+        condition.put("endyear",2016);
+        condition.put("endmonth",05);
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
@@ -84,29 +85,93 @@ public class callPriceAcceleration {
         int endmonth=condition.getInt("endmonth");
 
         BasicDBObject cond=new BasicDBObject();
-        cond.put("$gte",startyear);
-        cond.put("$lte",endyear);
-        document.put("year",cond);
+        List code_array=new ArrayList<>();
+        List code_array_temp=new ArrayList<>();
 
-        cond=new BasicDBObject();
-        cond.put("$gte",startmonth);
-        cond.put("$lte",endmonth);
-        document.put("month",cond);
+        if(startyear==endyear){
+            //先调用前一年的数据
+            cond.put("$gte",startyear);
+            cond.put("$lte",startyear);
+            document.put("year",cond);
 
-        cond=new BasicDBObject();
-        cond.put("$gte",rowmin);
-        cond.put("$lte",rowmax);
-        document.put("row",cond);
+            cond=new BasicDBObject();
+            cond.put("$gte",startmonth);
+            cond.put("$lte",endmonth);
+            document.put("month",cond);
 
-        cond=new BasicDBObject();
-        cond.put("$gte",colmin);
-        cond.put("$lte",colmax);
-        document.put("col",cond);
+            cond=new BasicDBObject();
+            cond.put("$gte",rowmin);
+            cond.put("$lte",rowmax);
+            document.put("row",cond);
 
-        System.out.println(document);
-        List code_array=coll.find(document).toArray();
-        System.out.println(code_array.size());
-        //printArray_BasicDB(code_array);
+            cond=new BasicDBObject();
+            cond.put("$gte",colmin);
+            cond.put("$lte",colmax);
+            document.put("col",cond);
+
+            //System.out.println(document);
+            code_array=coll.find(document).toArray();
+            System.out.println(code_array.size());
+
+        }else if(endyear>startyear){
+            //先调用前一年的数据
+            cond.put("$gte",startyear);
+            cond.put("$lte",startyear);
+            document.put("year",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",startmonth);
+            cond.put("$lte",12);
+            document.put("month",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",rowmin);
+            cond.put("$lte",rowmax);
+            document.put("row",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",colmin);
+            cond.put("$lte",colmax);
+            document.put("col",cond);
+
+            System.out.println(document);
+            code_array=coll.find(document).toArray();
+            System.out.println("第一年数据："+code_array.size());
+
+            //再调用第二年的数据
+            document = new BasicDBObject();
+            document.put("source",source);
+            cond=new BasicDBObject();
+            cond.put("$gte",endyear);
+            cond.put("$lte",endyear);
+            document.put("year",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",1);
+            cond.put("$lte",endmonth);
+            document.put("month",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",rowmin);
+            cond.put("$lte",rowmax);
+            document.put("row",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",colmin);
+            cond.put("$lte",colmax);
+            document.put("col",cond);
+
+            System.out.println(document);
+            code_array_temp=coll.find(document).toArray();
+            System.out.println("第二年数据："+code_array_temp.size());
+
+            //将code_array_temp中的数据添加到code_array中
+            code_array.addAll(code_array_temp);
+
+            System.out.println("合并后的list的大小："+code_array.size());
+
+        }
+
 
         BasicDBObject doc;
         int row_doc;
@@ -216,6 +281,111 @@ public class callPriceAcceleration {
         }
 
         System.out.println(totalgrid);
+
+        //逐个网格计算网格的价格加速度。加速度的计算方式有两种：
+        //第一是计算该时间段内最高的值与最低的值之间产生的加速度；
+        //第二种是从从起始时间计算价格加速度
+
+        Iterator totalgrid_it=totalgrid.keys();
+        String key;
+        double value;
+        double maxprice;
+        double minprice;
+        String maxprice_date;
+        String minprice_date;
+        String codeindex;
+        JSONObject code_acceleration=new JSONObject();
+        if(totalgrid_it.hasNext()){
+            while(totalgrid_it.hasNext()){
+
+                codeindex=(String)totalgrid_it.next();
+                date_price=totalgrid.getJSONObject(codeindex);
+                Iterator date_price_it=date_price.keys();
+
+                System.out.println(codeindex+":"+date_price);
+
+                String[] datearray=new String[date_price.size()];
+                double[] pricearray=new double[date_price.size()];
+                int count=0;
+                if(date_price_it.hasNext()) {
+                    while (date_price_it.hasNext()) {
+                        key=(String)date_price_it.next();
+                        value=date_price.getDouble(key);
+                        datearray[count]=key;
+                        pricearray[count]=value;
+                        count++;
+                    }
+                }
+
+                //第一种：计算最大最小值
+                maxprice= Tool.getMaxNum(pricearray);
+                int maxindex=Tool.getMaxNum_Index(pricearray);
+                maxprice_date=datearray[maxindex];
+
+                minprice= Tool.getMinNum(pricearray);
+                int minindex=Tool.getMinNum_Index(pricearray);
+                minprice_date=datearray[minindex];
+
+                System.out.println("max:"+maxprice_date+","+maxprice);
+                System.out.println("min:"+minprice_date+","+minprice);
+
+                int maxyear=Integer.parseInt(maxprice_date.substring(0,maxprice_date.indexOf("-")));
+                int minyear=Integer.parseInt(minprice_date.substring(0,minprice_date.indexOf("-")));
+
+                int maxmonth=Integer.parseInt(maxprice_date.substring(maxprice_date.indexOf("-")+"-".length()));
+                int minmonth=Integer.parseInt(minprice_date.substring(minprice_date.indexOf("-")+"-".length()));
+
+                double acceleration=0;
+
+                if(maxyear==minyear){
+                    acceleration=(maxprice-minprice)/(maxmonth-minmonth);
+                }else if(maxyear>minyear){
+                    acceleration=(maxprice-minprice)/((maxmonth+12)-minmonth);
+                }else if(maxyear<minyear){
+                    acceleration=(maxprice-minprice)/(maxmonth-(minmonth+12));
+                }
+
+                code_acceleration.put(codeindex,acceleration);
+                System.out.println("第一种计算方法");
+                System.out.println("acceleration:"+acceleration);
+
+
+                //第二种：计算开始和结束的时间对应的加速度
+                GregorianCalendar calendar;
+                Iterator keys=date_price.keys();
+                String codekey="";
+                List<GregorianCalendar> datelist=new ArrayList<>();
+                if(keys.hasNext()){
+                    while(keys.hasNext()){
+                        codekey=(String) keys.next();
+                        int year=Integer.parseInt(codekey.substring(0,codekey.indexOf("-")));
+                        int month=Integer.parseInt(codekey.substring(codekey.indexOf("-")+"-".length()));
+                        calendar=new GregorianCalendar(year,month,1);
+                        datelist.add(calendar);
+                    }
+                }
+
+                System.out.println(datelist);
+
+                /*double startprice=date_price.getDouble(starttime);
+                double endprice=date_price.getDouble(endtime);
+                if(startyear==endyear){
+                    acceleration=(endprice-startprice)/(endmonth-startmonth);
+                }else {
+                    acceleration=(endprice-startprice)/((endmonth+12)-startmonth);
+                }
+
+                code_acceleration.put(codeindex,acceleration);
+                System.out.println("第二种计算方法");
+                System.out.println("acceleration:"+acceleration);*/
+            }
+        }
+        //System.out.println(code_acceleration);
+
+
+
+
+
 
 
     }
