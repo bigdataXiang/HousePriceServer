@@ -70,12 +70,12 @@ public class CallPriceAcceleration extends CallInterestGrid{
         condition.put("export_collName","GridData_Resold_100");
 
         String resultdata=test(condition);
-        System.out.println("数据返回到get函数中");
         System.out.println(resultdata);
 
         Response r= new Response();
         r.setCode(200);
         r.setContent(resultdata);
+        System.out.println("数据返回到get函数中");
         return r;
 
     }
