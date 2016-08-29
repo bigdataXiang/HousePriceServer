@@ -19,7 +19,7 @@ import static utils.UtilFile.printArray_BasicDB;
  */
 public class CallPriceAcceleration extends CallInterestGrid{
     public Response get(String body){
-        System.out.println(body);
+        //System.out.println(body);
         JSONObject obj=JSONObject.fromObject(body);
 
         double west=obj.getDouble("west");
@@ -75,7 +75,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
         Response r= new Response();
         r.setCode(200);
         r.setContent(resultdata);
-        System.out.println("数据返回到get函数中");
+        //System.out.println("数据返回到get函数中");
         return r;
 
     }
@@ -84,10 +84,15 @@ public class CallPriceAcceleration extends CallInterestGrid{
         double length=9.003999999997348E-4;//每100m的纬度差
 
 
-        int colmin=(int)Math.ceil((116.27431869506836-115.417284)/width);
-        int colmax=(int)Math.ceil((116.43911361694335-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.907761097366105-39.438283)/length);
-        int rowmax=(int)Math.ceil((39.96324076608185-39.438283)/length);
+        /*int colmin=(int)Math.ceil((116.34066581726076-115.417284)/width);
+        int colmax=(int)Math.ceil((116.50546073913574-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.90762941952987-39.438283)/length);
+        int rowmax=(int)Math.ceil((39.96310919494646-39.438283)/length);*/
+
+        int colmin=(int)Math.ceil((116.33955001831055-115.417284)/width);
+        int colmax=(int)Math.ceil((116.50434494018553-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.90782693618929-39.438283)/length);
+        int rowmax=(int)Math.ceil((39.963306551554616-39.438283)/length);
 
         System.out.println(colmin+","+colmax+","+rowmin+","+rowmax);
 
@@ -132,7 +137,6 @@ public class CallPriceAcceleration extends CallInterestGrid{
         List code_array_temp=new ArrayList<>();
 
         if(startyear==endyear){
-            //先调用前一年的数据
             cond.put("$gte",startyear);
             cond.put("$lte",startyear);
             document.put("year",cond);
@@ -276,7 +280,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
             while (it.hasNext()){
                 code=(int)it.next();
                 codelist=gridmap.get(code);
-                //printArray_BasicDB(codelist);
+                printArray_BasicDB(codelist);
 
                 //将一个网格里面的数据处理成一个时间点一个价格的形式
                 for(int i=0;i<codelist.size();i++){
@@ -308,6 +312,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
                     while (it_timeprice.hasNext()) {
                         date=(String) it_timeprice.next();
                         average_price_list=timeprice_map.get(date);
+                        System.out.println(date+":"+average_price_list);
 
                         for(int i=0;i<average_price_list.size();i++){
                             average_price=average_price_list.get(i);
@@ -323,6 +328,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
                         }
 
                         date_price.put(date,average_price);
+                        System.out.println(date_price);
                         totalgrid.put(code,date_price);
                     }
                 }
@@ -370,6 +376,8 @@ public class CallPriceAcceleration extends CallInterestGrid{
                     }
                 }
 
+                double acceleration=0;
+                /*这一段暂时不要，但是之后是需要的
                 //第一种：计算最大最小值
                 maxprice= Tool.getMaxNum(pricearray);
                 int maxindex=Tool.getMaxNum_Index(pricearray);
@@ -379,8 +387,8 @@ public class CallPriceAcceleration extends CallInterestGrid{
                 int minindex=Tool.getMinNum_Index(pricearray);
                 minprice_date=datearray[minindex];
 
-                /*System.out.println("max:"+maxprice_date+","+maxprice);
-                System.out.println("min:"+minprice_date+","+minprice);*/
+                *//*System.out.println("max:"+maxprice_date+","+maxprice);
+                System.out.println("min:"+minprice_date+","+minprice);*//*
 
                 int maxyear=Integer.parseInt(maxprice_date.substring(0,maxprice_date.indexOf("-")));
                 int minyear=Integer.parseInt(minprice_date.substring(0,minprice_date.indexOf("-")));
@@ -388,7 +396,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
                 int maxmonth=Integer.parseInt(maxprice_date.substring(maxprice_date.indexOf("-")+"-".length()));
                 int minmonth=Integer.parseInt(minprice_date.substring(minprice_date.indexOf("-")+"-".length()));
 
-                double acceleration=0;
+
 
                 if(maxyear==minyear){
                     acceleration=(maxprice-minprice)/(maxmonth-minmonth)*10000;
@@ -399,7 +407,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
                 }
 
                 code_acceleration.put(codeindex,acceleration);
-                /*System.out.println("第一种计算方法");
+                System.out.println("第一种计算方法");
                 System.out.println("acceleration:"+acceleration);*/
 
 
@@ -460,7 +468,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
                 }else{
                     endtime=late.get(Calendar.YEAR)+"-"+late.get(Calendar.MONTH);
                 }
-                //System.out.println(starttime+":"+endtime);
+
 
                 double startprice=date_price.getDouble(starttime);
                 double endprice=date_price.getDouble(endtime);
@@ -489,6 +497,8 @@ public class CallPriceAcceleration extends CallInterestGrid{
                 data_obj.put("color",color);
                 data_obj.put("starttime",starttime);
                 data_obj.put("endtime",endtime);
+                data_obj.put("startprice",startprice);
+                data_obj.put("endprice",endprice);
 
                 jsonArray.add(data_obj);
             }
@@ -514,6 +524,8 @@ public class CallPriceAcceleration extends CallInterestGrid{
                     nullobj.put("color","");
                     nullobj.put("starttime","");
                     nullobj.put("endtime","");
+                    nullobj.put("startprice",0);
+                    nullobj.put("endprice",0);
 
                     //System.out.println("nullobj:"+nullobj);
                     jsonArray.add(nullobj);
@@ -533,7 +545,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
         result.put("c_max",c_max);
         result.put("N",N);
         result.put("data",jsonArray);
-        System.out.println("最后的数据结果计算出~");
+        //System.out.println("最后的数据结果计算出~");
 
         return result.toString();
     }
