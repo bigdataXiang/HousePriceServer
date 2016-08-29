@@ -4,8 +4,10 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.svail.bean.Response;
 import com.svail.db.db;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import utils.Tool;
+import utils.UtilFile;
 
 import java.util.*;
 
@@ -15,15 +17,65 @@ import static utils.UtilFile.printArray_BasicDB;
 /**
  * Created by ZhouXiang on 2016/8/24.
  */
-public class callPriceAcceleration {
+public class CallPriceAcceleration extends CallInterestGrid{
     public Response get(String body){
-        JSONObject condition= JSONObject.fromObject(body);
-        condition.put("source","woaiwojia");
+        System.out.println(body);
+        JSONObject obj=JSONObject.fromObject(body);
+
+        double west=obj.getDouble("west");
+        double east=obj.getDouble("east");
+        double south=obj.getDouble("south");
+        double north=obj.getDouble("north");
+        int zoom=obj.getInt("zoom");
+        String starttime=obj.getString("starttime");
+        String endtime=obj.getString("endtime");
+
+        int startyear=Integer.parseInt(starttime.substring(0,starttime.indexOf("年")));
+        int startmonth=Integer.parseInt(starttime.substring(starttime.indexOf("年")+"年".length(),starttime.indexOf("月")));
+
+        int endyear=Integer.parseInt(endtime.substring(0,endtime.indexOf("年")));
+        int endmonth=Integer.parseInt(endtime.substring(endtime.indexOf("年")+"年".length(),endtime.indexOf("月")));
+
+        int N=getResolution(zoom);
+        String source=obj.getString("source");
+        if(source.equals("我爱我家")){
+            source="woaiwojia";
+        }else if(source.equals("房天下")){
+            source="fang";
+        }else if(source.equals("安居客")){
+            source="anjuke";
+        }else if(source.equals("链家")){
+            source="lianjia";
+        }
+
+        double width=0.0011785999999997187;//每100m的经度差
+        double length=9.003999999997348E-4;//每100m的纬度差
+
+        int colmin=(int) Math.ceil((west-115.417284)/width);
+        int colmax=(int)Math.ceil((east-115.417284)/width);
+        int rowmin=(int)Math.ceil((south-39.438283)/length);
+        int rowmax=(int)Math.ceil((north-39.438283)/length);
+
+        JSONObject condition=new JSONObject();
+        condition.put("N",N);
+        condition.put("rowmax",rowmax);
+        condition.put("rowmin",rowmin);
+        condition.put("colmax",colmax);
+        condition.put("colmin",colmin);
+        condition.put("startyear",startyear);
+        condition.put("startmonth",startmonth);
+        condition.put("endyear",endyear);
+        condition.put("endmonth",endmonth);
+        condition.put("source",source);
         condition.put("export_collName","GridData_Resold_100");
+
+        String resultdata=test(condition);
+        System.out.println("数据返回到get函数中");
+        System.out.println(resultdata);
 
         Response r= new Response();
         r.setCode(200);
-        r.setContent("");
+        r.setContent(resultdata);
         return r;
 
     }
@@ -31,46 +83,37 @@ public class callPriceAcceleration {
         double width=0.0011785999999997187;//每100m的经度差
         double length=9.003999999997348E-4;//每100m的纬度差
 
-        /*System.out.println(0.0011785999999997187*5);
-        System.out.println(9.003999999997348E-4*5);
-        System.out.println(115.417284+0.0011785999999997187*5);
-        System.out.println(39.438283+9.003999999997348E-4*5);*/
 
+        int colmin=(int)Math.ceil((116.27431869506836-115.417284)/width);
+        int colmax=(int)Math.ceil((116.43911361694335-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.907761097366105-39.438283)/length);
+        int rowmax=(int)Math.ceil((39.96324076608185-39.438283)/length);
 
-        int colmin=(int)Math.ceil((116.21629714965819-115.417284)/width);
-        int colmax=(int)Math.ceil((116.5458869934082-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.91473966049243-39.438283)/length);
-        int rowmax=(int)Math.ceil((40.03274067972939-39.438283)/length);
+        System.out.println(colmin+","+colmax+","+rowmin+","+rowmax);
 
         JSONObject condition=new JSONObject();
-        condition.put("N",5);
+        condition.put("N",10);
         condition.put("rowmax",rowmax);
         condition.put("rowmin",rowmin);
         condition.put("colmax",colmax);
         condition.put("colmin",colmin);
         condition.put("startyear",2015);
         condition.put("startmonth",10);
-        condition.put("endyear",2016);
-        condition.put("endmonth",05);
+        condition.put("endyear",2015);
+        condition.put("endmonth",12);
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
-        test(condition);
-        System.out.println();
+        System.out.println(test(condition));
     }
 
-    public static void test(JSONObject condition){
+    public static String test(JSONObject condition){
         int rowmin=condition.getInt("rowmin");
         int rowmax=condition.getInt("rowmax");
         int colmin=condition.getInt("colmin");
         int colmax=condition.getInt("colmax");
         int N=condition.getInt("N");
 
-        //将小网格合并成大网格
-        int r_min=(int) Math.ceil((double)rowmin/N);
-        int r_max=(int) Math.ceil((double)rowmax/N);
-        int c_min=(int) Math.ceil((double)colmin/N);
-        int c_max=(int) Math.ceil((double)colmax/N);
 
         String collName=condition.getString("export_collName");
         DBCollection coll = db.getDB().getCollection(collName);
@@ -111,7 +154,7 @@ public class callPriceAcceleration {
 
             //System.out.println(document);
             code_array=coll.find(document).toArray();
-            System.out.println(code_array.size());
+            //System.out.println(code_array.size());
 
         }else if(endyear>startyear){
             //先调用前一年的数据
@@ -184,6 +227,7 @@ public class callPriceAcceleration {
         int row;
         int col;
 
+        JSONObject code_index_rowcol=new JSONObject();
         for(int i=0;i<code_array.size();i++){
             doc= (BasicDBObject) code_array.get(i);
             doc.remove("_id");
@@ -200,6 +244,8 @@ public class callPriceAcceleration {
             doc.put("col",col);
             code=result_doc[2];
             doc.put("code",code);
+            String row_col=row+"_"+col;
+            code_index_rowcol.put(code,row_col);
 
             //System.out.println("转换后的N00*N00的网格数据"+doc);
             code_array_after.add(doc);
@@ -221,7 +267,7 @@ public class callPriceAcceleration {
         Map<String,List> timeprice_map= new HashMap<>();
         List<Double> average_price_list=new ArrayList<>();
         double average_price;
-        System.out.println("共有"+gridmap.size()+"个网格");
+        //System.out.println("共有"+gridmap.size()+"个网格");
         Iterator it=gridmap.keySet().iterator();
         List<JSONObject> timeseries_price=new ArrayList<>();
         JSONObject date_price;
@@ -256,6 +302,8 @@ public class callPriceAcceleration {
                 int counts=0;
                 Iterator it_timeprice=timeprice_map.keySet().iterator();//存放的是每一个时间点的价格的集合
                 date_price=new JSONObject();//里面存放的是该网格价格均值处理之后时间与价格一一对应的数据
+
+                JSONObject timeprice=new JSONObject();
                 if(it_timeprice.hasNext()) {
                     while (it_timeprice.hasNext()) {
                         date=(String) it_timeprice.next();
@@ -273,6 +321,7 @@ public class callPriceAcceleration {
                         }else {
                             average_price=0;
                         }
+
                         date_price.put(date,average_price);
                         totalgrid.put(code,date_price);
                     }
@@ -280,7 +329,7 @@ public class callPriceAcceleration {
             }
         }
 
-        System.out.println(totalgrid);
+        //System.out.println(totalgrid);
 
         //逐个网格计算网格的价格加速度。加速度的计算方式有两种：
         //第一是计算该时间段内最高的值与最低的值之间产生的加速度；
@@ -295,6 +344,10 @@ public class callPriceAcceleration {
         String minprice_date;
         String codeindex;
         JSONObject code_acceleration=new JSONObject();
+
+        JSONArray data=new JSONArray();
+        JSONObject data_obj;
+        List< JSONObject> jsonArray=new ArrayList<>();
         if(totalgrid_it.hasNext()){
             while(totalgrid_it.hasNext()){
 
@@ -302,7 +355,7 @@ public class callPriceAcceleration {
                 date_price=totalgrid.getJSONObject(codeindex);
                 Iterator date_price_it=date_price.keys();
 
-                System.out.println(codeindex+":"+date_price);
+                /*System.out.println(codeindex+":"+date_price);*/
 
                 String[] datearray=new String[date_price.size()];
                 double[] pricearray=new double[date_price.size()];
@@ -326,8 +379,8 @@ public class callPriceAcceleration {
                 int minindex=Tool.getMinNum_Index(pricearray);
                 minprice_date=datearray[minindex];
 
-                System.out.println("max:"+maxprice_date+","+maxprice);
-                System.out.println("min:"+minprice_date+","+minprice);
+                /*System.out.println("max:"+maxprice_date+","+maxprice);
+                System.out.println("min:"+minprice_date+","+minprice);*/
 
                 int maxyear=Integer.parseInt(maxprice_date.substring(0,maxprice_date.indexOf("-")));
                 int minyear=Integer.parseInt(minprice_date.substring(0,minprice_date.indexOf("-")));
@@ -338,23 +391,24 @@ public class callPriceAcceleration {
                 double acceleration=0;
 
                 if(maxyear==minyear){
-                    acceleration=(maxprice-minprice)/(maxmonth-minmonth);
+                    acceleration=(maxprice-minprice)/(maxmonth-minmonth)*10000;
                 }else if(maxyear>minyear){
-                    acceleration=(maxprice-minprice)/((maxmonth+12)-minmonth);
+                    acceleration=(maxprice-minprice)/((maxmonth+12)-minmonth)*10000;
                 }else if(maxyear<minyear){
-                    acceleration=(maxprice-minprice)/(maxmonth-(minmonth+12));
+                    acceleration=(maxprice-minprice)/(maxmonth-(minmonth+12))*10000;
                 }
 
                 code_acceleration.put(codeindex,acceleration);
-                System.out.println("第一种计算方法");
-                System.out.println("acceleration:"+acceleration);
+                /*System.out.println("第一种计算方法");
+                System.out.println("acceleration:"+acceleration);*/
 
 
                 //第二种：计算开始和结束的时间对应的加速度
-                GregorianCalendar calendar;
+                //GregorianCalendar calendar;
+                Calendar calendar ;
                 Iterator keys=date_price.keys();
                 String codekey="";
-                List<GregorianCalendar> datelist=new ArrayList<>();
+                List<Calendar> datelist=new ArrayList<>();
                 if(keys.hasNext()){
                     while(keys.hasNext()){
                         codekey=(String) keys.next();
@@ -364,29 +418,152 @@ public class callPriceAcceleration {
                         datelist.add(calendar);
                     }
                 }
+                /*System.out.println(datelist);*/
+                Calendar early;
+                Calendar late;
 
-                System.out.println(datelist);
+                //获取最早的月份
+                early=datelist.get(0);
+                for(int i=1;i<datelist.size();i++){
+                    int result=early.compareTo(datelist.get(i));
+                    if(result>0){
+                        early=datelist.get(i);
+                    }
+                }
+                /*System.out.println(early.get(Calendar.YEAR));
+                System.out.println(early.get(Calendar.MONTH));*/
 
-                /*double startprice=date_price.getDouble(starttime);
+                //获取最晚的月份
+                late=datelist.get(0);
+                for(int i=1;i<datelist.size();i++){
+                    int result=late.compareTo(datelist.get(i));
+                    if(result<0){
+                        late=datelist.get(i);
+                    }
+                }
+
+
+               /* calendar=new GregorianCalendar(2017,11,1);
+                System.out.println(calendar.get(Calendar.YEAR));
+                System.out.println(calendar.get(Calendar.MONTH));*/
+
+                String starttime="";
+                String endtime="";
+                if(early.get(Calendar.MONTH)==0){
+                    starttime=(early.get(Calendar.YEAR)-1)+"-"+(early.get(Calendar.MONTH)+12);
+                }else{
+                    starttime=early.get(Calendar.YEAR)+"-"+(early.get(Calendar.MONTH));
+                }
+
+                if(late.get(Calendar.MONTH)==0){
+                    endtime=(late.get(Calendar.YEAR)-1)+"-"+(late.get(Calendar.MONTH)+12);
+                }else{
+                    endtime=late.get(Calendar.YEAR)+"-"+late.get(Calendar.MONTH);
+                }
+                //System.out.println(starttime+":"+endtime);
+
+                double startprice=date_price.getDouble(starttime);
                 double endprice=date_price.getDouble(endtime);
                 if(startyear==endyear){
-                    acceleration=(endprice-startprice)/(endmonth-startmonth);
+                    acceleration=(endprice-startprice)/(endmonth-startmonth)*10000;
                 }else {
-                    acceleration=(endprice-startprice)/((endmonth+12)-startmonth);
+                    /*System.out.println(endprice-startprice);
+                    System.out.println((endmonth+12)-startmonth);*/
+                    acceleration=(endprice-startprice)/((endmonth+12)-startmonth)*10000;
                 }
 
                 code_acceleration.put(codeindex,acceleration);
-                System.out.println("第二种计算方法");
+                /*System.out.println("第二种计算方法");
                 System.out.println("acceleration:"+acceleration);*/
+
+                data_obj=new JSONObject();
+
+                String rowcol=code_index_rowcol.getString(codeindex);
+                int rows=Integer.parseInt(rowcol.substring(0,rowcol.indexOf("_")));
+                int cols=Integer.parseInt(rowcol.substring(rowcol.indexOf("_")+"_".length()));
+                String color=setColorRegion(acceleration);
+                data_obj.put("code",Integer.parseInt(codeindex));
+                data_obj.put("acceleration",acceleration);
+                data_obj.put("row",rows);
+                data_obj.put("col",cols);
+                data_obj.put("color",color);
+                data_obj.put("starttime",starttime);
+                data_obj.put("endtime",endtime);
+
+                jsonArray.add(data_obj);
             }
         }
-        //System.out.println(code_acceleration);
+
+        //将小网格合并成大网格
+        int r_min=(int) Math.ceil((double)rowmin/N);
+        int r_max=(int) Math.ceil((double)rowmax/N);
+        int c_min=(int) Math.ceil((double)colmin/N);
+        int c_max=(int) Math.ceil((double)colmax/N);
+
+        JSONObject nullobj;
+        for(int i=r_min;i<=r_max;i++) {
+            for (int j =c_min; j<=c_max; j++) {
+                String index=""+(j + (2000/N) * (i - 1));
+                if(!totalgrid.containsKey(index)){
+                    nullobj=new JSONObject();
+
+                    nullobj.put("code",Integer.parseInt(index));
+                    nullobj.put("acceleration",0);
+                    nullobj.put("row",i);
+                    nullobj.put("col",j);
+                    nullobj.put("color","");
+                    nullobj.put("starttime","");
+                    nullobj.put("endtime","");
+
+                    //System.out.println("nullobj:"+nullobj);
+                    jsonArray.add(nullobj);
+                }
+
+            }
+        }
 
 
+        //根据网格code排序
+        Collections.sort(jsonArray, new UtilFile.CodeComparator());
 
+        JSONObject result=new JSONObject();
+        result.put("r_min",r_min);
+        result.put("r_max",r_max);
+        result.put("c_min",c_min);
+        result.put("c_max",c_max);
+        result.put("N",N);
+        result.put("data",jsonArray);
+        System.out.println("最后的数据结果计算出~");
 
+        return result.toString();
+    }
 
+    public static String setColorRegion(double price){
+        String color="";
 
-
+        if(price>900){
+            color="#BA0000";
+        }else if(price>800&&price<=900){
+            color="#C70000";
+        }else if(price>700&&price<=800){
+            color="#ED0000";
+        }else if(price>600&&price<=700){
+            color="#FF0000";
+        }else if(price>500&&price<=600){
+            color="#FF4000";
+        }else if(price>400&&price<=500){
+            color="#FC5800";
+        }else if(price>300&&price<=400){
+            color="#FF5900";
+        }else if(price>250&&price<=300){
+            color="#FF9D14";
+        }else if(price>200&&price<=250){
+            color="#FFD900";
+        }else if(price>100&&price<=200){
+            color="#CCFF00";
+        }else{
+            color="#CFFC5D";
+        }
+        return color;
     }
 }

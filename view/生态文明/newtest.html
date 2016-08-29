@@ -292,27 +292,63 @@
         var north=bounds.getNorth();
         var zoom=map.getZoom();
         console.log(zoom);
-        var x=document.getElementById("gridTime").selectedIndex;
-        var y=document.getElementById("gridTime").options;
-        var gridTime=y[x].text;
 
-        x=document.getElementById("source").selectedIndex;
-        y=document.getElementById("source").options;
-        var source=y[x].text;
 
-        var json={
-            "west":west,
-            "east":east,
-            "south":south,
-            "north":north,
-            "zoom":zoom,
-            "gridTime":gridTime,
-            "source":source
-        };
-        $.post("/gridcolor",""+JSON.stringify(json), function(result){
-            var price= JSON.parse(result);
-            draw_rectangle(bounds,price);
-        });
+        var x=document.getElementById("gridValue").selectedIndex;
+        var y=document.getElementById("gridValue").options;
+        var gridValue=y[x].text;
+        if(gridValue=="房价加速度"){
+            x=document.getElementById("startTime").selectedIndex;
+            y=document.getElementById("startTime").options;
+            var startTime=y[x].text;
+
+            x=document.getElementById("endTime").selectedIndex;
+            y=document.getElementById("endTime").options;
+            var endTime=y[x].text;
+
+            x=document.getElementById("source").selectedIndex;
+            y=document.getElementById("source").options;
+            var source=y[x].text;
+
+            var json={
+                "west":west,
+                "east":east,
+                "south":south,
+                "north":north,
+                "zoom":zoom,
+                "starttime":startTime,
+                "endtime":endTime,
+                "source":source
+            };
+            $.post("/gridacceleration",""+JSON.stringify(json), function(result){
+                var price= JSON.parse(result);
+                draw_rectangle_Acceleration(bounds,price);
+            });
+
+        }else if(gridValue=="房价"){
+            x=document.getElementById("gridTime").selectedIndex;
+            y=document.getElementById("gridTime").options;
+            var gridTime=y[x].text;
+
+            x=document.getElementById("source").selectedIndex;
+            y=document.getElementById("source").options;
+            var source=y[x].text;
+
+            var json={
+                "west":west,
+                "east":east,
+                "south":south,
+                "north":north,
+                "zoom":zoom,
+                "gridTime":gridTime,
+                "source":source
+            };
+            $.post("/gridcolor",""+JSON.stringify(json), function(result){
+                var price= JSON.parse(result);
+                draw_rectangle(bounds,price);
+            });
+        }
+
         //draw_multiPolyline();画多线
     });
 
@@ -334,28 +370,60 @@
         var zoom=map.getZoom();
         console.log(zoom);
 
-        var x=document.getElementById("gridTime").selectedIndex;
-        var y=document.getElementById("gridTime").options;
-        var gridTime=y[x].text;
+        var x=document.getElementById("gridValue").selectedIndex;
+        var y=document.getElementById("gridValue").options;
+        var gridValue=y[x].text;
+        if(gridValue=="房价加速度"){
+            x=document.getElementById("startTime").selectedIndex;
+            y=document.getElementById("startTime").options;
+            var startTime=y[x].text;
 
+            x=document.getElementById("endTime").selectedIndex;
+            y=document.getElementById("endTime").options;
+            var endTime=y[x].text;
 
-        x=document.getElementById("source").selectedIndex;
-        y=document.getElementById("source").options;
-        var source=y[x].text;
+            x=document.getElementById("source").selectedIndex;
+            y=document.getElementById("source").options;
+            var source=y[x].text;
 
-        var json={
-            "west":west,
-            "east":east,
-            "south":south,
-            "north":north,
-            "zoom":zoom,
-            "gridTime":gridTime,
-            "source":source
-        };
-        $.post("/gridcolor",""+JSON.stringify(json), function(result){
-            var price= JSON.parse(result);
-            draw_rectangle(bounds,price);
-        });
+            var json={
+                "west":west,
+                "east":east,
+                "south":south,
+                "north":north,
+                "zoom":zoom,
+                "starttime":startTime,
+                "endtime":endTime,
+                "source":source
+            };
+            $.post("/gridacceleration",""+JSON.stringify(json), function(result){
+                var price= JSON.parse(result);
+                draw_rectangle_Acceleration(bounds,price);
+            });
+
+        }else if(gridValue=="房价"){
+            x=document.getElementById("gridTime").selectedIndex;
+            y=document.getElementById("gridTime").options;
+            var gridTime=y[x].text;
+
+            x=document.getElementById("source").selectedIndex;
+            y=document.getElementById("source").options;
+            var source=y[x].text;
+
+            var json={
+                "west":west,
+                "east":east,
+                "south":south,
+                "north":north,
+                "zoom":zoom,
+                "gridTime":gridTime,
+                "source":source
+            };
+            $.post("/gridcolor",""+JSON.stringify(json), function(result){
+                var price= JSON.parse(result);
+                draw_rectangle(bounds,price);
+            });
+        }
 
     });
 
@@ -620,6 +688,84 @@
                 var averageprice=gridvalue.average_price;
 
                 if(averageprice!=0){
+                    rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_java});//,className:gridcode_java
+                    rect.index=count;
+                    rect.data=price.data[rect.index];
+
+                    rect.on('click', function(e){
+                        var json={
+                            "row":this.data.row,
+                            "col":this.data.col,
+                            "code":this.data.code,
+                            "N":N
+                        };
+
+                        $.post("/price", JSON.stringify(json),
+                                function(data){
+                                    var ctx = document.getElementById("myChart").getContext("2d");
+                                    pricedata= JSON.parse(data);
+
+                                    var max=pricedata.suggestedMax;
+                                    var min=pricedata.suggestedMin;
+
+                                    var grid=JSON.stringify(json);
+                                    var gridinfo=JSON.parse(grid);
+                                    var info="编码："+gridinfo.code+","+gridinfo.row+"行"+gridinfo.col+"列";
+                                    window.myLine = new Chart(ctx, dataStruct(pricedata,info,max,min));
+                                    $('#myModal').modal();
+                                }
+                        )
+                    });
+
+                    rect.addTo(map);
+                    rects.push(rect);
+                }
+                count++;
+            }
+        }
+
+    }
+    function draw_rectangle_Acceleration(bounds,price) {
+        var west=bounds.getWest();
+        var east=bounds.getEast();
+        var south=bounds.getSouth();
+        var north=bounds.getNorth();
+        var N=price.N;
+        var width=0.0011785999999997187*N;//每N00m的经度差
+        var length=9.003999999997348E-4*N;//每N00m的纬度差
+        var r_min=price.r_min;
+        var r_max=price.r_max;
+        var c_min=price.c_min;
+        var c_max=price.c_max;
+
+        var row;
+        var col;
+
+        //将之前的图层删除
+        if(rects.length!=0){
+            for (var i=0;i<rects.length;i++){
+                map=map.removeLayer(rects[i]);
+            }
+            rects=[];
+        }
+
+        var count=0;
+        for( row=r_min;row<=r_max;row++){
+            for(col=c_min;col<=c_max;col++){
+
+                //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                var dist_wid=(col-1)*width;
+                var dist_len=(row-1)*length;
+                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [(39.438283+length)+dist_len,((115.417284+width)+dist_wid)]];//(左下角，右上角)
+                var rect;
+                var gridvalue=price.data[count];
+                var gridcode_java=gridvalue.code;
+                var gridcolor=gridvalue.color;
+                var gridrow=gridvalue.row;
+                var gridcol=gridvalue.col;
+                var acceleration=gridvalue.acceleration;
+
+                if(acceleration!=0){
                     rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_java});//,className:gridcode_java
                     rect.index=count;
                     rect.data=price.data[rect.index];

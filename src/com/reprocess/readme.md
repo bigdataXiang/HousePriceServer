@@ -70,6 +70,22 @@
 >不能加载本地的图片，至今未知。另外我还发现了之前我把zoommin的值调得太小了，其实可以调大一点显示整个北京的区域就好了
 >总之leaflet的api文档里有很多只是值得仔细去学习。不懂的地方要搜别人做过的例子，不能自己一味地闷着头做。
 
+##8月27日
++ 时间比较的问题
+>GregorianCalendar和Calendar的区别
+Calendar是父类
+GregorianCalendar是子类
+一般使用的时候可以使用
+Calendar c=new GregorianCalendar();//直接创建
+Calendar ca = new GregorianCalendar()//默认当前的时刻。
+Calendar ca = new GregorianCanlendar(int year,int month,int dayOfMonth)//初始具有指定年月日的公历类对象。
+Calendar ca = new GregorianCanlendar(int year,int month,int dayOfMonth,int hourOfDay,int minute)初始具有指定年月日的公历类对象。
+Calendar ca = new GregorianCanlendar(int year,int month,int dayOfMonth,int hourOfDay,int minute,int second)//初始具有指定年月日的公历类对象。
+
+使用ca.get(Calendar.YEAR)、ca.get(Calendar.MONTH)、ca.get(Calendar.DAY)方式获得年月日
+
+
+
 
   
   
