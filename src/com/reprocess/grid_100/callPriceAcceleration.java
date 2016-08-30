@@ -84,20 +84,23 @@ public class CallPriceAcceleration extends CallInterestGrid{
         double length=9.003999999997348E-4;//每100m的纬度差
 
 
-        /*int colmin=(int)Math.ceil((116.34066581726076-115.417284)/width);
-        int colmax=(int)Math.ceil((116.50546073913574-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.90762941952987-39.438283)/length);
-        int rowmax=(int)Math.ceil((39.96310919494646-39.438283)/length);*/
+        //第一种"west":116.24496459960938,"east":116.57455444335936,"south":39.85546510325357,"north":39.97330520737606
+        int colmin=(int)Math.ceil((116.24496459960938-115.417284)/width);
+        int colmax=(int)Math.ceil((116.57455444335936-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.85546510325357-39.438283)/length);
+        int rowmax=(int)Math.ceil((39.97330520737606-39.438283)/length);
 
-        int colmin=(int)Math.ceil((116.33955001831055-115.417284)/width);
-        int colmax=(int)Math.ceil((116.50434494018553-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.90782693618929-39.438283)/length);
-        int rowmax=(int)Math.ceil((39.963306551554616-39.438283)/length);
+        /*
+        //第二种"west":116.24050140380858,"east":116.57009124755858,"south":39.85572865909662,"north":39.97356831014807
 
-        System.out.println(colmin+","+colmax+","+rowmin+","+rowmax);
+        int colmin=(int)Math.ceil((116.24050140380858-115.417284)/width);
+        int colmax=(int)Math.ceil((116.57009124755858-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.85572865909662-39.438283)/length);
+        int rowmax=(int)Math.ceil((39.97356831014807-39.438283)/length);
+        System.out.println(colmin+","+colmax+","+rowmin+","+rowmax);*/
 
         JSONObject condition=new JSONObject();
-        condition.put("N",10);
+        condition.put("N",20);
         condition.put("rowmax",rowmax);
         condition.put("rowmin",rowmin);
         condition.put("colmax",colmax);
@@ -119,6 +122,17 @@ public class CallPriceAcceleration extends CallInterestGrid{
         int colmax=condition.getInt("colmax");
         int N=condition.getInt("N");
 
+        //将小网格合并成大网格
+        int r_min=(int) Math.ceil((double)rowmin/N);
+        int r_max=(int) Math.ceil((double)rowmax/N);
+        int c_min=(int) Math.ceil((double)colmin/N);
+        int c_max=(int) Math.ceil((double)colmax/N);
+
+        //根据大网格调用需要的小网格
+        rowmin=(r_min-1)*N+1;
+        rowmax=r_max*N;
+        colmin=(c_min-1)*N+1;
+        colmax=c_max*N;
 
         String collName=condition.getString("export_collName");
         DBCollection coll = db.getDB().getCollection(collName);
@@ -158,7 +172,9 @@ public class CallPriceAcceleration extends CallInterestGrid{
 
             //System.out.println(document);
             code_array=coll.find(document).toArray();
-            //System.out.println(code_array.size());
+           // printArray_BasicDB(code_array);
+            System.out.println("从mongodb中调用的数据个数："+code_array.size());
+
 
         }else if(endyear>startyear){
             //先调用前一年的数据
@@ -280,7 +296,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
             while (it.hasNext()){
                 code=(int)it.next();
                 codelist=gridmap.get(code);
-                printArray_BasicDB(codelist);
+                //printArray_BasicDB(codelist);
 
                 //将一个网格里面的数据处理成一个时间点一个价格的形式
                 for(int i=0;i<codelist.size();i++){
@@ -312,7 +328,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
                     while (it_timeprice.hasNext()) {
                         date=(String) it_timeprice.next();
                         average_price_list=timeprice_map.get(date);
-                        System.out.println(date+":"+average_price_list);
+                       // System.out.println(date+":"+average_price_list);
 
                         for(int i=0;i<average_price_list.size();i++){
                             average_price=average_price_list.get(i);
@@ -328,7 +344,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
                         }
 
                         date_price.put(date,average_price);
-                        System.out.println(date_price);
+                       // System.out.println(date_price);
                         totalgrid.put(code,date_price);
                     }
                 }
@@ -504,12 +520,6 @@ public class CallPriceAcceleration extends CallInterestGrid{
             }
         }
 
-        //将小网格合并成大网格
-        int r_min=(int) Math.ceil((double)rowmin/N);
-        int r_max=(int) Math.ceil((double)rowmax/N);
-        int c_min=(int) Math.ceil((double)colmin/N);
-        int c_max=(int) Math.ceil((double)colmax/N);
-
         JSONObject nullobj;
         for(int i=r_min;i<=r_max;i++) {
             for (int j =c_min; j<=c_max; j++) {
@@ -544,8 +554,9 @@ public class CallPriceAcceleration extends CallInterestGrid{
         result.put("c_min",c_min);
         result.put("c_max",c_max);
         result.put("N",N);
+        System.out.println("一共有"+jsonArray.size()+"个网格");
         result.put("data",jsonArray);
-        //System.out.println("最后的数据结果计算出~");
+       // System.out.println("最后的数据结果计算出~"+result.toString());
 
         return result.toString();
     }

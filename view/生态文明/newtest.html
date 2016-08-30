@@ -759,14 +759,17 @@
                 var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [(39.438283+length)+dist_len,((115.417284+width)+dist_wid)]];//(左下角，右上角)
                 var rect;
                 var gridvalue=price.data[count];
+
                 var gridcode_java=gridvalue.code;
+                var gridcode_js=col+(row-1)*(2000/N);
+
                 var gridcolor=gridvalue.color;
                 var gridrow=gridvalue.row;
                 var gridcol=gridvalue.col;
                 var acceleration=gridvalue.acceleration;
 
                 if(acceleration!=0){
-                    rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_java});//,className:gridcode_java
+                    rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_js+","+row+","+col});//,className:gridcode_java
                     rect.index=count;
                     rect.data=price.data[rect.index];
 
