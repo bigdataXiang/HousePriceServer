@@ -84,19 +84,19 @@ public class CallPriceAcceleration extends CallInterestGrid{
         double length=9.003999999997348E-4;//每100m的纬度差
 
 
-        //第一种"west":116.24496459960938,"east":116.57455444335936,"south":39.85546510325357,"north":39.97330520737606
+        /*//第一种"west":116.24496459960938,"east":116.57455444335936,"south":39.85546510325357,"north":39.97330520737606
         int colmin=(int)Math.ceil((116.24496459960938-115.417284)/width);
         int colmax=(int)Math.ceil((116.57455444335936-115.417284)/width);
         int rowmin=(int)Math.ceil((39.85546510325357-39.438283)/length);
-        int rowmax=(int)Math.ceil((39.97330520737606-39.438283)/length);
+        int rowmax=(int)Math.ceil((39.97330520737606-39.438283)/length);*/
 
 
-       /* //第二种"west":116.24050140380858,"east":116.57009124755858,"south":39.85572865909662,"north":39.97356831014807
+        //第二种"west":116.24050140380858,"east":116.57009124755858,"south":39.85572865909662,"north":39.97356831014807
         int colmin=(int)Math.ceil((116.24050140380858-115.417284)/width);
         int colmax=(int)Math.ceil((116.57009124755858-115.417284)/width);
         int rowmin=(int)Math.ceil((39.85572865909662-39.438283)/length);
         int rowmax=(int)Math.ceil((39.97356831014807-39.438283)/length);
-        System.out.println(colmin+","+colmax+","+rowmin+","+rowmax);*/
+        System.out.println(colmin+","+colmax+","+rowmin+","+rowmax);
 
         JSONObject condition=new JSONObject();
         condition.put("N",20);
@@ -293,9 +293,15 @@ public class CallPriceAcceleration extends CallInterestGrid{
         JSONObject totalgrid=new JSONObject();//存放的是所有网格的唯一时间价格数据
         if(it.hasNext()){
             while (it.hasNext()){
+
+
                 code=(int)it.next();
                 codelist=gridmap.get(code);
-                //printArray_BasicDB(codelist);
+
+                //if(code==2336){
+                   // printArray_BasicDB(codelist);
+
+
 
                 //将一个网格里面的数据处理成一个时间点一个价格的形式
                 for(int i=0;i<codelist.size();i++){
@@ -327,7 +333,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
                     while (it_timeprice.hasNext()) {
                         date=(String) it_timeprice.next();
                         average_price_list=timeprice_map.get(date);
-                       // System.out.println(date+":"+average_price_list);
+                        //System.out.println(date+":"+average_price_list);
 
                         for(int i=0;i<average_price_list.size();i++){
                             average_price=average_price_list.get(i);
@@ -347,6 +353,9 @@ public class CallPriceAcceleration extends CallInterestGrid{
                         totalgrid.put(code,date_price);
                     }
                 }
+
+            //}
+
             }
         }
 
