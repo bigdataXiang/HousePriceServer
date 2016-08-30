@@ -142,6 +142,19 @@ public class CallInterestGrid {
         int rowmax=condition.getInt("rowmax");
         int colmin=condition.getInt("colmin");
         int colmax=condition.getInt("colmax");
+
+        //将小网格合并成大网格
+        int r_min=(int) Math.ceil((double)rowmin/N);
+        int r_max=(int) Math.ceil((double)rowmax/N);
+        int c_min=(int) Math.ceil((double)colmin/N);
+        int c_max=(int) Math.ceil((double)colmax/N);
+
+        //根据大网格调用需要的小网格
+        rowmin=(r_min-1)*N+1;
+        rowmax=r_max*N;
+        colmin=(c_min-1)*N+1;
+        colmax=c_max*N;
+
         cond.put("$gte",rowmin);
         cond.put("$lte",rowmax);
         document.put("row",cond);
@@ -255,10 +268,7 @@ public class CallInterestGrid {
 
         //将小网格合并成大网格
         JSONObject nullobj;
-        int r_min=(int) Math.ceil((double)rowmin/N);
-        int r_max=(int) Math.ceil((double)rowmax/N);
-        int c_min=(int) Math.ceil((double)colmin/N);
-        int c_max=(int) Math.ceil((double)colmax/N);
+
         for(int i=r_min;i<=r_max;i++) {
             for (int j =c_min; j<=c_max; j++) {
                 String codeindex=""+(j + (2000/N) * (i - 1));
