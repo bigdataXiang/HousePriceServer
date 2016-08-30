@@ -90,9 +90,8 @@ public class CallPriceAcceleration extends CallInterestGrid{
         int rowmin=(int)Math.ceil((39.85546510325357-39.438283)/length);
         int rowmax=(int)Math.ceil((39.97330520737606-39.438283)/length);
 
-        /*
-        //第二种"west":116.24050140380858,"east":116.57009124755858,"south":39.85572865909662,"north":39.97356831014807
 
+       /* //第二种"west":116.24050140380858,"east":116.57009124755858,"south":39.85572865909662,"north":39.97356831014807
         int colmin=(int)Math.ceil((116.24050140380858-115.417284)/width);
         int colmax=(int)Math.ceil((116.57009124755858-115.417284)/width);
         int rowmin=(int)Math.ceil((39.85572865909662-39.438283)/length);
@@ -344,14 +343,14 @@ public class CallPriceAcceleration extends CallInterestGrid{
                         }
 
                         date_price.put(date,average_price);
-                       // System.out.println(date_price);
+                        //System.out.println(date_price);
                         totalgrid.put(code,date_price);
                     }
                 }
             }
         }
 
-        //System.out.println(totalgrid);
+        System.out.println(totalgrid);
 
         //逐个网格计算网格的价格加速度。加速度的计算方式有两种：
         //第一是计算该时间段内最高的值与最低的值之间产生的加速度；

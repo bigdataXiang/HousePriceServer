@@ -62,7 +62,7 @@ public class UtilFile {
         for(int i=0;i<array.size();i++){
             BasicDBObject document= (BasicDBObject) array.get(i);
             System.out.println(array.get(i));
-            FileTool.Dump(array.get(i).toString(),"E:\\房地产可视化\\to100\\test1.txt","utf-8");
+            FileTool.Dump(array.get(i).toString(),"E:\\房地产可视化\\to100\\第二种.txt","utf-8");
         }
     }
     public static class CodeComparator implements Comparator {
