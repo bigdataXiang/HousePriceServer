@@ -6,6 +6,7 @@ import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import utils.FileTool;
 import utils.Tool;
 import utils.UtilFile;
 
@@ -296,6 +297,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
 
 
                 code=(int)it.next();
+                //System.out.println(code);
                 codelist=gridmap.get(code);
 
                 //if(code==2336){
@@ -313,12 +315,13 @@ public class CallPriceAcceleration extends CallInterestGrid{
                         average_price_list=timeprice_map.get(date);
                         average_price_list.add(average_price);
                         timeprice_map.put(date,average_price_list);
+                       // System.out.println(average_price_list);
 
                     }else{
                         average_price_list=new ArrayList<>();
                         average_price_list.add(average_price);
                         timeprice_map.put(date,average_price_list);
-
+                       // System.out.println(average_price_list);
                     }
 
                 }
@@ -326,17 +329,18 @@ public class CallPriceAcceleration extends CallInterestGrid{
                 double totalprice=0;
                 int counts=0;
                 Iterator it_timeprice=timeprice_map.keySet().iterator();//存放的是每一个时间点的价格的集合
+                List<Double> averageprice_list=new ArrayList<>();
                 date_price=new JSONObject();//里面存放的是该网格价格均值处理之后时间与价格一一对应的数据
-
                 JSONObject timeprice=new JSONObject();
+
                 if(it_timeprice.hasNext()) {
                     while (it_timeprice.hasNext()) {
                         date=(String) it_timeprice.next();
-                        average_price_list=timeprice_map.get(date);
-                        //System.out.println(date+":"+average_price_list);
+                        averageprice_list=timeprice_map.get(date);
+                        //System.out.println(date+":"+averageprice_list);
 
-                        for(int i=0;i<average_price_list.size();i++){
-                            average_price=average_price_list.get(i);
+                        for(int i=0;i<averageprice_list.size();i++){
+                            average_price=averageprice_list.get(i);
                             if(average_price!=0){
                                 totalprice+=average_price;
                                 counts++;
@@ -351,15 +355,14 @@ public class CallPriceAcceleration extends CallInterestGrid{
                         date_price.put(date,average_price);
                         //System.out.println(date_price);
                         totalgrid.put(code,date_price);
+
                     }
                 }
-
-            //}
-
+                timeprice_map.clear();
             }
         }
 
-        System.out.println(totalgrid);
+        //System.out.println(totalgrid);
 
         //逐个网格计算网格的价格加速度。加速度的计算方式有两种：
         //第一是计算该时间段内最高的值与最低的值之间产生的加速度；
