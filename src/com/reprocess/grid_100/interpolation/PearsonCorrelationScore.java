@@ -101,9 +101,9 @@ public class PearsonCorrelationScore {
     }
 
     public static void main(String[] args) {
-        PearsonCorrelationScore pearsonCorrelationScore = new PearsonCorrelationScore();
+        /*PearsonCorrelationScore pearsonCorrelationScore = new PearsonCorrelationScore();
         System.out.println(pearsonCorrelationScore.sim_pearson("Lisa Rose",
-                "Gene Seymour"));
+                "Gene Seymour"));*/
     }
 
 }
