@@ -393,6 +393,7 @@ public class InterestedRegion {
         String self_timeseries="";
         JSONObject single_code=new JSONObject();
         JSONObject single_code_value=new JSONObject();
+        JSONObject adjacent_codedata=new JSONObject();
         for(int i=0;i<nullgrid.size();i++){
             obj=(JSONObject)nullgrid.get(i);
             row=obj.getInt("row");
@@ -406,7 +407,9 @@ public class InterestedRegion {
 
                     if(code!=adjacent_code){
                         if(jsonArray_map.containsKey(adjacent_code)){
-                            adjacent_data.add(jsonArray_map.get(adjacent_code));
+                            adjacent_codedata=new JSONObject();
+                            adjacent_codedata.put(""+adjacent_code,jsonArray_map.get(adjacent_code));
+                            adjacent_data.add(adjacent_codedata);
                             //System.out.println(code+"("+row+"行"+col+"列"+")"+"周围的点有："+jsonArray_map.get(adjacent_code)+"("+m+"行"+n+"列"+")");
                         }
                     }
