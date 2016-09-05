@@ -29,16 +29,19 @@ public class InterestedRegion {
         int rowmax=(int)Math.ceil((39.96366837052331-39.438283)/length);
 
         JSONObject condition=new JSONObject();
+        condition.put("N",5);
         condition.put("rowmax",rowmax);
         condition.put("rowmin",rowmin);
         condition.put("colmax",colmax);
         condition.put("colmin",colmin);
-        condition.put("year",2015);
-        condition.put("month",10);
+        condition.put("startyear",2015);
+        condition.put("startmonth",10);
+        condition.put("endyear",2016);
+        condition.put("endmonth",5);
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
-        JSONArray array=findNullGrid(condition,5);
+        JSONArray array=findNullGrid(condition);
         findAdjacentGrid(array,5);
        // System.out.println();
     }
@@ -68,25 +71,13 @@ public class InterestedRegion {
     }
     public static Map<Integer, JSONObject> jsonArray_map=new HashMap<>();
     public static List<JSONObject> jsonArray=new ArrayList<>();
-    public static JSONArray findNullGrid(JSONObject condition,int N){
+    public static JSONArray findNullGrid(JSONObject condition){
 
-        String collName=condition.getString("export_collName");
-        DBCollection coll = db.getDB().getCollection(collName);
-        BasicDBObject document = new BasicDBObject();
-
-        int year=condition.getInt("year");
-        int month=condition.getInt("month");
-        String source=condition.getString("source");
-
-        document.put("year",year);
-        document.put("month",month);
-        document.put("source",source);
-        List code_array=new ArrayList<>();
-        BasicDBObject cond=new BasicDBObject();
         int rowmin=condition.getInt("rowmin");
         int rowmax=condition.getInt("rowmax");
         int colmin=condition.getInt("colmin");
         int colmax=condition.getInt("colmax");
+        int N=condition.getInt("N");
 
         //将小网格合并成大网格
         int r_min=(int) Math.ceil((double)rowmin/N);
@@ -100,38 +91,127 @@ public class InterestedRegion {
         colmin=(c_min-1)*N+1;
         colmax=c_max*N;
 
-        cond.put("$gte",rowmin);
-        cond.put("$lte",rowmax);
-        document.put("row",cond);
+        String collName=condition.getString("export_collName");
+        DBCollection coll = db.getDB().getCollection(collName);
+        BasicDBObject document = new BasicDBObject();
 
-        cond=new BasicDBObject();
-        cond.put("$gte",colmin);
-        cond.put("$lte",colmax);
-        document.put("col",cond);
+        String source=condition.getString("source");
+        document.put("source",source);
 
-        //System.out.println(document);
-        code_array=coll.find(document).toArray();
+        int startyear=condition.getInt("startyear");
+        int startmonth=condition.getInt("startmonth");
+        int endyear=condition.getInt("endyear");
+        int endmonth=condition.getInt("endmonth");
+
+        BasicDBObject cond=new BasicDBObject();
+        List code_array=new ArrayList<>();
+        List code_array_temp=new ArrayList<>();
+
+        if(startyear==endyear){
+            cond.put("$gte",startyear);
+            cond.put("$lte",startyear);
+            document.put("year",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",startmonth);
+            cond.put("$lte",endmonth);
+            document.put("month",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",rowmin);
+            cond.put("$lte",rowmax);
+            document.put("row",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",colmin);
+            cond.put("$lte",colmax);
+            document.put("col",cond);
+
+            //System.out.println(document);
+            code_array=coll.find(document).toArray();
+            // printArray_BasicDB(code_array);
+            System.out.println("从mongodb中调用的数据个数："+code_array.size());
+
+
+        }else if(endyear>startyear){
+            //先调用前一年的数据
+            cond.put("$gte",startyear);
+            cond.put("$lte",startyear);
+            document.put("year",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",startmonth);
+            cond.put("$lte",12);
+            document.put("month",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",rowmin);
+            cond.put("$lte",rowmax);
+            document.put("row",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",colmin);
+            cond.put("$lte",colmax);
+            document.put("col",cond);
+
+           // System.out.println(document);
+            code_array=coll.find(document).toArray();
+           // System.out.println("第一年数据："+code_array.size());
+
+            //再调用第二年的数据
+            document = new BasicDBObject();
+            document.put("source",source);
+            cond=new BasicDBObject();
+            cond.put("$gte",endyear);
+            cond.put("$lte",endyear);
+            document.put("year",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",1);
+            cond.put("$lte",endmonth);
+            document.put("month",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",rowmin);
+            cond.put("$lte",rowmax);
+            document.put("row",cond);
+
+            cond=new BasicDBObject();
+            cond.put("$gte",colmin);
+            cond.put("$lte",colmax);
+            document.put("col",cond);
+
+            //System.out.println(document);
+            code_array_temp=coll.find(document).toArray();
+            //System.out.println("第二年数据："+code_array_temp.size());
+
+            //将code_array_temp中的数据添加到code_array中
+            code_array.addAll(code_array_temp);
+
+           // System.out.println("合并后的list的大小："+code_array.size());
+        }
 
         BasicDBObject doc;
         int row_doc;
         int col_doc;
         int[] result_doc;
         List code_array_after=new ArrayList<>();
-
-        Map<Integer,Code_Price_RowCol> map= new HashMap<>();
-        Code_Price_RowCol cpr;
-        List<Double> pricelist;
-        double average_price;
+        Map<Integer,List> gridmap= new HashMap<>();
+        List<BasicDBObject> codelist;
         int code;
         int row;
         int col;
-        for(int i=0;i<code_array.size();i++){
 
+        JSONObject code_index_rowcol=new JSONObject();
+        for(int i=0;i<code_array.size();i++){
             doc= (BasicDBObject) code_array.get(i);
             doc.remove("_id");
             row_doc=doc.getInt("row");
             col_doc=doc.getInt("col");
 
+            //System.out.println("转换前的100*100的网格数据"+doc);
+
+            //将doc中的row、col、code从100分辨率的转换成N00分辨率的
             result_doc=codeMapping100toN00(row_doc,col_doc,N);
             row=result_doc[0];
             doc.put("row",row);
@@ -139,81 +219,134 @@ public class InterestedRegion {
             doc.put("col",col);
             code=result_doc[2];
             doc.put("code",code);
+            String row_col=row+"_"+col;
+            code_index_rowcol.put(code,row_col);
+
+            //System.out.println("转换后的N00*N00的网格数据"+doc);
             code_array_after.add(doc);
 
-            average_price=doc.getDouble("average_price");
-            if (map.containsKey(code)) {
-
-                cpr = map.get(code);
-                pricelist=cpr.getPricelist();
-                pricelist.add(average_price);
-                cpr.setPricelist(pricelist);
-                map.put(code,cpr);
+            if (gridmap.containsKey(code)) {
+                codelist=gridmap.get(code);
+                codelist.add(doc);
+                gridmap.put(code,codelist);
             }else{
-                pricelist = new ArrayList<Double>();
-                pricelist.add(average_price);
-
-                cpr=new Code_Price_RowCol();
-                cpr.setCode(""+code);
-                cpr.setCol(col);
-                cpr.setRow(row);
-                cpr.setPricelist(pricelist);
-                map.put(code,cpr);
+                codelist=new ArrayList<>();
+                codelist.add(doc);
+                gridmap.put(code,codelist);
             }
         }
 
+        //统计gridmap中一共有多少个网格，并且对每个网格的doc作操作
+        String date;
+        JSONObject obj;
+        Map<String,List> timeprice_map= new HashMap<>();
+        List<Double> average_price_list=new ArrayList<>();
+        double average_price;
+        //System.out.println("共有"+gridmap.size()+"个网格");
+        Iterator it=gridmap.keySet().iterator();
+        List<JSONObject> timeseries_price=new ArrayList<>();
+        JSONObject date_price;
+        JSONObject totalgrid=new JSONObject();//存放的是所有网格的唯一时间价格数据
 
-        Iterator it=map.keySet().iterator();
-        String color;
-
-        JSONObject jsonObject;
-        JSONObject codekey=new JSONObject();
+        Map<String,String> codekey= new HashMap<>();
         if(it.hasNext()){
             while (it.hasNext()){
-                double totalprice=0;
+
+
                 code=(int)it.next();
-                cpr=map.get(code);
-                pricelist=cpr.getPricelist();
-                //System.out.println(pricelist);
-                if (pricelist.size() != 0) {
-                    int count = 0;//统计pricelist中均价不为0的数目
-                    for (int i = 0; i < pricelist.size(); i++) {
-                        double price = pricelist.get(i);
-                        if (price != 0) {
-                            totalprice += price;
-                            count++;
+                codekey.put(""+code,"");
+                //System.out.println(code);
+                codelist=gridmap.get(code);
+
+                //将一个网格里面的数据处理成一个时间点一个价格的形式
+                for(int i=0;i<codelist.size();i++){
+                    obj=JSONObject.fromObject(codelist.get(i));
+                    date=obj.getString("year")+"-"+obj.getString("month");
+                    average_price=obj.getDouble("average_price");
+
+                    if(timeprice_map.containsKey(date)){
+                        average_price_list=timeprice_map.get(date);
+                        average_price_list.add(average_price);
+                        timeprice_map.put(date,average_price_list);
+                        // System.out.println(average_price_list);
+
+                    }else{
+                        average_price_list=new ArrayList<>();
+                        average_price_list.add(average_price);
+                        timeprice_map.put(date,average_price_list);
+                        // System.out.println(average_price_list);
+                    }
+
+                }
+
+                double totalprice=0;
+                int counts=0;
+                Iterator it_timeprice=timeprice_map.keySet().iterator();//存放的是每一个时间点的价格的集合
+                List<Double> averageprice_list=new ArrayList<>();
+                date_price=new JSONObject();//里面存放的是该网格价格均值处理之后时间与价格一一对应的数据
+                JSONObject timeprice=new JSONObject();
+
+                if(it_timeprice.hasNext()) {
+                    while (it_timeprice.hasNext()) {
+                        date=(String) it_timeprice.next();
+                        averageprice_list=timeprice_map.get(date);
+                        //System.out.println(date+":"+averageprice_list);
+
+                        for(int i=0;i<averageprice_list.size();i++){
+                            average_price=averageprice_list.get(i);
+                            if(average_price!=0){
+                                totalprice+=average_price;
+                                counts++;
+                            }
+                        }
+                        if(counts!=0){
+                            average_price=totalprice/counts;
+                        }else {
+                            average_price=0;
                         }
 
+                        date_price.put(date,average_price);
+                        //System.out.println(date_price);
+                        totalgrid.put(code,date_price);
+
                     }
-                    if(count!=0){
-                        average_price = totalprice / count;
-                    }else{
-                        average_price=0;
-                    }
-                }else{
-                    average_price=0;
                 }
-                row=cpr.getRow();
-                col=cpr.getCol();
-                color=setColorRegion(average_price);
+                timeprice_map.clear();
+            }
+        }
 
-                jsonObject=new JSONObject();
-                jsonObject.put("code",code);
-                jsonObject.put("average_price",average_price);
-                jsonObject.put("color",color);
-                jsonObject.put("row",row);
-                jsonObject.put("col",col);
-                jsonArray_map.put(code,jsonObject);
-                jsonArray.add(jsonObject);
+        //System.out.println(totalgrid);
+        //将有数据的网格整理一下
+        JSONArray nullgrid=new JSONArray();//用来装那些有缺失数据的点
+        String key="";
+        JSONObject value;
+        JSONObject comparedata=new JSONObject();
+        Iterator it_totalgrid=totalgrid.keys();
+        if(it_totalgrid.hasNext()){
 
-                // System.out.println(jsonObject);
-                codekey.put(""+code,"");
+            while (it_totalgrid.hasNext()){
+                key=(String) it_totalgrid.next();
+                value=totalgrid.getJSONObject(key);
+                jsonArray_map.put(Integer.parseInt(key),value);
+                String rowcol=code_index_rowcol.getString(key);
+                int rows=Integer.parseInt(rowcol.substring(0,rowcol.indexOf("_")));
+                int cols=Integer.parseInt(rowcol.substring(rowcol.indexOf("_")+"_".length()));
+
+                comparedata.put("code",Integer.parseInt(key));
+                comparedata.put("timeseries",value);
+                comparedata.put("row",rows);
+                comparedata.put("col",cols);
+                jsonArray.add(comparedata);
+
+                if(value.size()!=8){
+                    nullgrid.add(comparedata);
+                }
+
             }
         }
 
 
         //将小网格合并成大网格
-        JSONArray nullgrid=new JSONArray();
         JSONObject nullobj;
         int nullcount=0;
         for(int i=r_min;i<=r_max;i++) {
@@ -222,31 +355,29 @@ public class InterestedRegion {
                 if(!codekey.containsKey(codeindex)){
                     nullobj=new JSONObject();
                     nullobj.put("code",Integer.parseInt(codeindex));
-                    nullobj.put("average_price",0);
+                    nullobj.put("timeseries","");
                     nullobj.put("row",i);
                     nullobj.put("col",j);
-                    nullobj.put("color","");
                     nullgrid.add(nullobj);
-                    jsonArray_map.put(Integer.parseInt(codeindex),nullobj);
-                    jsonArray.add(nullobj);
                     nullcount++;
-                    System.out.println(nullobj);
+                    //System.out.println(nullobj);
                 }
 
             }
         }
 
-        Collections.sort(jsonArray, new UtilFile.CodeComparator()); // 根据网格code排序
+        /*Collections.sort(jsonArray, new UtilFile.CodeComparator()); // 根据网格code排序
         JSONObject object= new JSONObject();
         object.put("r_min",r_min);
         object.put("r_max",r_max);
         object.put("c_min",c_min);
         object.put("c_max",c_max);
         object.put("N",N);
-        object.put("data",jsonArray);
+        object.put("data",jsonArray);*/
 
-        System.out.println("没有数据的网格数目："+nullcount);
-        System.out.println("有数据的网格数目："+(jsonArray.size()-nullcount));
+        System.out.println("有缺失数据的网格数目："+nullgrid.size());
+        System.out.println("有数据的网格数目："+(jsonArray.size()));
+
 
         return nullgrid;
     }
@@ -258,11 +389,16 @@ public class InterestedRegion {
         int col;
         int adjacent_code;
         int code;
+        JSONArray adjacent_data=new JSONArray();
+        String self_timeseries="";
+        JSONObject single_code=new JSONObject();
+        JSONObject single_code_value=new JSONObject();
         for(int i=0;i<nullgrid.size();i++){
             obj=(JSONObject)nullgrid.get(i);
             row=obj.getInt("row");
             col=obj.getInt("col");
             code=obj.getInt("code");
+            self_timeseries=obj.getString("timeseries");
 
             for(int m=row-1;m<=row+1;m++){
                 for(int n=col-1;n<=col+1;n++){
@@ -270,12 +406,22 @@ public class InterestedRegion {
 
                     if(code!=adjacent_code){
                         if(jsonArray_map.containsKey(adjacent_code)){
-                            System.out.println(code+"周围的点有："+jsonArray_map.get(adjacent_code));
+                            adjacent_data.add(jsonArray_map.get(adjacent_code));
+                            //System.out.println(code+"("+row+"行"+col+"列"+")"+"周围的点有："+jsonArray_map.get(adjacent_code)+"("+m+"行"+n+"列"+")");
                         }
                     }
                 }
             }
+
+            single_code_value.put("row",row);
+            single_code_value.put("col",col);
+            single_code_value.put("self_timeseries",self_timeseries);
+            single_code_value.put("adjacent_array",adjacent_data);
+
+            single_code.put(""+code,single_code_value);
+
         }
+        System.out.println(single_code);
 
     }
 }
