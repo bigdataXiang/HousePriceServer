@@ -121,8 +121,9 @@ Calendar ca = new GregorianCanlendar(int year,int month,int dayOfMonth,int hourO
                  0.4-0.6     中等程度相关
                  0.2-0.4     弱相关
                  0.0-0.2     极弱相关或无相关
-
-     
+>3. 协方差
+    两组数[x1,x2...xn]和[y1,y2...yn]其协方差为
+    cov(xy)=E(xy)-E(x)*E(y)=(1/n)*(x1*y1+...+xn*yn)-(1/(n*n))(x1+...+xn)(y1+...+yn)
  
 
 
