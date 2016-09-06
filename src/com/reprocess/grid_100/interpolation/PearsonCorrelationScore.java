@@ -58,7 +58,7 @@ public class PearsonCorrelationScore {
      *            name
      * @param person2
      *            name
-     * @return 皮尔逊相关度值
+     * @return 皮尔逊相关度值 皮尔逊相关系数=协方差(x,y)/[标准差(x)*标准差(y)]
      */
     public static double sim_pearson(String person1, String person2) {
         // 找出双方都有的数据,（皮尔逊算法要求）
@@ -185,7 +185,12 @@ public class PearsonCorrelationScore {
                         r_adjacentcode = new JSONObject();
                         r_adjacentcode.put("code", adjacent_code);
                         r_adjacentcode.put("r",r);
-                        rlist.add(r_adjacentcode);
+
+                        //选取相关性大于0.5的网格
+                        if(r>0.5){
+                            rlist.add(r_adjacentcode);
+                        }
+
 
                       //}
 
@@ -197,6 +202,8 @@ public class PearsonCorrelationScore {
 
                 interpolation_singlecode.put("row",self_row);
                 interpolation_singlecode.put("col",self_col);
+                interpolation_singlecode.put("self_timeseries",self_timeseries);
+
 
                 //加入list之前先根据相关性进行排序
                 Collections.sort(rlist, new UtilFile.RComparator());
@@ -213,12 +220,16 @@ public class PearsonCorrelationScore {
 
         Iterator it=interpolation_codes.keys();
         String key="";
-        String value="";
+        JSONObject value;
         if(it.hasNext()){
             while(it.hasNext()){
                 key=(String)it.next();
-                value=interpolation_codes.getString(key);
-                System.out.println(key+""+value);
+                value=interpolation_codes.getJSONObject(key);
+                self_timeseries=value.getJSONObject("self_timeseries");
+                rlist=value.getJSONArray("rlist");
+
+                System.out.println(key+":"+self_timeseries);
+                System.out.println("    "+rlist);
             }
 
         }
