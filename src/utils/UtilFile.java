@@ -44,6 +44,46 @@ public class UtilFile {
 
         }
     }
+    public static class CodeComparator implements Comparator {
+        public int compare(Object object1, Object object2) {
+
+            JSONObject obj1=JSONObject.fromObject(object1);
+            JSONObject obj2=JSONObject.fromObject(object2);
+
+            int code1=obj1.getInt("code");
+            int code2=obj2.getInt("code");
+
+            int flag = new Integer(code1).compareTo(new Integer(code2));
+            return flag;
+        }
+    }
+    public static class Average_PriceComparator implements Comparator {
+        public int compare(Object object1, Object object2) {
+
+            JSONObject obj1=JSONObject.fromObject(object1);
+            JSONObject obj2=JSONObject.fromObject(object2);
+
+            double price1=obj1.getDouble("average_price");
+            double price2=obj2.getDouble("average_price");
+
+            int flag = new Double(price1).compareTo(new Double(price2));
+            return flag;
+        }
+    }
+    public static class RComparator implements Comparator {
+        public int compare(Object object1, Object object2) {
+
+            JSONObject obj1=JSONObject.fromObject(object1);
+            JSONObject obj2=JSONObject.fromObject(object2);
+
+            double price1=obj1.getDouble("r");
+            double price2=obj2.getDouble("r");
+
+            int flag = new Double(price1).compareTo(new Double(price2));
+            return flag;
+        }
+    }
+
 
 
     public static void printArray(int[] array){
@@ -65,33 +105,7 @@ public class UtilFile {
             FileTool.Dump(array.get(i).toString(),"E:\\房地产可视化\\to100\\第二种.txt","utf-8");
         }
     }
-    public static class CodeComparator implements Comparator {
-        public int compare(Object object1, Object object2) {
 
-            JSONObject obj1=JSONObject.fromObject(object1);
-            JSONObject obj2=JSONObject.fromObject(object2);
-
-            int code1=obj1.getInt("code");
-            int code2=obj2.getInt("code");
-
-            int flag = new Integer(code1).compareTo(new Integer(code2));
-            return flag;
-        }
-    }
-
-    public static class Average_PriceComparator implements Comparator {
-        public int compare(Object object1, Object object2) {
-
-            JSONObject obj1=JSONObject.fromObject(object1);
-            JSONObject obj2=JSONObject.fromObject(object2);
-
-            double price1=obj1.getDouble("average_price");
-            double price2=obj2.getDouble("average_price");
-
-            int flag = new Double(price1).compareTo(new Double(price2));
-            return flag;
-        }
-    }
 
     public static List JSONArrayToList(JSONArray array){
 

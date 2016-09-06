@@ -25,17 +25,19 @@ public class CallInterestGrid {
     public static void main(String[] args){
         double width=0.0011785999999997187;//每100m的经度差
         double length=9.003999999997348E-4;//每100m的纬度差
+
+
         System.out.println(0.0011785999999997187*5);
         System.out.println(9.003999999997348E-4*5);
-
         System.out.println(115.417284+0.0011785999999997187*5);
         System.out.println(39.438283+9.003999999997348E-4*5);
 
 
-        int colmin=(int)Math.ceil((116.21629714965819-115.417284)/width);
-        int colmax=(int)Math.ceil((116.5458869934082-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.91473966049243-39.438283)/length);
-        int rowmax=(int)Math.ceil((40.03274067972939-39.438283)/length);
+
+        int colmin=(int)Math.ceil((116.29062652587892-115.417284)/width);
+        int colmax=(int)Math.ceil((116.4554214477539-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.90657598772841-39.438283)/length);
+        int rowmax=(int)Math.ceil((39.965477436645436-39.438283)/length);
 
         JSONObject condition=new JSONObject();
         condition.put("rowmax",rowmax);
@@ -47,7 +49,9 @@ public class CallInterestGrid {
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
-        System.out.println(CallMongo(condition,5));
+        System.out.println(CallMongo(condition,10));
+        //getLngLat(53,75,10);
+
     }
     public Response get(String body){
         JSONObject obj=JSONObject.fromObject(body);
@@ -258,6 +262,7 @@ public class CallInterestGrid {
                 jsonObject.put("color",color);
                 jsonObject.put("row",row);
                 jsonObject.put("col",col);
+                jsonObject.put("corners",getLngLat(row,col,N));
                 jsonArray.add(jsonObject);
 
                // System.out.println(jsonObject);
@@ -279,6 +284,7 @@ public class CallInterestGrid {
                     nullobj.put("row",i);
                     nullobj.put("col",j);
                     nullobj.put("color","");
+                    nullobj.put("corners","");
                     jsonArray.add(nullobj);
                 }
 
@@ -298,5 +304,46 @@ public class CallInterestGrid {
         System.out.println(object.toString());
 
         return object.toString();
+    }
+
+    public static JSONObject getLngLat(int row,int col,int N){
+        double width=0.0011785999999997187*N;//每N00m的经度差
+        double length=9.003999999997348E-4*N;//每N00m的纬度差
+        JSONObject corners=new JSONObject();
+
+        double base_lng=115.417284;
+        double base_lat=39.438283;
+
+        double[] southwest=new double[2];
+        double[] southeast=new double[2];
+        double[] northeast=new double[2];
+        double[] northwest=new double[2];
+
+        double lat=0;
+        double lng=0;
+
+        //西南角经纬度
+        lat=(row-1)*length;
+        lng=(col-1)*width;
+
+        southwest[0]=base_lng+lng;
+        southwest[1]=base_lat+lat;
+        corners.put("southwest",southwest);
+
+        southeast[0]=base_lng+lng+width;
+        southeast[1]=base_lat+lat;
+        corners.put("southeast",southeast);
+
+        northeast[0]=base_lng+lng+width;
+        northeast[1]=base_lat+lat+length;
+        corners.put("northeast",northeast);
+
+        northwest[0]=base_lng+lng;
+        northwest[1]=base_lat+lat+length;
+        corners.put("northwest",northwest);
+
+        //System.out.println(corners.toString());
+
+        return corners;
     }
 }

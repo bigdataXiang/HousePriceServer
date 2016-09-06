@@ -389,7 +389,7 @@ public class InterestedRegion {
         int col;
         int adjacent_code;
         int code;
-        JSONArray adjacent_data=new JSONArray();
+        JSONArray adjacent_data;
         String self_timeseries="";
         JSONObject single_code=new JSONObject();
         JSONObject single_code_value=new JSONObject();
@@ -401,6 +401,7 @@ public class InterestedRegion {
             code=obj.getInt("code");
             self_timeseries=obj.getString("timeseries");
 
+            adjacent_data=new JSONArray();
             for(int m=row-1;m<=row+1;m++){
                 for(int n=col-1;n<=col+1;n++){
                     adjacent_code=(n + (2000/N) * (m - 1));
@@ -420,6 +421,7 @@ public class InterestedRegion {
             single_code_value.put("col",col);
             single_code_value.put("self_timeseries",self_timeseries);
             single_code_value.put("adjacent_array",adjacent_data);
+            System.out.println("adjacent_array的大小是："+adjacent_data.size());
 
             single_code.put(""+code,single_code_value);
 
