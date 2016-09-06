@@ -110,16 +110,13 @@ public class PearsonCorrelationScore {
         return  r;
     }
 
-    public static void main(String[] args) {
-
-        /*System.out.println(4.37409*5.106383+3.516513*5.0732203);
-        System.out.println((4.37409+3.516513)*(5.106383+5.0732203)/2);*/
 
 
+    public static void pearson(){
         String testpath="D:\\github.com\\bigdataXiang\\HousePriceServer\\src\\com\\reprocess\\grid_100\\interpolation\\";
         Vector<String> testfile= FileTool.Load(testpath+"testfile.txt","utf-8");
         String result=testfile.elementAt(0);
-       // System.out.println(result);
+        // System.out.println(result);
         JSONObject single_code=JSONObject.fromObject(result);
         String interest_code="";
         JSONObject single_code_value=new JSONObject();
@@ -174,13 +171,13 @@ public class PearsonCorrelationScore {
 
                         //求解邻接code对应的时间序列
                         adjacent_code_timeseries = adjacent_codedata.getJSONObject(adjacent_code);
-                           // System.out.println(adjacent_code+":"+adjacent_code_timeseries);
+                        // System.out.println(adjacent_code+":"+adjacent_code_timeseries);
 
                         //初始化两个数据序列的值
                         initDataSet(interest_code, adjacent_code, self_timeseries, adjacent_code_timeseries);
                         //计算两者的皮尔逊相关系数
                         double r = sim_pearson(interest_code, adjacent_code);
-                       // System.out.println(interest_code + "与" + adjacent_code + "的相关系数是：" + r);
+                        // System.out.println(interest_code + "与" + adjacent_code + "的相关系数是：" + r);
 
                         r_adjacentcode = new JSONObject();
                         r_adjacentcode.put("code", adjacent_code);
@@ -192,7 +189,7 @@ public class PearsonCorrelationScore {
                         }
 
 
-                      //}
+                        //}
 
                     }
                 }else{
@@ -210,7 +207,7 @@ public class PearsonCorrelationScore {
                 interpolation_singlecode.put("rlist",rlist);
                 interpolation_codes.put(interest_code,interpolation_singlecode);
 
-               //}
+                //}
 
 
             }
@@ -233,6 +230,70 @@ public class PearsonCorrelationScore {
             }
 
         }
+
     }
+
+    public static void main(String[] args) {
+
+    }
+    public static double covariance(String code1, String code2){
+
+        // 找出双方都有的数据,（皮尔逊算法要求）
+        List<String> list = new ArrayList<String>();
+        for (Entry<String, Double> p1 : dataset.get(code1).entrySet()) {
+            if (dataset.get(code2).containsKey(p1.getKey())) {
+                list.add(p1.getKey());
+            }
+        }
+
+        int N = list.size();
+        double cov;
+
+        if(N!=0){
+            double sumX = 0.0;
+            double sumY = 0.0;
+            double sumXY = 0.0;
+
+            for (String name : list) {
+                Map<String, Double> p1Map = dataset.get(code1);
+                Map<String, Double> p2Map = dataset.get(code2);
+
+                sumX += p1Map.get(name);
+                sumY += p2Map.get(name);
+                sumXY += p1Map.get(name) * p2Map.get(name);
+            }
+
+            cov =(1/N)*(sumXY - sumX * sumY / N) ;
+        }else {
+            cov=0;
+        }
+
+        return cov;
+    }
+
+    /**
+     * 计算矩阵a与矩阵b的乘积
+     * @param a
+     * @param b
+     * @return
+     */
+    public static int[][] marixMultiply(int a[][], int b[][]) {
+        if (a == null || b == null || a[0].length != b.length) {
+            throw new IllegalArgumentException("matrix is illegal");
+        }
+        int row = a.length;
+        int column = b[0].length;
+        int multiplyC = a[0].length;
+        int[][] result = new int[row][column];
+
+        for (int m = 0; m < row; m++)
+            for (int n = 0; n < column; n++)
+                for (int i = 0; i < multiplyC; i++) {
+                    result[m][n] += a[m][i] * b[i][n];
+                }
+        return result;
+    }
+
+
 
 }
