@@ -136,6 +136,9 @@ Calendar ca = new GregorianCanlendar(int year,int month,int dayOfMonth,int hourO
  
  为什么这三个网格里面的值都是一样的？需要检查一下数据。
  
++ 犯了一个错误
+和之前面试时候的错误一样，就是list是不能动态删除里面的元素的。因为删除一个元素之后，list的长度和元素的值都会变
+ 
  
 
 
