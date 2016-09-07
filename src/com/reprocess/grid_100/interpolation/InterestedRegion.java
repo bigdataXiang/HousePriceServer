@@ -32,11 +32,8 @@ public class InterestedRegion {
         /**2、设置好调用数据库的参数*/
         condition=condition();
 
-
-
-        JSONArray array=findNullGrid(condition);
-        findAdjacentGrid(array,5);
-       // System.out.println();
+        /**返回有缺失值的网格的编码*/
+        JSONArray lack_value_grid=findNullGrid(condition);//["44553","44556","44563","44564","44566","45364","45365","46157","46159","46161","46166","44157","44161","44163","44165","44954","45754","45765","46560","46561","44565","44953","44955","45356"]
 
     }
     public static int getResolution(int zoom){
@@ -499,8 +496,7 @@ public class InterestedRegion {
             }
         }
 
-        //System.out.println(totalgrid);
-        //将屏幕范围内有数据的网格整理一下
+        //将屏幕范围内数据有缺失的网格整理一下
         JSONArray nullgrid=new JSONArray();//用来装那些有缺失数据的点
         String key="";
         JSONObject value;
@@ -511,24 +507,14 @@ public class InterestedRegion {
             while (it_totalgrid.hasNext()){
                 key=(String) it_totalgrid.next();
                 value=totalgrid.getJSONObject(key);
-                jsonArray_map.put(Integer.parseInt(key),value);
-                String rowcol=code_index_rowcol.getString(key);
-                int rows=Integer.parseInt(rowcol.substring(0,rowcol.indexOf("_")));
-                int cols=Integer.parseInt(rowcol.substring(rowcol.indexOf("_")+"_".length()));
-
-                comparedata.put("code",Integer.parseInt(key));
-                comparedata.put("timeseries",value);
-                comparedata.put("row",rows);
-                comparedata.put("col",cols);
-                jsonArray.add(comparedata);
 
                 //将数据不足八个月的都放到nullgrid里面去，要进行插值的
                 if(value.size()!=8){
-                    nullgrid.add(comparedata);
+                    nullgrid.add(key);
+                    //System.out.println(value);
                 }
             }
         }
-
 
         JSONObject nullobj;
         int nullcount=0;
@@ -536,31 +522,18 @@ public class InterestedRegion {
             for (int j =c_min; j<=c_max; j++) {
                 String codeindex=""+(j + (2000/N) * (i - 1));
                 if(!codekey.containsKey(codeindex)){
-                    nullobj=new JSONObject();
-                    nullobj.put("code",Integer.parseInt(codeindex));
-                    nullobj.put("timeseries","");
-                    nullobj.put("row",i);
-                    nullobj.put("col",j);
-                    nullgrid.add(nullobj);
-                    nullcount++;
+                    nullgrid.add(codeindex);
                     //System.out.println(nullobj);
                 }
 
             }
         }
-
         System.out.println("有缺失数据的网格数目："+nullgrid.size());
-        System.out.println("有数据的网格数目："+(jsonArray.size()));
-
-
+        System.out.println("有缺失数据的网格数目："+nullgrid);
         return nullgrid;
     }
 
-    /**
-     * 确定要进行插值的屏幕范围内的网格
-     * @param nullgrid
-     * @param N
-     */
+    /**确定要进行插值的屏幕范围内的网格*/
     public static void findAdjacentGrid(JSONArray nullgrid,int N){
 
         JSONObject obj=new JSONObject();
