@@ -533,50 +533,7 @@ public class InterestedRegion {
         return nullgrid;
     }
 
-    /**确定要进行插值的屏幕范围内的网格*/
-    public static void findAdjacentGrid(JSONArray nullgrid,int N){
 
-        JSONObject obj=new JSONObject();
-        int row;
-        int col;
-        int adjacent_code;
-        int code;
-        JSONArray adjacent_data;
-        String self_timeseries="";
-        JSONObject single_code=new JSONObject();
-        JSONObject single_code_value=new JSONObject();
-        JSONObject adjacent_codedata;
-
-        for(int i=0;i<nullgrid.size();i++){
-            obj=(JSONObject)nullgrid.get(i);
-            row=obj.getInt("row");
-            col=obj.getInt("col");
-            code=obj.getInt("code");
-            self_timeseries=obj.getString("timeseries");
-
-            single_code_value.put("row",row);
-            single_code_value.put("col",col);
-            single_code_value.put("self_timeseries",self_timeseries);
-            single_code.put(""+code,single_code_value);
-        }
-
-        adjacent_data=new JSONArray();
-        int rows=2000/N;
-        int cols=2000/N;
-        for(int r=1;r<=rows;r++){
-            for(int c=1;c<=cols;c++){
-                adjacent_code=(c+ (2000/N) * (r - 1));
-                if(jsonArray_map.containsKey(adjacent_code)){
-                    adjacent_codedata=new JSONObject();
-                    adjacent_codedata.put(""+adjacent_code,jsonArray_map.get(adjacent_code));
-                    adjacent_data.add(adjacent_codedata);
-                    //System.out.println(code+"("+row+"行"+col+"列"+")"+"周围的点有："+jsonArray_map.get(adjacent_code)+"("+m+"行"+n+"列"+")");
-                }
-            }
-        }
-        System.out.println(single_code);
-
-    }
 
 
 }
