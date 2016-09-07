@@ -69,7 +69,7 @@ public class PearsonCorrelationScore {
             }
         }
 
-        int N = list.size();
+        int N = list.size();//如果是对总体的计算一般使用n，如果是对样本的计算一般使用n-1，这样是对总体的无偏估计
         double r;
 
         //有可能存在两组数就没有完全相同的时间点，故这里是需要判断的
@@ -111,12 +111,15 @@ public class PearsonCorrelationScore {
     }
 
 
-
-    public static void pearson(){
+    /**
+     * 确定参与数据缺失点插值的点
+     * @return
+     */
+    public static JSONObject pearson(){
+        //1.从静态文本中读取文件，确定待插值的网格和用于插值的网格
         String testpath="D:\\github.com\\bigdataXiang\\HousePriceServer\\src\\com\\reprocess\\grid_100\\interpolation\\";
         Vector<String> testfile= FileTool.Load(testpath+"testfile.txt","utf-8");
         String result=testfile.elementAt(0);
-        // System.out.println(result);
         JSONObject single_code=JSONObject.fromObject(result);
         String interest_code="";
         JSONObject single_code_value=new JSONObject();
@@ -213,11 +216,14 @@ public class PearsonCorrelationScore {
             }
         }
 
-        //System.out.println(interpolation_codes.toString());
+        System.out.println(interpolation_codes.toString());
 
         Iterator it=interpolation_codes.keys();
         String key="";
         JSONObject value;
+        JSONObject valublecode;
+
+        JSONObject interpolation=new JSONObject();
         if(it.hasNext()){
             while(it.hasNext()){
                 key=(String)it.next();
@@ -225,8 +231,45 @@ public class PearsonCorrelationScore {
                 self_timeseries=value.getJSONObject("self_timeseries");
                 rlist=value.getJSONArray("rlist");
 
-                System.out.println(key+":"+self_timeseries);
-                System.out.println("    "+rlist);
+                //System.out.println(key+":"+self_timeseries);
+
+
+                //取rllist中相关系数最高的五个点
+                JSONArray interpolation_list_5=new JSONArray();
+                if(rlist.size()>5){
+                    //System.out.println("与"+key+"相关性高的code：");
+                    for(int i=rlist.size()-1;i>rlist.size()-6;i--){
+                        valublecode=rlist.get(i);
+                        //System.out.println(valublecode);
+                        interpolation_list_5.add(valublecode);
+                    }
+                }
+
+                interpolation.put(key,interpolation_list_5);
+            }
+        }
+        System.out.println(interpolation);
+        return interpolation;
+
+    }
+
+    public static void singleCodeInterpolation(JSONObject interpolation){
+
+        Iterator it =interpolation.keys();
+        String key;
+        JSONArray interpolation_list_5;
+        JSONObject adjacent_obj;
+        String adjacent_code;
+        if(it.hasNext()){
+            while (it.hasNext()){
+                key=(String) it.next();
+                interpolation_list_5=interpolation.getJSONArray(key);
+
+                for(int i=0;i<interpolation_list_5.size();i++){
+                    adjacent_obj=interpolation_list_5.getJSONObject(i);
+                    adjacent_code=adjacent_obj.getString("code");
+                    System.out.println(dataset.get(adjacent_code));
+                }
             }
 
         }
@@ -234,11 +277,13 @@ public class PearsonCorrelationScore {
     }
 
     public static void main(String[] args) {
+        JSONObject interpolation=pearson();//{"44553":[{"code":"45754","r":0.9999999999999893},{"code":"46166","r":0.9999999999985891},{"code":"44564","r":0.999999999998465},{"code":"44161","r":0.9846171279165659},{"code":"44954","r":0.9163949063528937}],"44556":[],"44563":[{"code":"45754","r":1.0000000000000444},{"code":"46166","r":0.9999999999999745},{"code":"44162","r":0.9599756760643429},{"code":"45359","r":0.9521491602945367},{"code":"45762","r":0.9383323643385016}],"44564":[{"code":"45762","r":1.0000026691445016},{"code":"44956","r":1.0000000002730443},{"code":"46157","r":1.0000000000026537},{"code":"44166","r":1.0000000000015612},{"code":"44158","r":1.000000000001283}],"44566":[{"code":"44165","r":1.0000000000042069},{"code":"45756","r":0.8842457658458388},{"code":"46561","r":0.8754487612251354},{"code":"45754","r":0.8409790784268929},{"code":"44966","r":0.8147627294467269}],"45364":[{"code":"45754","r":0.99306695535799},{"code":"46560","r":0.9884262893664505},{"code":"44957","r":0.985856582385948},{"code":"44158","r":0.9849361610580533},{"code":"44153","r":0.9757599572519818}],"45365":[{"code":"44165","r":1.0000000000084608},{"code":"44161","r":0.9922210843042336},{"code":"44160","r":0.9895786953388341},{"code":"44960","r":0.9891613622901583},{"code":"45360","r":0.9878234141303601}],"46157":[{"code":"44564","r":1.0000000000026537},{"code":"45754","r":0.9999694497454086},{"code":"46166","r":0.9994568151676683},{"code":"44161","r":0.9912070160300842},{"code":"46556","r":0.9803418261673766}],"46159":[],"46161":[{"code":"44165","r":1.0000000000043985},{"code":"44963","r":0.9795861709949995},{"code":"45764","r":0.9704004102554434},{"code":"44154","r":0.9669236806904087},{"code":"45754","r":0.965574912255726}],"46166":[{"code":"44563","r":0.9999999999999745},{"code":"44564","r":0.9999999999986026},{"code":"44553","r":0.9999999999985891},{"code":"46157","r":0.9994568151676683},{"code":"46560","r":0.9873056220676827}],"44157":[{"code":"44161","r":0.99999999999974},{"code":"45357","r":0.9915214094144376},{"code":"46160","r":0.9703461609793591},{"code":"45761","r":0.9659581197619368},{"code":"46560","r":0.9609280085862177}],"44161":[{"code":"44165","r":1.0000000000001643},{"code":"44954","r":0.9999999999999504},{"code":"44157","r":0.99999999999974},{"code":"45754","r":0.999323908783843},{"code":"45760","r":0.9984569309603111}],"44163":[{"code":"44564","r":1.0000000000002387},{"code":"45361","r":0.9261203209430575},{"code":"46166","r":0.9069735099222169},{"code":"46563","r":0.9037304141708133},{"code":"44156","r":0.8889123546053517}],"44165":[{"code":"46167","r":1.000000003534472},{"code":"44958","r":1.0000000028753162},{"code":"46160","r":1.0000000000554132},{"code":"46162","r":1.0000000000184186},{"code":"45760","r":1.0000000000154314}],"44954":[{"code":"44161","r":0.9999999999999504},{"code":"44962","r":0.9689241035197159},{"code":"44958","r":0.966411234688561},{"code":"44164","r":0.9466094074980667},{"code":"45364","r":0.9377222688709478}],"45754":[{"code":"44563","r":1.0000000000000444},{"code":"44553","r":0.9999999999999893},{"code":"46157","r":0.9999694497454086},{"code":"46564","r":0.9998642097965291},{"code":"45760","r":0.9997259291978358}],"45765":[{"code":"44564","r":1.0000000000002087},{"code":"45754","r":0.9959893785731951},{"code":"45363","r":0.9824482507967962},{"code":"46556","r":0.9807897706278123},{"code":"46157","r":0.9769073325860704}],"46560":[{"code":"44564","r":0.9999999999998891},{"code":"45754","r":0.9903774310257425},{"code":"45364","r":0.9884262893664505},{"code":"46166","r":0.9873056220676827},{"code":"46564","r":0.9854209777663695}],"46561":[{"code":"44165","r":1.0000000000045615},{"code":"44155","r":0.9830630478440083},{"code":"45754","r":0.9676491057196981},{"code":"45759","r":0.9615242077521753},{"code":"44966","r":0.9121363440448407}],"44565":[],"44953":[],"44955":[],"45356":[]}
 
+        singleCodeInterpolation(interpolation);
     }
     public static double covariance(String code1, String code2){
 
-        // 找出双方都有的数据,（皮尔逊算法要求）
+        // 找出双方都有的数据
         List<String> list = new ArrayList<String>();
         for (Entry<String, Double> p1 : dataset.get(code1).entrySet()) {
             if (dataset.get(code2).containsKey(p1.getKey())) {
@@ -293,7 +338,4 @@ public class PearsonCorrelationScore {
                 }
         return result;
     }
-
-
-
 }
