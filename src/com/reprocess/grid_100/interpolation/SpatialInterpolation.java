@@ -19,7 +19,7 @@ import static com.reprocess.grid_100.ResoldGridClassify.setColorRegion;
 /**
  * Created by ZhouXiang on 2016/9/5.
  */
-public class InterestedRegion extends NiMatrix{
+public class SpatialInterpolation extends NiMatrix{
     public static Map<Integer, JSONObject> jsonArray_map=new HashMap<>();//用于存放北京区域内N00*N00分辨率时的每个网格的时序数据
     public static Map<String, Map<String, Double>> dataset = new HashMap<>();//dataset的key是网格的code，value是网格对应的时间价格序列值
     public Map<String, Map<String, Double>> getDataSet() {
@@ -578,8 +578,6 @@ public class InterestedRegion extends NiMatrix{
                 timevalue_map.put(key_date, value_price);
             }
         }
-
-        //System.out.println(code+"  "+timevalue_map.size());
         dataset.put(code, timevalue_map);
     }
 
@@ -804,25 +802,9 @@ public class InterestedRegion extends NiMatrix{
                 NiMatrix inverse_matrix = new NiMatrix();
                 C_y_nn_inverse=inverse_matrix.getNiMatrix(C_y_nn);//求C_y_nn的逆矩阵
 
-                /*System.out.println("原矩阵：");
-                inverse_matrix.printMatrix(C_y_nn);
-                System.out.println("逆矩阵：");
-                inverse_matrix.printMatrix(C_y_nn_inverse);
-                System.out.println("单位矩阵：");
-                inverse_matrix.printMatrix(marixMultiply(C_y_nn_inverse,C_y_nn));*/
 
                 /** 求权重w */
                 w=marixMultiply(C_y_nn_inverse,C_y_n0);
-                //System.out.println("W:"+w.length);
-                //print2DArray(w);
-
-                /*printSeparator(10);//打印分隔符
-                for(int i=0;i<N;i++){
-
-                    related_code_json=JSONObject.fromObject(related_list.get(i));
-                    related_code=related_code_json.getString("code");
-                    printDataSetMap(related_code);
-                }*/
 
                 String[] dates={"2015-11","2015-10","2016-3","2016-2","2016-5","2015-12","2016-4","2016-1"};
                 double y0=0;
@@ -834,13 +816,13 @@ public class InterestedRegion extends NiMatrix{
                     y0=y0_EstimatedValue(w,related_list,dates[i]);
                     System.out.print(dates[i]+" : "+y0+" ; ");
                 }
+                System.out.print("\n");
                 printSeparator(40);//打印分隔符
-                //System.out.print("\n");
           }
         }
     }
 
-    /**求协方差矩阵*/
+    /**9、求协方差矩阵*/
     public static void covarianceMatrix(double[][] C_y_nn,List related_list){
 
         String code_i="";
