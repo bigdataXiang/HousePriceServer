@@ -804,18 +804,38 @@ public class InterestedRegion extends NiMatrix{
                 NiMatrix inverse_matrix = new NiMatrix();
                 C_y_nn_inverse=inverse_matrix.getNiMatrix(C_y_nn);//求C_y_nn的逆矩阵
 
-                System.out.println("原矩阵：");
+                /*System.out.println("原矩阵：");
                 inverse_matrix.printMatrix(C_y_nn);
                 System.out.println("逆矩阵：");
                 inverse_matrix.printMatrix(C_y_nn_inverse);
-
                 System.out.println("单位矩阵：");
-                inverse_matrix.printMatrix(marixMultiply(C_y_nn_inverse,C_y_nn));
+                inverse_matrix.printMatrix(marixMultiply(C_y_nn_inverse,C_y_nn));*/
 
-                //求权重w
+                /** 求权重w */
                 w=marixMultiply(C_y_nn_inverse,C_y_n0);
-                System.out.println("W:");
-                inverse_matrix.printMatrix(w);
+                System.out.println("W:"+w.length);
+                print2DArray(w);
+
+                printDataSetMap(lackdata_code);
+                printSeparator(10);//打印分隔符
+
+                for(int i=0;i<N;i++){
+
+                    related_code_json=JSONObject.fromObject(related_list.get(i));
+                    related_code=related_code_json.getString("code");
+                    printDataSetMap(related_code);
+                }
+                printSeparator(40);//打印分隔符
+
+                String[] dates={"2015-11","2015-10","2016-3","2016-2","2016-5","2015-12","2016-4","2016-1"};
+                double y0=0;
+                for (int i=0;i<dates.length;i++){
+                    y0=y0_EstimatedValue(w,related_list,dates[i]);
+                    System.out.print(dates[i]+" : "+y0+" ; ");
+                }
+                System.out.print("\n");
+
+
           }
         }
     }
@@ -881,7 +901,7 @@ public class InterestedRegion extends NiMatrix{
     public static void printDataSetMap(String dataset_key){
         Map<String, Double> map=dataset.get(dataset_key);
         for (Map.Entry<String, Double> p : map.entrySet()) {
-            System.out.print(p.getKey()+":"+p.getValue()+" ; ");
+            System.out.print(p.getKey()+" : "+p.getValue()+" ; ");
         }
         System.out.println("\n");
     }
@@ -911,6 +931,47 @@ public class InterestedRegion extends NiMatrix{
                 }
         return result;
     }
+    /**打印分隔符*/
+    public static void printSeparator(int N){
+        StringBuffer space= new StringBuffer();
+        for(int i= 0;i<N;i++)
+        {
+            space.append("-");
+            space.append("-");
+            space.append("*");
+            space.append("-");
+            space.append("-");
+        }
+        System.out.println(space.toString());
+    }
+
+    /**求数据缺失点的估计值*/
+    public static double y0_EstimatedValue(double[][] w,JSONArray related_list,String date){
+
+        double y0=0;
+        int N=related_list.size();
+        JSONObject related_code_json;
+        String related_code;
+        double avenrage_price=0;
+
+        for(int i=0;i<N;i++){
+
+            related_code_json=JSONObject.fromObject(related_list.get(i));
+            related_code=related_code_json.getString("code");
+            Map<String, Double> map=dataset.get(related_code);
+
+            for (Map.Entry<String, Double> p : map.entrySet()) {
+                if(p.getKey().equals(date)){
+                    //System.out.println(w[i][0]);
+                    //System.out.println(p.getValue());
+                    avenrage_price=p.getValue()*w[i][0];
+                }
+            }
+            y0+=avenrage_price;
+        }
+        return y0;
+    }
+
 
 
 
