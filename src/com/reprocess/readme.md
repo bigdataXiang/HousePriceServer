@@ -138,6 +138,14 @@ Calendar ca = new GregorianCanlendar(int year,int month,int dayOfMonth,int hourO
  
 + 犯了一个错误
 和之前面试时候的错误一样，就是list是不能动态删除里面的元素的。因为删除一个元素之后，list的长度和元素的值都会变
+
+## 09月08日
++ java除法的陷阱问题
+>这个问题已经不是第一次犯错了，就是不长记性呢怎么。
+首先，两个整数相除，返回的要么是整数，要么是0。如果结果是零点几，那就要把两个整数强制转换成double型
+其次，当double类型数据小数位很长的时候，要保留小数的位数，则用下面的方法：
+>BigDecimal b = new BigDecimal(cov_temp*(sumXY - sumX * sumY / N));
+>cov = b.setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue();
  
  
 

@@ -10,6 +10,7 @@ import net.sf.json.JSONObject;
 import utils.FileTool;
 import utils.UtilFile;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static com.reprocess.grid_100.GridMerge.codeMapping100toN00;
@@ -702,8 +703,10 @@ public class InterestedRegion {
             }
         }
 
+        //System.out.println(list);
         int N = list.size();
         double cov;
+        double cov_temp;
 
         if(N!=0){
             double sumX = 0.0;
@@ -718,8 +721,14 @@ public class InterestedRegion {
                 sumY += p2Map.get(name);
                 sumXY += p1Map.get(name) * p2Map.get(name);
             }
+            /*System.out.println(sumXY);
+            System.out.println(sumX * sumY / N);*/
 
-            cov =(1/N)*(sumXY - sumX * sumY / N) ;
+            cov_temp=(1/(double)N);
+            BigDecimal b = new BigDecimal(cov_temp*(sumXY - sumX * sumY / N));
+            cov = b.setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue();
+            //System.out.println(cov);
+
         }else {
             cov=0;
         }
@@ -743,15 +752,15 @@ public class InterestedRegion {
                 lackdata_code=(String) it.next();
                 related_list=code_relatedCode.getJSONArray(lackdata_code);
 
-                //System.out.println(lackdata_code);
-                //printDataSetMap(lackdata_code);
+                System.out.println("lackdata_code:"+lackdata_code);
+                printDataSetMap(lackdata_code);
 
                 for(int i=0;i<related_list.size();i++){
                     related_code_json=JSONObject.fromObject(related_list.get(i));
                     related_code=related_code_json.getString("code");
 
-                    //System.out.println(related_code);
-                    //printDataSetMap(related_code);
+                    System.out.println("related_code:"+related_code);
+                    printDataSetMap(related_code);
 
                     lackdata_related_cov=covariance(lackdata_code,related_code);
                     System.out.println(lackdata_code+"和"+related_code+":"+lackdata_related_cov);
@@ -761,6 +770,7 @@ public class InterestedRegion {
         }
     }
 
+    /**打印dataset里面的map值*/
     public static void printDataSetMap(String dataset_key){
         Map<String, Double> map=dataset.get(dataset_key);
         for (Map.Entry<String, Double> p : map.entrySet()) {
