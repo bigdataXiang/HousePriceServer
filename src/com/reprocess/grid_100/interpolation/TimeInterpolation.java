@@ -7,6 +7,7 @@ import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import utils.FileTool;
+import utils.UtilFile;
 
 import java.util.*;
 
@@ -42,6 +43,8 @@ public class TimeInterpolation {
         for(int i=0;i<dates.length;i++){
             print_dataset_time_codepriceMap(dates[i]);
         }
+
+        System.out.println(findRelatedMonth(dates));
 
 
     }
@@ -229,8 +232,36 @@ public class TimeInterpolation {
     }
 
     /**6、求待插值的月份与其他月份的相关性 R ,并且找出五个相关性最强的月份*/
-    public static JSONObject findRelatedMonth(JSONArray lackvalue_grids){
+    public static JSONObject findRelatedMonth(String[] lackvalue_months){
 
+        String lackdata_month="";
+        String related_month=" ";
+        double r;
+
+        JSONObject interpolation_singlemonth=new JSONObject();
+
+        for(int i=0;i<lackvalue_months.length;i++){
+            lackdata_month=lackvalue_months[i];
+
+            List rlist=new ArrayList<>();
+            for(int j=0;j<lackvalue_months.length;j++){
+
+                if(j!=i){
+                    related_month=lackvalue_months[j];
+                    r=pearson(lackdata_month,related_month);
+
+                    JSONObject r_adjacent_month=new JSONObject();
+                    r_adjacent_month.put("month",related_month);
+                    r_adjacent_month.put("r",r);
+                    rlist.add(r_adjacent_month);
+                }
+            }
+            //加入list之前先根据相关性进行排序
+            Collections.sort(rlist, new UtilFile.RComparator());
+
+            interpolation_singlemonth.put(lackdata_month,rlist);
+        }
+        return interpolation_singlemonth;
     }
 
 
