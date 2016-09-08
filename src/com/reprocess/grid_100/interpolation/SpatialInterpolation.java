@@ -63,6 +63,7 @@ public class SpatialInterpolation extends NiMatrix{
         JSONArray lackvalue_grids=JSONArray.fromObject(grids.elementAt(0));
         JSONObject code_relatedCode=findRelatedCode(lackvalue_grids);
 
+        System.out.println(code_relatedCode);
         /**7、计算单个缺失数据的网格与其他网格的相关性系数*/
         codesCovariance(code_relatedCode);
 
