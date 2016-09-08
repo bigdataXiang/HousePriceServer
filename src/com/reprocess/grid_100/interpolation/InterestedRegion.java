@@ -687,7 +687,7 @@ public class InterestedRegion extends NiMatrix{
             if(list_10.size()==0){
                 //System.out.println("要搞清楚"+lackdata_code+"为什么与所有的网格相关性都是0");
             }else {
-                System.out.println(lackdata_code+" : "+list_10.size()+" "+list_10);
+                //System.out.println(lackdata_code+" : "+list_10.size()+" "+list_10);
                 interpolation_singlecode.put(lackdata_code,list_10);
             }
         }
@@ -813,29 +813,29 @@ public class InterestedRegion extends NiMatrix{
 
                 /** 求权重w */
                 w=marixMultiply(C_y_nn_inverse,C_y_n0);
-                System.out.println("W:"+w.length);
-                print2DArray(w);
+                //System.out.println("W:"+w.length);
+                //print2DArray(w);
 
-                printDataSetMap(lackdata_code);
-                printSeparator(10);//打印分隔符
-
+                /*printSeparator(10);//打印分隔符
                 for(int i=0;i<N;i++){
 
                     related_code_json=JSONObject.fromObject(related_list.get(i));
                     related_code=related_code_json.getString("code");
                     printDataSetMap(related_code);
-                }
-                printSeparator(40);//打印分隔符
+                }*/
 
                 String[] dates={"2015-11","2015-10","2016-3","2016-2","2016-5","2015-12","2016-4","2016-1"};
                 double y0=0;
+
+                System.out.println(lackdata_code+":");
+                printDataSetMap(lackdata_code);
+
                 for (int i=0;i<dates.length;i++){
                     y0=y0_EstimatedValue(w,related_list,dates[i]);
                     System.out.print(dates[i]+" : "+y0+" ; ");
                 }
-                System.out.print("\n");
-
-
+                printSeparator(40);//打印分隔符
+                //System.out.print("\n");
           }
         }
     }
