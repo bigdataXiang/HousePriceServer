@@ -620,7 +620,7 @@ public class InterestedRegion {
             }
 
             //System.out.println("sumXY:"+sumXY);
-            //System.out.println("sumX * sumY/N:"+sumX * sumY/N);
+           // System.out.println("sumX * sumY/N:"+sumX * sumY/N);
             double numerator = sumXY - sumX * sumY / N;
             double denominator = Math.sqrt((sumX_Sq - sumX * sumX / N)
                     * (sumY_Sq - sumY * sumY / N));
@@ -655,9 +655,11 @@ public class InterestedRegion {
             for (Map.Entry<String, Map<String, Double>> ds : dataset.entrySet()) {
 
                 String related_code=ds.getKey();
+                int size=dataset.get(related_code).size();
+
                 if(lackdata_code.equals(related_code)){
 
-                }else {
+                }else if(size>7){//选取本身时间连续性比较好的网格进行相关性计算
                     r=pearson(lackdata_code,related_code);
 
                     //选取相关性大于0.5的网格
@@ -674,8 +676,8 @@ public class InterestedRegion {
 
             //取相关性最高的十个code
             List list_10=new ArrayList<>();
-            if(rlist.size()>20){
-                for(int rl=rlist.size()-1;rl>rlist.size()-21;rl--){
+            if(rlist.size()>10){
+                for(int rl=rlist.size()-1;rl>rlist.size()-11;rl--){
                     list_10.add(rlist.get(rl));
                 }
             }else {
@@ -683,7 +685,7 @@ public class InterestedRegion {
             }
 
             if(list_10.size()==0){
-                System.out.println("要搞清楚"+lackdata_code+"为什么与所有的网格相关性都是0");
+                //System.out.println("要搞清楚"+lackdata_code+"为什么与所有的网格相关性都是0");
             }else {
                 System.out.println(lackdata_code+" : "+list_10.size()+" "+list_10);
                 interpolation_singlecode.put(lackdata_code,list_10);
@@ -728,6 +730,7 @@ public class InterestedRegion {
             BigDecimal b = new BigDecimal(cov_temp*(sumXY - sumX * sumY / N));
             cov = b.setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue();
             //System.out.println(cov);
+            //cov =cov_temp*(sumXY - sumX * sumY / N);
 
         }else {
             cov=0;
