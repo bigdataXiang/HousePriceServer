@@ -114,8 +114,7 @@ public class NiMatrix {
 
     }
     /*矩阵做乘法，验证结果*/
-    public static double[][] getProductMatrix(double[][] init_matrix,
-                                              double[][] new_matrix) {
+    public static double[][] getProductMatrix(double[][] init_matrix, double[][] new_matrix) {
 
         int len = init_matrix.length;
         double[][] product_matrix = new double[len][len];

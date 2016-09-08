@@ -19,7 +19,7 @@ import static com.reprocess.grid_100.ResoldGridClassify.setColorRegion;
 /**
  * Created by ZhouXiang on 2016/9/5.
  */
-public class InterestedRegion {
+public class InterestedRegion extends NiMatrix{
     public static Map<Integer, JSONObject> jsonArray_map=new HashMap<>();//用于存放北京区域内N00*N00分辨率时的每个网格的时序数据
     public static Map<String, Map<String, Double>> dataset = new HashMap<>();//dataset的key是网格的code，value是网格对应的时间价格序列值
     public Map<String, Map<String, Double>> getDataSet() {
@@ -638,7 +638,7 @@ public class InterestedRegion {
         return  r;
     }
 
-    /**6、计算lackdata_code与全区域的其他网格的皮尔逊系数 r ，并且返回20个相关系数最高的值，有些code之间的相关系数高是因为本身数据量少，故要做二次筛选 */
+    /**6、计算lackdata_code与全区域的其他网格的皮尔逊系数 r ，并且返回10个相关系数最高的值，有些code之间的相关系数高是因为本身数据量少，故要做二次筛选 */
     public static JSONObject findRelatedCode(JSONArray lackvalue_grids){
 
         double r=0;
@@ -694,7 +694,7 @@ public class InterestedRegion {
         return interpolation_singlecode;
     }
 
-    /**7、计算两个网格之间的协方差*/
+    /**7、计算两个网格之间的协方差 用的是除以（N-1）*/
     public static double covariance(String code1, String code2){
 
         // 找出双方都有的数据
@@ -714,6 +714,8 @@ public class InterestedRegion {
             double sumX = 0.0;
             double sumY = 0.0;
             double sumXY = 0.0;
+            double avenrageX=0.0;
+            double avenrageY=0.0;
 
             for (String name : list) {
                 Map<String, Double> p1Map = dataset.get(code1);
@@ -726,11 +728,18 @@ public class InterestedRegion {
             /*System.out.println(sumXY);
             System.out.println(sumX * sumY / N);*/
 
+            avenrageX=sumX/N;
+            avenrageY=sumY/N;
+
+            /**用公式 cov(xy)=E(xy)-E(x)*E(y)=(1/n)*(x1*y1+...+xn*yn)-(1/(n*n))(x1+...+xn)(y1+...+yn)*/
             cov_temp=(1/(double)N);
             BigDecimal b = new BigDecimal(cov_temp*(sumXY - sumX * sumY / N));
             cov = b.setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue();
             //System.out.println(cov);
-            //cov =cov_temp*(sumXY - sumX * sumY / N);
+
+            /**用公式 cov(xy)= (1/(N-1))*(sumXY-avenrageX*sumY)  */
+            cov =(1/(double)(N-1))*(sumXY - avenrageX*sumY);
+            //System.out.println(cov);
 
         }else {
             cov=0;
@@ -743,7 +752,7 @@ public class InterestedRegion {
     public static void codesCovariance(JSONObject code_relatedCode){
 
         String lackdata_code;
-        List related_list;
+        JSONArray related_list;
         JSONObject related_code_json;
         String related_code;
         Iterator it=code_relatedCode.keys();
@@ -751,28 +760,123 @@ public class InterestedRegion {
 
         if(it.hasNext()){
             while(it.hasNext()){
-
+/**==================================求方程的右边一列（n+1）*1 和期望比 ======================================================*/
                 lackdata_code=(String) it.next();
                 related_list=code_relatedCode.getJSONArray(lackdata_code);
 
-                System.out.println("lackdata_code:"+lackdata_code);
-                printDataSetMap(lackdata_code);
+                //System.out.println("lackdata_code:"+lackdata_code);
+                //printDataSetMap(lackdata_code);
 
-                for(int i=0;i<related_list.size();i++){
+                int N=related_list.size();
+                double[][] C_y_n0=new double[N+1][1];
+                double[][] C_y_nn=new double[N+1][N+1];
+                double[][] C_y_nn_inverse=new double[N+1][N+1];
+                double b_n0=0;
+                double[][] w=new double[N+1][1];
+
+                for(int i=0;i<N;i++){
                     related_code_json=JSONObject.fromObject(related_list.get(i));
                     related_code=related_code_json.getString("code");
 
-                    System.out.println("related_code:"+related_code);
-                    printDataSetMap(related_code);
+                    //System.out.println("related_code:"+related_code);
+                    //printDataSetMap(related_code);
 
                     lackdata_related_cov=covariance(lackdata_code,related_code);
-                    System.out.println(lackdata_code+"和"+related_code+":"+lackdata_related_cov);
-                }
+                    C_y_n0[i][0]=lackdata_related_cov;
 
+                    /**求周围点与缺失点的期望比*/
+                    b_n0=expectRatio(lackdata_code,related_code);
+                    C_y_nn[i][N]=b_n0;
+                    C_y_nn[N][i]=b_n0;
+                    //System.out.println("b_n0:"+b_n0);
+
+                    //System.out.print(lackdata_related_cov+" , ");
+                    //System.out.println(lackdata_code+"和"+related_code+":"+lackdata_related_cov);
+                }
+                C_y_n0[N][0]=1;//最后一列为1
+                C_y_nn[N][N]=0;//矩阵的第（N+1）行和（N+1）列为0
+                System.out.print("\n");
+/**==================================求方程的左边矩阵边一列 （n+1）*（n+1） ======================================================*/
+
+                covarianceMatrix(C_y_nn,related_list);//求协方差矩阵
+                //print2DArray(C_y_nn);
+
+                NiMatrix inverse_matrix = new NiMatrix();
+                C_y_nn_inverse=inverse_matrix.getNiMatrix(C_y_nn);//求C_y_nn的逆矩阵
+
+                System.out.println("原矩阵：");
+                inverse_matrix.printMatrix(C_y_nn);
+                System.out.println("逆矩阵：");
+                inverse_matrix.printMatrix(C_y_nn_inverse);
+
+                System.out.println("单位矩阵：");
+                inverse_matrix.printMatrix(marixMultiply(C_y_nn_inverse,C_y_nn));
+
+                //求权重w
+                w=marixMultiply(C_y_nn_inverse,C_y_n0);
+                System.out.println("W:");
+                inverse_matrix.printMatrix(w);
+          }
+        }
+    }
+
+    /**求协方差矩阵*/
+    public static void covarianceMatrix(double[][] C_y_nn,List related_list){
+
+        String code_i="";
+        String code_j="";
+        double cov_ij;
+        JSONObject related_code_json;
+
+        for(int i=0;i<related_list.size();i++){
+
+            related_code_json=JSONObject.fromObject(related_list.get(i));
+            code_i=related_code_json.getString("code");
+
+            for(int j=0;j<related_list.size();j++){
+
+                related_code_json=JSONObject.fromObject(related_list.get(j));
+                code_j=related_code_json.getString("code");
+
+                cov_ij=covariance(code_i,code_j);
+                C_y_nn[i][j]=cov_ij;
             }
         }
     }
 
+    /**求周围采样点和缺失数据点的时间序列的期望比*/
+    public static double expectRatio(String self_code, String related_code){
+
+        double ratio=0;
+
+        double sum_self_code = 0.0;
+        double sum_related_code = 0.0;
+        double avenrage_self_code=0.0;
+        double avenrage_related_code=0.0;
+
+        Map<String, Double> self_code_Map = dataset.get(self_code);
+        Map<String, Double> related_code_Map = dataset.get(related_code);
+
+        Collection self_code_values = self_code_Map.values();
+        for (Object object_self_code : self_code_values)
+        {
+            sum_self_code+=(double)object_self_code;
+        }
+        avenrage_self_code=sum_self_code/self_code_values.size();
+
+        Collection related_code_values = related_code_Map.values();
+        for (Object object_related_code : related_code_values)
+        {
+            sum_related_code+=(double)object_related_code;
+        }
+        avenrage_related_code=sum_related_code/related_code_values.size();
+
+        ratio=avenrage_related_code/avenrage_self_code;
+
+        //System.out.println(ratio);
+
+        return ratio;
+    }
     /**打印dataset里面的map值*/
     public static void printDataSetMap(String dataset_key){
         Map<String, Double> map=dataset.get(dataset_key);
@@ -780,6 +884,32 @@ public class InterestedRegion {
             System.out.print(p.getKey()+":"+p.getValue()+" ; ");
         }
         System.out.println("\n");
+    }
+    /**打印二维数组*/
+    public static void print2DArray(double[][] C_y_nn){
+        for(int i=0;i<C_y_nn.length;i++){
+            for(int j=0;j<C_y_nn[i].length;j++){
+              System.out.print(C_y_nn[i][j]+" , ");
+            }
+            System.out.print("\n");
+        }
+    }
+    /**计算矩阵a与矩阵b的乘积*/
+    public static double[][] marixMultiply(double a[][], double b[][]) {
+        if (a == null || b == null || a[0].length != b.length) {
+            throw new IllegalArgumentException("matrix is illegal");
+        }
+        int row = a.length;
+        int column = b[0].length;
+        int multiplyC = a[0].length;
+        double[][] result = new double[row][column];
+
+        for (int m = 0; m < row; m++)
+            for (int n = 0; n < column; n++)
+                for (int i = 0; i < multiplyC; i++) {
+                    result[m][n] += a[m][i] * b[i][n];
+                }
+        return result;
     }
 
 
