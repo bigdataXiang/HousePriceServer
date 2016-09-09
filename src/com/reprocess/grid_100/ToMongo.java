@@ -389,7 +389,7 @@ public class ToMongo {
         Mongo m;
         try {
             System.out.println("运行开始:");
-            m = new MongoClient("192.168.6.9", 27017);   //127.0.0.1             //Mongo("192.168.6.9", 27017);
+            m = new MongoClient("192.168.6.9", 27017);   //127.0.0.1
 
             DB db = m.getDB("houseprice");
 

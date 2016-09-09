@@ -149,6 +149,27 @@ Calendar ca = new GregorianCanlendar(int year,int month,int dayOfMonth,int hourO
 >{"code":44556,"timeseries":{"2015-11":3.943662,"2016-2":3.943662,"2015-12":3.943662,"2016-1":3.943662},"row":112,"col":156}
 >{"code":46159,"timeseries":{"2015-11":7,"2015-10":7,"2015-12":7,"2016-1":7},"row":116,"col":159}
 
+## 09月09日
++ 本地mongodb数据库的创建
+
+（1）mongodb服务的启动和关闭
+    启动： cmd到"D:\ruanjian\MongoDB\bin"目录下，执行"mongod"命令，启动mongodb服务
+    关闭： use admin，执行db.shutdownServer()
+     
+（2）另外打开一个cmd窗口，也是cmd到"D:\ruanjian\MongoDB\bin"目录下，执行"mongo"命令，即可
+     进入到本地数据库
+     
+（3）mongodb数据库常用命令
+>show dbsc: 列出所有的数据库
+>use houseprice ：使用 "houseprice" 数据库
+>show collections : 列出 "houseprice" 数据库中的所有的表
+>use helloword : 进入 "houseprice" 数据库中的 "helloword" 表
+> db.dropDatabase() : 删除当前使用数据库
+>db.cloneDatabase("127.0.0.1") : 将指定机器上的数据库的数据克隆到当前数据库
+>db.copyDatabase("mydb", "temp", "127.0.0.1") : 将本机的mydb的数据复制到temp数据库中
+>db.repairDatabase() : 修复当前数据库
+>db.getName() : 查看当前使用的数据库
+>db.getMongo() : 查看当前db的链接机器地址
 
 
 
