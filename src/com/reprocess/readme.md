@@ -160,12 +160,14 @@ Calendar ca = new GregorianCanlendar(int year,int month,int dayOfMonth,int hourO
      进入到本地数据库
      
 （3）mongodb数据库常用命令
+>db.copyDatabase(from_dbname, to_dbname, from_hostname) : 从另一个主机克隆数据库
 >show dbsc: 列出所有的数据库
 >use houseprice ：使用 "houseprice" 数据库
 >show collections : 列出 "houseprice" 数据库中的所有的表
 >use helloword : 进入 "houseprice" 数据库中的 "helloword" 表
 > db.dropDatabase() : 删除当前使用数据库
 >db.cloneDatabase("127.0.0.1") : 将指定机器上的数据库的数据克隆到当前数据库
+>db.copyDatabase("mydb", "newmydb", "192.168.11.52") : 将192.168.11.51 mongod实例mydb库，复制到本地newmydb库：
 >db.copyDatabase("mydb", "temp", "127.0.0.1") : 将本机的mydb的数据复制到temp数据库中
 >db.repairDatabase() : 修复当前数据库
 >db.getName() : 查看当前使用的数据库
