@@ -386,6 +386,7 @@ public class ToMongo {
      * @param source ： 数据的来源（fang、woaiwojia）
      */
     public static void ToMongoDB(String collName,String source){
+
         Mongo m;
         try {
             System.out.println("运行开始:");
