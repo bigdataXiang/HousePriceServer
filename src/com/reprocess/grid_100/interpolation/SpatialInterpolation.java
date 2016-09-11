@@ -28,7 +28,90 @@ public class SpatialInterpolation extends NiMatrix{
 
     public static void main(String[] args){
 
- /*       *//**1、先生成整个北京区域内的每个网格的时序数据，存放刚到jsonArray_map中*//*
+        //System.out.println(getA());
+        System.out.println(getInterpolationResult());
+    }
+    public static int getResolution(int zoom){
+        int N;
+        switch(zoom){
+            case 18:N=1;
+                break;
+            case 17:N=2;
+                break;
+            case 16:N=3;
+                break;
+            case 15:N=5;
+                break;
+            case 14:N=10;
+                break;
+            case 13:N=20;
+                break;
+            case 12:N=30;
+                break;
+            case 11:N=40;
+                break;
+            default:N=50;
+                break;
+        }
+        return N;
+    }
+
+    /**计算出时空插值中空间插值的权重 A */
+    public static JSONObject getA(){
+
+        String path="D:\\github.com\\bigdataXiang\\HousePriceServer\\src\\com\\reprocess\\grid_100\\interpolation\\";
+        /**4、初始化数据集*/
+        Vector<String> gridmap=FileTool.Load(path+"gridmap.txt","utf-8");
+        JSONObject code_timevalue;
+        for(int i=0;i<gridmap.size();i++){
+            code_timevalue=JSONObject.fromObject(gridmap.elementAt(i));
+            initDataSet(code_timevalue);
+        }
+
+
+        /**5、6、计算有缺失数据的网格与全部网格的相关系数 r ,并且返回相关性最强的20个*/
+        Vector<String> grids= FileTool.Load(path+"lackvalue_grid.txt","utf-8");
+        JSONArray lackvalue_grids=JSONArray.fromObject(grids.elementAt(0));
+        JSONObject code_relatedCode=findRelatedCode(lackvalue_grids);
+
+        //System.out.println(code_relatedCode);
+
+        Iterator it=code_relatedCode.keys();
+        String key_code="";
+        JSONArray value_objs;
+        JSONObject obj;
+        String code="";
+        double r=0;
+
+        JSONObject A=new JSONObject();
+        if(it.hasNext()){
+            while(it.hasNext()){
+                key_code=(String) it.next();
+                value_objs=code_relatedCode.getJSONArray(key_code);
+
+                int n=value_objs.size();
+                double avenrage_r=0;
+                double total_r=0;
+                for(int i=0;i<n;i++){
+                    obj=(JSONObject) value_objs.get(i);
+                    code=obj.getString("code");
+                    r=obj.getDouble("r");
+
+                    total_r+=r;
+                }
+
+                avenrage_r=total_r/n;
+                A.put(key_code,avenrage_r);
+            }
+        }
+
+        return A;
+    }
+
+    /**整个插值的过程汇总，最后求得每一个网格插值前和插值后的值对比*/
+    public static JSONObject getInterpolationResult(){
+
+        /*       *//**1、先生成整个北京区域内的每个网格的时序数据，存放刚到jsonArray_map中*//*
         JSONObject condition=new JSONObject();
         condition.put("N",5);
         condition.put("source","woaiwojia");
@@ -63,35 +146,11 @@ public class SpatialInterpolation extends NiMatrix{
         JSONArray lackvalue_grids=JSONArray.fromObject(grids.elementAt(0));
         JSONObject code_relatedCode=findRelatedCode(lackvalue_grids);
 
-        System.out.println(code_relatedCode);
         /**7、计算单个缺失数据的网格与其他网格的相关性系数*/
-        codesCovariance(code_relatedCode);
+        JSONObject spatial=codesCovariance(code_relatedCode);
+        //System.out.println(spatial);
+        return spatial;
 
-
-    }
-    public static int getResolution(int zoom){
-        int N;
-        switch(zoom){
-            case 18:N=1;
-                break;
-            case 17:N=2;
-                break;
-            case 16:N=3;
-                break;
-            case 15:N=5;
-                break;
-            case 14:N=10;
-                break;
-            case 13:N=20;
-                break;
-            case 12:N=30;
-                break;
-            case 11:N=40;
-                break;
-            default:N=50;
-                break;
-        }
-        return N;
     }
     /**1.生成北京区域内N00*N00分辨率时的每个网格的时序数据,并且存放在jsonArray_map中*/
     public static void getAllGridSeriesValue(JSONObject condition){
@@ -748,7 +807,7 @@ public class SpatialInterpolation extends NiMatrix{
     }
 
     /**8、计算单个缺失数据的网格与其他网格的相关性系数*/
-    public static void codesCovariance(JSONObject code_relatedCode){
+    public static JSONObject codesCovariance(JSONObject code_relatedCode){
 
         String lackdata_code;
         JSONArray related_list;
@@ -756,6 +815,8 @@ public class SpatialInterpolation extends NiMatrix{
         String related_code;
         Iterator it=code_relatedCode.keys();
         double lackdata_related_cov;
+
+        JSONObject interpolation=new JSONObject();
 
         if(it.hasNext()){
             while(it.hasNext()){
@@ -794,7 +855,7 @@ public class SpatialInterpolation extends NiMatrix{
                 }
                 C_y_n0[N][0]=1;//最后一列为1
                 C_y_nn[N][N]=0;//矩阵的第（N+1）行和（N+1）列为0
-                System.out.print("\n");
+                //System.out.print("\n");
 /**==================================求方程的左边矩阵边一列 （n+1）*（n+1） ======================================================*/
 
                 covarianceMatrix(C_y_nn,related_list);//求协方差矩阵
@@ -810,17 +871,24 @@ public class SpatialInterpolation extends NiMatrix{
                 String[] dates={"2015-11","2015-10","2016-3","2016-2","2016-5","2015-12","2016-4","2016-1"};
                 double y0=0;
 
-                System.out.println(lackdata_code+":");
-                printDataSetMap(lackdata_code);
+                JSONObject obj=new JSONObject();
+                //System.out.println(lackdata_code+":");
+                //printDataSetMap(lackdata_code);
 
                 for (int i=0;i<dates.length;i++){
                     y0=y0_EstimatedValue(w,related_list,dates[i]);
-                    System.out.print(dates[i]+" : "+y0+" ; ");
+                    //System.out.print(dates[i]+" : "+y0+" ; ");
+
+                    obj.put(dates[i],y0);
                 }
-                System.out.print("\n");
-                printSeparator(40);//打印分隔符
+                interpolation.put(lackdata_code,obj);
+
+                //System.out.print("\n");
+                //printSeparator(40);//打印分隔符
           }
         }
+
+        return interpolation;
     }
 
     /**9、求协方差矩阵*/

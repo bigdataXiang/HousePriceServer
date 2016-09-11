@@ -13,7 +13,7 @@ public class db {
         if(m==null&&db==null){
                 try {
                     System.out.println("运行开始:");
-                    m = new Mongo("192.168.6.9", 27017);
+                    m = new Mongo("127.0.0.1", 27017);//192.168.6.9
                     //m = new Mongo("127.0.0.1", 27017);
                     //m.dropDatabase("test");
                     db= m.getDB("houseprice");
