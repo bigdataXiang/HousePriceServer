@@ -65,7 +65,9 @@ public class SpatialInterpolation extends NiMatrix{
         JSONObject code_timevalue;
         for(int i=0;i<gridmap.size();i++){
             code_timevalue=JSONObject.fromObject(gridmap.elementAt(i));
-            initDataSet(code_timevalue);
+            String code=code_timevalue.getString("code");
+            JSONObject timeseries=code_timevalue.getJSONObject("timeseries");
+            initDataSet(code,timeseries,dataset);
         }
 
 
@@ -119,7 +121,7 @@ public class SpatialInterpolation extends NiMatrix{
         getAllGridSeriesValue(condition);
 
         *//**2、设置好调用数据库的参数*//*
-        condition=condition();
+        condition= condition(west,east,south,north);
 
         *//**3、返回有缺失值的网格的编码*//*
         JSONArray lack_value_grid=findNullGrid(condition);//["44553","44556","44563","44564","44566","45364","45365","46157","46159","46161","46166","44157","44161","44163","44165","44954","45754","45765","46560","46561","44565","44953","44955","45356"]
@@ -131,7 +133,9 @@ public class SpatialInterpolation extends NiMatrix{
         JSONObject code_timevalue;
         for(int i=0;i<gridmap.size();i++){
             code_timevalue=JSONObject.fromObject(gridmap.elementAt(i));
-            initDataSet(code_timevalue);
+            String code=code_timevalue.getString("code");
+            JSONObject timeseries=code_timevalue.getJSONObject("timeseries");
+            initDataSet(code,timeseries,dataset);
         }
 
         /*//打印数据集
@@ -313,14 +317,14 @@ public class SpatialInterpolation extends NiMatrix{
     }
 
     /**2、设置好调用数据库的参数*/
-    public static JSONObject condition(){
+    public static JSONObject condition(double west,double east,double south,double north){
         double width=0.0011785999999997187;//每100m的经度差
         double length=9.003999999997348E-4;//每100m的纬度差
 
-        int colmin=(int)Math.ceil((116.31834983825684-115.417284)/width);
-        int colmax=(int)Math.ceil((116.40074729919434-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.934223203947056-39.438283)/length);
-        int rowmax=(int)Math.ceil((39.96366837052331-39.438283)/length);
+        int colmin=(int)Math.ceil((west-115.417284)/width);
+        int colmax=(int)Math.ceil((east-115.417284)/width);
+        int rowmin=(int)Math.ceil((south-39.438283)/length);
+        int rowmax=(int)Math.ceil((north-39.438283)/length);
 
         JSONObject condition=new JSONObject();
         condition.put("N",5);
@@ -622,10 +626,8 @@ public class SpatialInterpolation extends NiMatrix{
     }
 
     /**4、初始化DataSet数据集，其实第四步和第一步可以融合一下，去所里再更改一下*/
-    public static void initDataSet(JSONObject code_timevalue) {
+    public static void initDataSet(String code,JSONObject timeseries,Map dataset) {
 
-        String code=code_timevalue.getString("code");
-        JSONObject timeseries=code_timevalue.getJSONObject("timeseries");
 
         Map<String, Double> timevalue_map = new HashMap<String, Double>();
         Iterator it = timeseries.keys();

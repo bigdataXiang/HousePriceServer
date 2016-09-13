@@ -118,9 +118,9 @@ public class CallInterestGrid {
                 break;
             case 13:N=20;
                 break;
-            case 12:N=5;
+            case 12:N=30;
                 break;
-            case 11:N=40;
+            case 11:N=5;
                 break;
             default:N=50;
                 break;

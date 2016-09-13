@@ -173,6 +173,17 @@ Calendar ca = new GregorianCanlendar(int year,int month,int dayOfMonth,int hourO
 >db.getName() : 查看当前使用的数据库
 >db.getMongo() : 查看当前db的链接机器地址
 
+## 09月13日
+一、SSE(和方差)
+该统计参数计算的是拟合数据和原始数据对应点的误差的平方和,SSE越接近于0，说明模型选择和拟合更好，数据预测也越成功。接下来的MSE和RMSE因为和SSE是同出一宗，所以效果一样
+
+二、MSE(均方差)
+该统计参数是预测数据和原始数据对应点误差的平方和的均值，也就是SSE/n，和SSE没有太大的区别
+
+三、RMSE(均方根)
+该统计参数，也叫回归系统的拟合标准差，是MSE的平方根
+
+
 
 
 
