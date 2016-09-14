@@ -25,6 +25,7 @@ public class SpatialInterpolation extends NiMatrix{
     public Map<String, Map<String, Double>> getDataSet() {
         return dataset;
     }
+    public static Map<String, String> pearson_is_0=new HashMap<>();
 
     public static void main(String[] args){
 
@@ -733,6 +734,7 @@ public class SpatialInterpolation extends NiMatrix{
             }
             //加入list之前先根据相关性进行排序
             Collections.sort(rlist, new UtilFile.RComparator());
+           // System.out.println(rlist);
 
             //取相关性最高的十个code
             List list_10=new ArrayList<>();
@@ -746,6 +748,7 @@ public class SpatialInterpolation extends NiMatrix{
 
             if(list_10.size()==0){
                 //System.out.println("要搞清楚"+lackdata_code+"为什么与所有的网格相关性都是0");
+                pearson_is_0.put(lackdata_code,"");
             }else {
                 //System.out.println(lackdata_code+" : "+list_10.size()+" "+list_10);
                 interpolation_singlecode.put(lackdata_code,list_10);
