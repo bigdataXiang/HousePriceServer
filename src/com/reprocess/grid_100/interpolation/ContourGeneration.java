@@ -44,7 +44,7 @@ public class ContourGeneration {
             }
 
         }
-        MergeData();
+        Map<Integer,JSONObject> mergedata=MergeData();
 
     }
 
@@ -257,7 +257,8 @@ public class ContourGeneration {
     }
 
     /**8、将不用插值的数据和已经插值的数据进行合并,并且存于fullData.txt文件中*/
-    public static void MergeData(){
+    public static Map MergeData(){
+        Map<Integer,JSONObject> mergedata=new HashMap<>();
         fullData.addAll(interpolationData);
         JSONObject obj;
         Map<String,String> codekey=new HashMap<>();
@@ -288,11 +289,101 @@ public class ContourGeneration {
         Collections.sort(fullData, new UtilFile.CodeComparator()); // 根据网格code排序
         for(int i=0;i<fullData.size();i++){
 
-            FileTool.Dump(fullData.get(i).toString(),"D:\\fullData1.txt","utf-8");
-            //fullData1.txt中，code是整型的表示是不需要插值的数据，code是Stirng型的表示是插值的数据
+            //FileTool.Dump(fullData.get(i).toString(),"D:\\fullData1.txt","utf-8");//fullData1.txt中，code是整型的表示是不需要插值的数据，code是Stirng型的表示是插值的数据
+            JSONObject o=fullData.get(i);
+            int c=o.getInt("code");
+            mergedata.put(c,o);
+        }
+        return mergedata;
+    }
+
+    /**9、将插值后的结果全面表现在地图上*/
+    public static void girdDatas(String time,Map mergedata,int N){
+
+        int r_min=1;
+        int r_max=2000/N;
+        int c_min=1;
+        int c_max=2000/N;
+        JSONArray data=new JSONArray();
+        for(int code=1;code<=mergedata.size();code++){
+            JSONObject obj=(JSONObject) mergedata.get(code);
+            JSONObject timeseries=obj.getJSONObject("timeseries");
+            double average_price=0;
+
+            if(timeseries.size()!=0){
+                if(timeseries.containsKey(time)){
+                    average_price=timeseries.getDouble(time);
+                }else{
+                    System.out.println(code+"在"+time+"的插值怎么没有？！");
+                }
+            }else{
+                average_price=0;
+            }
+            int[] rowcol=codeToRowCol(code,N);
+            int row=rowcol[0];
+            int col=rowcol[1];
+            String color="";
+
+            obj=new JSONObject();
+            obj.put("code",code);
+            obj.put("average_price",average_price);
+            obj.put("row",row);
+            obj.put("col",col);
+
+
         }
     }
 
+    /**10、建立N00*N00的行列号与code的映射关系*/
+    public static int[] codeToRowCol(int code,int N){
 
+        Map<Integer,int[]> map=new HashMap<>();
+        int rows=2000/N;
+        int cols=2000/N;
+        int gridcode;
+        int[] rowcol=new int[2];
+        for(int r=1;r<rows;r++){
+            for(int c=1;c<cols;c++){
+                gridcode=c+(r-1)*cols;
+                rowcol[0]=r;
+                rowcol[1]=c;
+                map.put(gridcode,rowcol);
+            }
+        }
+
+        if(map.containsKey(code)){
+            rowcol=map.get(code);
+        }else {
+            System.out.println("无对应的行列号");
+        }
+
+        return rowcol;
+
+    }
+
+    /**11、建立更密集的配色方案*/
+    public static String setColorRegion(double price){
+        String color="";
+        boolean result;
+        for(double i=0.5;i<=15;){
+            result=section(price,i,i+0.5);
+            if(result){
+
+            }
+            i=i+0.5;
+        }
+
+        return color;
+    }
+    /** 判断x是否在区间（min，max]内*/
+    public static  boolean section(double x,double min,double max){
+        boolean result;
+        if(x>min&&x<=max){
+            result=true;
+        }else {
+            result=false;
+        }
+        return result;
+    }
 
 }
