@@ -1,5 +1,8 @@
 package com.reprocess.grid_100.interpolation;
 
+import com.mongodb.*;
+import com.svail.bean.Response;
+import com.svail.db.db;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -7,6 +10,8 @@ import utils.FileTool;
 import utils.UtilFile;
 
 import java.util.*;
+
+import static com.reprocess.grid_100.PoiCode.setPoiCode_100;
 
 /**
  * Created by ZhouXiang on 2016/9/13.
@@ -19,7 +24,63 @@ public class ContourGeneration {
     public static List<JSONObject> fullData=new ArrayList<>();//用来装那些每个月份都有值的网格json
     public static List<JSONObject> interpolationData=new ArrayList<>();//用来装那些某些月份的值缺乏但是已经插值好了的json
     public static Map<String,String> failedData=new HashMap<>();//用来装那些插值不成功的mse特别大的值
+
+    public Response get(String body){
+        JSONObject object=JSONObject.fromObject(body);
+        String time=object.getString("gridTime");
+        int year=Integer.parseInt(time.substring(0,time.indexOf("年")));
+        int month=Integer.parseInt(time.substring(time.indexOf("年")+"年".length(),time.indexOf("月")));
+        time=year+"-"+month;
+        Map<Integer,JSONObject> mergedata=new HashMap<>();
+        DBCollection coll = db.getDB().getCollection("resold_woaiwojia_interpolation");
+        List code_array=new ArrayList<>();
+        code_array=coll.find().toArray();
+        JSONObject obj;
+        String temp;
+        for(int i=0;i<code_array.size();i++){
+            temp=code_array.get(i).toString();
+            obj=JSONObject.fromObject(temp);
+            //System.out.println(obj);
+            obj.remove("_id");
+            int code=obj.getInt("code");
+            mergedata.put(code,obj);
+        }
+        System.out.println("开始合并数据");
+        JSONObject result=girdDatas(time,mergedata,5);
+        System.out.println("ok");
+        //System.out.println(result);
+
+        Response r= new Response();
+        r.setCode(200);
+        r.setContent(result.toString());
+        return r;
+
+    }
+
+
     public static void main(String[] args){
+       // toMongoDB("resold_woaiwojia_interpolation","D:\\objs.txt");
+        Map<Integer,JSONObject> mergedata=new HashMap<>();
+        DBCollection coll = db.getDB().getCollection("resold_woaiwojia_interpolation");
+        List code_array=new ArrayList<>();
+        code_array=coll.find().toArray();
+        JSONObject obj;
+        String temp;
+        for(int i=0;i<code_array.size();i++){
+            temp=code_array.get(i).toString();
+            obj=JSONObject.fromObject(temp);
+            //System.out.println(obj);
+            obj.remove("_id");
+            int code=obj.getInt("code");
+            mergedata.put(code,obj);
+        }
+        System.out.println("开始合并数据");
+        JSONObject result=girdDatas("2015-10",mergedata,5);
+        System.out.println("ok");
+        FileTool.Dump(result.toString(),"D:\\result.txt","utf-8");
+    }
+    /**生成最后的插值*/
+    public static void run(){
         creatAllGridsData();
         findLackDataGrid(4);
         interpolationResult();
@@ -49,7 +110,7 @@ public class ContourGeneration {
         System.out.println("开始合并数据：");
         JSONObject result=girdDatas("2015-10",mergedata,5);
         System.out.println("result:"+result);
-
+        FileTool.Dump(result.toString(),"D:\\result.txt","utf-8");
     }
 
 /**一、先对zoom=11，分辨率=500*500的网格进行插值*/
@@ -260,43 +321,18 @@ public class ContourGeneration {
         }
     }
 
-    /**8、将不用插值的数据和已经插值的数据进行合并,并且存于fullData.txt文件中*/
+    /**8、将不用插值的数据fullData和已经插值的数据interpolationData)进行合并,并且存于mongodb中*/
     public static Map MergeData(){
         Map<Integer,JSONObject> mergedata=new HashMap<>();
         fullData.addAll(interpolationData);
         JSONObject obj;
-        Map<String,String> codekey=new HashMap<>();
-        String code="";
+        int code;
         for(int i=0;i<fullData.size();i++){
             obj=fullData.get(i);
-            //System.out.println(obj);
-            code=obj.getString("code");
-            codekey.put(code,"");
-        }
-
-
-        JSONObject nullobj;
-        JSONObject timeseries=new JSONObject();
-        for(int i=1;i<=400;i++) {
-            for (int j =1; j<=400; j++) {
-                String codeindex=""+(j + (2000/5) * (i - 1));
-                if(!codekey.containsKey(codeindex)){
-                    nullobj=new JSONObject();
-                    nullobj.put("code",Integer.parseInt(codeindex));
-                    nullobj.put("timeseries",timeseries);
-                    fullData.add(nullobj);
-                }
-
-            }
-        }
-
-        Collections.sort(fullData, new UtilFile.CodeComparator()); // 根据网格code排序
-        for(int i=0;i<fullData.size();i++){
-
-            //FileTool.Dump(fullData.get(i).toString(),"D:\\fullData1.txt","utf-8");//fullData1.txt中，code是整型的表示是不需要插值的数据，code是Stirng型的表示是插值的数据
-            JSONObject o=fullData.get(i);
-            int c=o.getInt("code");
-            mergedata.put(c,o);
+            code=obj.getInt("code");
+            //System.out.println(code+":"+obj);
+            FileTool.Dump(obj.toString(),"D:\\objs.txt","utf-8");
+            mergedata.put(code,obj);
         }
         return mergedata;
     }
@@ -308,35 +344,66 @@ public class ContourGeneration {
         int r_max=2000/N;
         int c_min=1;
         int c_max=2000/N;
-        JSONArray data=new JSONArray();
-        for(int code=1;code<=mergedata.size();code++){
-            System.out.println(code);
-            JSONObject obj=(JSONObject) mergedata.get(code);
-            JSONObject timeseries=obj.getJSONObject("timeseries");
-            double average_price=0;
+        List<JSONObject> data=new ArrayList<>();
+        Map<Integer,String> codekey=new HashMap<>();
 
-            if(timeseries.size()!=0){
-                if(timeseries.containsKey(time)){
-                    average_price=timeseries.getDouble(time);
-                }else{
-                    System.out.println(code+"在"+time+"的插值怎么没有？！");
-                }
-            }else{
+        int code;
+        JSONObject obj;
+        JSONObject timeseries;
+        double average_price=0;
+        Iterator it=mergedata.keySet().iterator();
+        if(it.hasNext()){
+            while(it.hasNext()){
+                code=(int)it.next();
+                obj=(JSONObject) mergedata.get(code);
+                timeseries=obj.getJSONObject("timeseries");
+
                 average_price=0;
-            }
-            int[] rowcol=codeToRowCol(code,N);
-            int row=rowcol[0];
-            int col=rowcol[1];
-            String color=setColorRegion(average_price);
+                if(timeseries.size()!=0){
+                    if(timeseries.containsKey(time)){
+                        average_price=timeseries.getDouble(time);
+                    }else{
+                        System.out.println(code+"在"+time+"的插值怎么没有？！");
+                    }
+                }else{
+                    average_price=0;
+                }
 
-            obj=new JSONObject();
-            obj.put("code",code);
-            obj.put("average_price",average_price);
-            obj.put("row",row);
-            obj.put("col",col);
-            obj.put("color",color);
-            data.add(obj);
+                int[] rowcol=codeToRowCol(code,N);
+                int row=rowcol[0];
+                int col=rowcol[1];
+                String color=setColorRegion(average_price);
+
+                obj=new JSONObject();
+                obj.put("code",code);
+                obj.put("average_price",average_price);
+                obj.put("row",row);
+                obj.put("col",col);
+                obj.put("color",color);
+                //System.out.println(obj);
+                data.add(obj);
+                codekey.put(code,"");
+            }
         }
+
+        JSONObject nullobj;
+        int codeindex;
+        for(int i=1;i<=r_max;i++) {
+            for (int j =1; j<=c_max; j++) {
+                codeindex=(j + (2000/N) * (i - 1));
+                if(!codekey.containsKey(codeindex)){
+                    nullobj=new JSONObject();
+                    nullobj.put("code",codeindex);
+                    nullobj.put("average_price",0);
+                    nullobj.put("row",i);
+                    nullobj.put("col",j);
+                    nullobj.put("color","");
+                    data.add(nullobj);
+                }
+            }
+        }
+
+        Collections.sort(data, new UtilFile.CodeComparator());
 
         JSONObject result=new JSONObject();
         result.put("r_min",r_min);
@@ -435,6 +502,37 @@ public class ContourGeneration {
             color="#FF69B4";
         }
         return color;
+    }
+
+    /**12、将数据导入mongodb中*/
+    public static void toMongoDB(String collName,String file){
+
+        Mongo m;
+        try {
+            System.out.println("运行开始:");
+            m = new MongoClient("127.0.0.1", 27017);   //127.0.0.1
+            DB db = m.getDB("houseprice");
+
+            DBCollection coll = db.getCollection(collName);//coll.drop();
+            BasicDBObject document;
+
+            Vector<String> objs=FileTool.Load(file,"utf-8");
+            String poi="";
+            JSONObject obj;
+            for(int i=0;i<objs.size();i++){
+                poi=objs.elementAt(i);
+                document=BasicDBObject.parse(poi);
+                System.out.println(document);
+                coll.insert(document);
+            }
+        } catch (MongoException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            // TODO Auto-generated catch block
+            System.out.println("发生异常的原因为 :"+e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

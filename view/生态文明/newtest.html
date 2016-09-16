@@ -419,9 +419,12 @@
                 "gridTime":gridTime,
                 "source":source
             };
-            $.post("/gridcolor",""+JSON.stringify(json), function(result){
+            //  "/gridcolor_interpolation"
+            //  "/gridcolor"
+            $.post("/gridcolor_interpolation",""+JSON.stringify(json), function(result){
                 var price= JSON.parse(result);
-                draw_rectangle(bounds,price);
+                console.log("开始画网格");
+                draw_rectangle(price);
             });
         }
 
@@ -647,11 +650,7 @@
         polygon_array.push(poly);
 
     }
-    function draw_rectangle(bounds,price) {
-        var west=bounds.getWest();
-        var east=bounds.getEast();
-        var south=bounds.getSouth();
-        var north=bounds.getNorth();
+    function draw_rectangle(price) {
         var N=price.N;
         var width=0.0011785999999997187*N;//每N00m的经度差
         var length=9.003999999997348E-4*N;//每N00m的纬度差
@@ -688,6 +687,7 @@
                 var averageprice=gridvalue.average_price;
 
                 if(averageprice!=0){
+                    console.log(count);
                     rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_java});//,className:gridcode_java
                     rect.index=count;
                     rect.data=price.data[rect.index];
