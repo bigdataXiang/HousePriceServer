@@ -436,25 +436,25 @@
     });
 
     //load:当地图初始化时触发。（当地图的中心点和缩放初次设置时）
-    map.on('dragend', function(e) {
-        console.log("dragend");
+    map.on('zoomend', function(e) {
+        console.log("zoomend");
         //这里先删除旧的layer
-        for (var i=0;i<rects.length;i++){
-            map=map.removeLayer(rects[i]);
+
+        var zoom=map.getZoom();
+        console.log(zoom);
+        if(zoom==11){
+            if(rects.length==0){
+                var json={
+                    //"zoom":zoom,
+                    "gridTime":"2015年10月"
+                };
+                $.post("/gridcolor_interpolation",""+JSON.stringify(json), function(result){
+                    var price= JSON.parse(result);
+                    console.log("开始画网格");
+                    draw_rectangle_interpolation(price);
+                });
+            }
         }
-        rects=[];
-
-        var json={
-            //"zoom":zoom,
-            "gridTime":"2015年10月"
-        };
-        $.post("/gridcolor_interpolation",""+JSON.stringify(json), function(result){
-            var price= JSON.parse(result);
-            console.log("开始画网格");
-            draw_rectangle_interpolation(price);
-        });
-
-
     });
 
 

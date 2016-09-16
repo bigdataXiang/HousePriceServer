@@ -11,6 +11,7 @@ import utils.UtilFile;
 
 import java.util.*;
 
+import static com.reprocess.grid_100.CallInterestGrid.getLngLat;
 import static com.reprocess.grid_100.PoiCode.setPoiCode_100;
 
 /**
@@ -104,25 +105,76 @@ public class ContourGeneration {
 
 
     public static void main(String[] args){
-       // toMongoDB("resold_woaiwojia_interpolation","D:\\objs.txt");
+
+        callMongo();
+    }
+
+    /**调用mongodb生成网格值*/
+    public static void callMongo(){
+        String time="2015-10";
+        int N=5;
+
         Map<Integer,JSONObject> mergedata=new HashMap<>();
         DBCollection coll = db.getDB().getCollection("resold_woaiwojia_interpolation");
         List code_array=new ArrayList<>();
         code_array=coll.find().toArray();
         JSONObject obj;
         String temp;
+        double average_price;
+        JSONObject timeseries;
+        List<JSONObject> data=new ArrayList<>();
+
         for(int i=0;i<code_array.size();i++){
             temp=code_array.get(i).toString();
             obj=JSONObject.fromObject(temp);
             //System.out.println(obj);
             obj.remove("_id");
             int code=obj.getInt("code");
-            mergedata.put(code,obj);
+
+            timeseries=obj.getJSONObject("timeseries");
+
+            average_price=0;
+            if(timeseries.size()!=0){
+                if(timeseries.containsKey(time)){
+                    average_price=timeseries.getDouble(time);
+                }else{
+                    System.out.println(code+"在"+time+"的插值怎么没有？！");
+                }
+            }else{
+                average_price=0;
+            }
+
+            int[] rowcol=codeToRowCol(code,N);
+            int row=rowcol[0];
+            int col=rowcol[1];
+            String color=setColorRegion(average_price);
+
+            obj=new JSONObject();
+            obj.put("code",code);
+            obj.put("average_price",average_price);
+            obj.put("row",row);
+            obj.put("col",col);
+            obj.put("color",color);
+            obj.put("corners",getLngLat(row,col,N));
+            //System.out.println(obj);
+            data.add(obj);
         }
-        System.out.println("开始合并数据");
-        JSONObject result=girdDatas("2015-10",mergedata,5);
+        System.out.println("开始排序：");
+        Collections.sort(data, new UtilFile.CodeComparator());
+
+        JSONObject result=new JSONObject();
+        int r_min=1;
+        int r_max=2000/N;
+        int c_min=1;
+        int c_max=2000/N;
+        result.put("r_min",r_min);
+        result.put("r_max",r_max);
+        result.put("c_min",c_min);
+        result.put("c_max",c_max);
+        result.put("N",N);
+        result.put("data",data);
+
         System.out.println("ok");
-        FileTool.Dump(result.toString(),"D:\\result.txt","utf-8");
     }
     /**生成最后的插值*/
     public static void run(){
@@ -491,60 +543,26 @@ public class ContourGeneration {
     /**11、建立更密集的配色方案*/
     public static String setColorRegion(double price){
         String color="";
-        if(price>13){
-            color="#800000";
-        }else if(price>12.5&&price<=13){
-            color="#8B0000";
-        }else if(price>12&&price<=12.5){
-            color="#DC143C";
-        }else if(price>11.5&&price<=12){
-            color="#FF0000";
-        }else if(price>11&&price<=11.5){
-            color="#FF4500";
-        }else if(price>10.5&&price<=11){
-            color="#FF7F50";
-        }else if(price>10&&price<=10.5){
-            color="#D2691E";
-        }else if(price>9.5&&price<=10){
-            color="#CD853F";
-        }else if(price>9&&price<=9.5){
-            color="#FFA500";
-        }else if(price>8.5&&price<=9){
-            color="#DAA520";
-        }else if(price>8&&price<=8.5){
-            color="#FFD700";
-        }else if(price>7.5&&price<=8){
-            color="#808000";
-        }else if(price>7&&price<=7.5){
-            color="#008000";
-        }else if(price>6.5&&price<=7){
-            color="#228B22";
-        }else if(price>6&&price<=6.5){
-            color="#32CD32";
-        }else if(price>5.5&&price<=6){
-            color="#ADFF2F";
-        }else if(price>5&&price<=5.5){
-            color="#98FB98";
-        }else if(price>4.5&&price<=5){
-            color="#F5FFFA";
-        }else if(price>4&&price<=4.5){
-            color="#008080";
-        }else if(price>3.5&&price<=4){
-            color="#00CED1";
-        }else if(price>3&&price<=3.5){
-            color="#000080";
-        }else if(price>2.5&&price<=3){
-            color="#191970";
-        }else if(price>2&&price<=2.5){
-            color="#0000CD";
-        }else if(price>1.5&&price<=2){
-            color="#4169E1";
-        } else if(price>1&&price<=1.5){
-            color="#483D8B";
-        }else if(price>0.5&&price<=1){
-            color="#6A5ACD";
+        if(price>10){
+            color="#934320";
+        }else if(price>9&&price<=10){
+            color="#B35227";
+        }else if(price>8&&price<=9){
+            color="#D46724";
+        }else if(price>7&&price<=8){
+            color="#DA6F21";
+        }else if(price>6&&price<=7){
+            color="#DE7B24";
+        }else if(price>5&&price<=6){
+            color="#E08324";
+        }else if(price>4&&price<=5){
+            color="#E59035";
+        }else if(price>3&&price<=4){
+            color="#E49844";
+        }else if(price>2&&price<=3){
+            color="#E1A55C";
         }else{
-            color="#FF69B4";
+            color="#E6AC63";
         }
         return color;
     }
