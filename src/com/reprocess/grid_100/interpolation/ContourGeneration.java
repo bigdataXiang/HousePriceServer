@@ -31,22 +31,67 @@ public class ContourGeneration {
         int year=Integer.parseInt(time.substring(0,time.indexOf("年")));
         int month=Integer.parseInt(time.substring(time.indexOf("年")+"年".length(),time.indexOf("月")));
         time=year+"-"+month;
+        int N=5;
+
         Map<Integer,JSONObject> mergedata=new HashMap<>();
         DBCollection coll = db.getDB().getCollection("resold_woaiwojia_interpolation");
         List code_array=new ArrayList<>();
         code_array=coll.find().toArray();
         JSONObject obj;
         String temp;
+        double average_price;
+        JSONObject timeseries;
+        List<JSONObject> data=new ArrayList<>();
+
         for(int i=0;i<code_array.size();i++){
             temp=code_array.get(i).toString();
             obj=JSONObject.fromObject(temp);
             //System.out.println(obj);
             obj.remove("_id");
             int code=obj.getInt("code");
-            mergedata.put(code,obj);
+
+            timeseries=obj.getJSONObject("timeseries");
+
+            average_price=0;
+            if(timeseries.size()!=0){
+                if(timeseries.containsKey(time)){
+                    average_price=timeseries.getDouble(time);
+                }else{
+                    System.out.println(code+"在"+time+"的插值怎么没有？！");
+                }
+            }else{
+                average_price=0;
+            }
+
+            int[] rowcol=codeToRowCol(code,N);
+            int row=rowcol[0];
+            int col=rowcol[1];
+            String color=setColorRegion(average_price);
+
+            obj=new JSONObject();
+            obj.put("code",code);
+            obj.put("average_price",average_price);
+            obj.put("row",row);
+            obj.put("col",col);
+            obj.put("color",color);
+            //System.out.println(obj);
+            data.add(obj);
         }
-        System.out.println("开始合并数据");
-        JSONObject result=girdDatas(time,mergedata,5);
+        System.out.println("开始排序：");
+        Collections.sort(data, new UtilFile.CodeComparator());
+
+        JSONObject result=new JSONObject();
+        int r_min=1;
+        int r_max=2000/N;
+        int c_min=1;
+        int c_max=2000/N;
+        result.put("r_min",r_min);
+        result.put("r_max",r_max);
+        result.put("c_min",c_min);
+        result.put("c_max",c_max);
+        result.put("N",N);
+        result.put("data",data);
+
         System.out.println("ok");
         //System.out.println(result);
 
@@ -386,7 +431,7 @@ public class ContourGeneration {
             }
         }
 
-        JSONObject nullobj;
+        /*JSONObject nullobj;
         int codeindex;
         for(int i=1;i<=r_max;i++) {
             for (int j =1; j<=c_max; j++) {
@@ -401,7 +446,7 @@ public class ContourGeneration {
                     data.add(nullobj);
                 }
             }
-        }
+        }*/
 
         Collections.sort(data, new UtilFile.CodeComparator());
 
