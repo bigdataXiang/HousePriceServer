@@ -46,6 +46,10 @@ public class ContourGeneration {
         }
         Map<Integer,JSONObject> mergedata=MergeData();
 
+        System.out.println("开始合并数据：");
+        JSONObject result=girdDatas("2015-10",mergedata,5);
+        System.out.println("result:"+result);
+
     }
 
 /**一、先对zoom=11，分辨率=500*500的网格进行插值*/
@@ -298,7 +302,7 @@ public class ContourGeneration {
     }
 
     /**9、将插值后的结果全面表现在地图上*/
-    public static void girdDatas(String time,Map mergedata,int N){
+    public static JSONObject girdDatas(String time,Map mergedata,int N){
 
         int r_min=1;
         int r_max=2000/N;
@@ -306,6 +310,7 @@ public class ContourGeneration {
         int c_max=2000/N;
         JSONArray data=new JSONArray();
         for(int code=1;code<=mergedata.size();code++){
+            System.out.println(code);
             JSONObject obj=(JSONObject) mergedata.get(code);
             JSONObject timeseries=obj.getJSONObject("timeseries");
             double average_price=0;
@@ -322,16 +327,26 @@ public class ContourGeneration {
             int[] rowcol=codeToRowCol(code,N);
             int row=rowcol[0];
             int col=rowcol[1];
-            String color="";
+            String color=setColorRegion(average_price);
 
             obj=new JSONObject();
             obj.put("code",code);
             obj.put("average_price",average_price);
             obj.put("row",row);
             obj.put("col",col);
-
-
+            obj.put("color",color);
+            data.add(obj);
         }
+
+        JSONObject result=new JSONObject();
+        result.put("r_min",r_min);
+        result.put("r_max",r_max);
+        result.put("c_min",c_min);
+        result.put("c_max",c_max);
+        result.put("N",N);
+        result.put("data",data);
+
+        return result;
     }
 
     /**10、建立N00*N00的行列号与code的映射关系*/
@@ -342,8 +357,8 @@ public class ContourGeneration {
         int cols=2000/N;
         int gridcode;
         int[] rowcol=new int[2];
-        for(int r=1;r<rows;r++){
-            for(int c=1;c<cols;c++){
+        for(int r=1;r<=rows;r++){
+            for(int c=1;c<=cols;c++){
                 gridcode=c+(r-1)*cols;
                 rowcol[0]=r;
                 rowcol[1]=c;
@@ -354,7 +369,7 @@ public class ContourGeneration {
         if(map.containsKey(code)){
             rowcol=map.get(code);
         }else {
-            System.out.println("无对应的行列号");
+            System.out.println("无对应的行列号:"+code);
         }
 
         return rowcol;
@@ -364,26 +379,62 @@ public class ContourGeneration {
     /**11、建立更密集的配色方案*/
     public static String setColorRegion(double price){
         String color="";
-        boolean result;
-        for(double i=0.5;i<=15;){
-            result=section(price,i,i+0.5);
-            if(result){
-
-            }
-            i=i+0.5;
+        if(price>13){
+            color="#800000";
+        }else if(price>12.5&&price<=13){
+            color="#8B0000";
+        }else if(price>12&&price<=12.5){
+            color="#DC143C";
+        }else if(price>11.5&&price<=12){
+            color="#FF0000";
+        }else if(price>11&&price<=11.5){
+            color="#FF4500";
+        }else if(price>10.5&&price<=11){
+            color="#FF7F50";
+        }else if(price>10&&price<=10.5){
+            color="#D2691E";
+        }else if(price>9.5&&price<=10){
+            color="#CD853F";
+        }else if(price>9&&price<=9.5){
+            color="#FFA500";
+        }else if(price>8.5&&price<=9){
+            color="#DAA520";
+        }else if(price>8&&price<=8.5){
+            color="#FFD700";
+        }else if(price>7.5&&price<=8){
+            color="#808000";
+        }else if(price>7&&price<=7.5){
+            color="#008000";
+        }else if(price>6.5&&price<=7){
+            color="#228B22";
+        }else if(price>6&&price<=6.5){
+            color="#32CD32";
+        }else if(price>5.5&&price<=6){
+            color="#ADFF2F";
+        }else if(price>5&&price<=5.5){
+            color="#98FB98";
+        }else if(price>4.5&&price<=5){
+            color="#F5FFFA";
+        }else if(price>4&&price<=4.5){
+            color="#008080";
+        }else if(price>3.5&&price<=4){
+            color="#00CED1";
+        }else if(price>3&&price<=3.5){
+            color="#000080";
+        }else if(price>2.5&&price<=3){
+            color="#191970";
+        }else if(price>2&&price<=2.5){
+            color="#0000CD";
+        }else if(price>1.5&&price<=2){
+            color="#4169E1";
+        } else if(price>1&&price<=1.5){
+            color="#483D8B";
+        }else if(price>0.5&&price<=1){
+            color="#6A5ACD";
+        }else{
+            color="#FF69B4";
         }
-
         return color;
-    }
-    /** 判断x是否在区间（min，max]内*/
-    public static  boolean section(double x,double min,double max){
-        boolean result;
-        if(x>min&&x<=max){
-            result=true;
-        }else {
-            result=false;
-        }
-        return result;
     }
 
 }
