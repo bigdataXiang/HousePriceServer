@@ -154,56 +154,23 @@ public class test {
             }
         }
         //标题设置完毕,下面开始填充数据
-        Vector<String> rds = FileTool.Load(Folder,"UTF-8");
-        for(int i=0;i<rds.size();i++)
+        //Vector<String> rds = FileTool.Load(Folder,"UTF-8");
+        for(int i=0;i<10;i++)
         {
-            String element=rds.elementAt(i);
+            /*String element=rds.elementAt(i);
             test poi = new test(element);
-            row = sheet.createRow(i+1);
+            row = sheet.createRow(i+1);*/
             for(int k=0;k<=13;k++)
             {
                 switch(k){
                     case 0:
-                        row.createCell(0).setCellValue(poi.ADDRESS);
+                        row.createCell(0).setCellValue(1);
                         break;
                     case 1:
-                        row.createCell(1).setCellValue(poi.PostCoorLN);
+                        row.createCell(1).setCellValue(1);
                         break;
                     case 2:
-                        row.createCell(2).setCellValue(poi.PostCoorLA);
-                        break;
-                    case 3:
-                        row.createCell(3).setCellValue(poi.PostReg);
-                        break;
-                    case 4:
-                        row.createCell(4).setCellValue(poi.Code);
-                        break;
-                    case 5:
-                        row.createCell(5).setCellValue(poi.CodeCoorLN);
-                        break;
-                    case 6:
-                        row.createCell(6).setCellValue(poi.CodeCoorLA);
-                        break;
-                    case 7:
-                        row.createCell(7).setCellValue(poi.CodeReg);
-                        break;
-                    case 8:
-                        row.createCell(8).setCellValue(poi.CtfId);
-                        break;
-                    case 9:
-                        row.createCell(9).setCellValue(poi.Home);
-                        break;
-                    case 10:
-                        row.createCell(10).setCellValue(poi.Gender);
-                        break;
-                    case 11:
-                        row.createCell(11).setCellValue(poi.Birth);
-                        break;
-                    case 12:
-                        row.createCell(12).setCellValue(poi.PostAddr);
-                        break;
-                    case 13:
-                        row.createCell(13).setCellValue(poi.Mobile);
+                        row.createCell(2).setCellValue(1);
                         break;
                 }
 
@@ -211,7 +178,7 @@ public class test {
 
 
         }
-        FileOutputStream fos = new FileOutputStream(Folder.replace(".txt", "")+"_excel.csv");
+        FileOutputStream fos = new FileOutputStream("D:\\test\\"+"_excel.csv");
         wb.write(fos);
         if(null != fos){
             fos.close();

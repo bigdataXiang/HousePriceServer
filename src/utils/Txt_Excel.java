@@ -40,13 +40,20 @@ public class Txt_Excel {
 
 	public static void writeExcel() throws IOException {
 
+		//创建一个Excel(or new XSSFWorkbook())
 		Workbook wb = new HSSFWorkbook();
-		Sheet sheet = designExcel();
+		//创建表格
+		Sheet sheet = wb.createSheet("出租房价");
+		//创建行
+		Row row = sheet.createRow(0);
+		//设置行高
+		row.setHeightInPoints(30);
+		designExcel(sheet);
+
 		Vector<String> rds = FileTool.Load(Folder, "UTF-8");
 
 		JSONObject obj;
 		String element;
-		Row row;
 		for (int i = 0; i < rds.size(); i++) {
 			element = rds.elementAt(i);
 			//System.out.println(element);
@@ -98,12 +105,7 @@ public class Txt_Excel {
 		}
 	}
 
-	public static Sheet designExcel() {
-		//创建一个Excel(or new XSSFWorkbook())
-		Workbook wb = new HSSFWorkbook();
-		//创建表格
-		Sheet sheet = wb.createSheet("出租房价");
-		//创建行
+	public static void designExcel(Sheet sheet) {
 		Row row = sheet.createRow(0);
 		//设置行高
 		row.setHeightInPoints(30);
@@ -142,7 +144,6 @@ public class Txt_Excel {
 					break;
 			}
 		}
-		return sheet;
 	}
 
 	Txt_Excel(JSONObject obj)throws IOException{
@@ -158,7 +159,7 @@ public class Txt_Excel {
 				fitment=0;
 			}
 
-			if(obj.containsKey("volume_rate")){
+			/*if(obj.containsKey("volume_rate")){
 				if(!obj.getString("volume_rate").equals("null")){
 					volume_rate=obj.getDouble("volume_rate");
 				}else {
@@ -178,7 +179,7 @@ public class Txt_Excel {
 
 			}else {
 				green_rate=0;
-			}
+			}*/
 
 			//"layout":{"rooms":"2","halls":"1","kitchen":"","bathrooms":"1"},
 			JSONObject layout=obj.getJSONObject("layout");
