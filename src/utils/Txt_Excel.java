@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Vector;
 
+import net.sf.json.JSONObject;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -88,7 +89,7 @@ public class Txt_Excel {
 	public String Birth;
 	public String PostAddr;
 	public String Mobile;
-	public static String Folder="D:/zhouxiang/人口数据/宾馆数据/人口统计/人口样本.txt";
+	public static String Folder="D:\\test\\woaiwojia_rentout_2016_0401.txt";
 	public static void main(String argv[]) throws Exception{
 	    System.out.println("测试开始!");
 	    writeExcel();
@@ -109,46 +110,34 @@ public class Txt_Excel {
         {
         	switch(i){
         	case 0:
-        		row.createCell(0).setCellValue("Name");
+        		row.createCell(0).setCellValue("price");
         		break;
         	case 1:
-        		row.createCell(1).setCellValue("PostCoorLN");
+        		row.createCell(1).setCellValue("area");
         		break;
         	case 2:
-        		row.createCell(2).setCellValue("PostCoorLA");
+        		row.createCell(2).setCellValue("unit_price");
         		break;
         	case 3:
-        		row.createCell(3).setCellValue("PostReg");
+        		row.createCell(3).setCellValue("fitment");
         		break;
         	case 4:
-        		row.createCell(4).setCellValue("Code");
+        		row.createCell(4).setCellValue("volume_rate");
         		break;
         	case 5:
-        		row.createCell(5).setCellValue("CodeCoorLN");
+        		row.createCell(5).setCellValue("green_rate");
         		break;
         	case 6:
-        		row.createCell(6).setCellValue("CodeCoorLA");
+        		row.createCell(6).setCellValue("rooms");
         		break;
         	case 7:
-        		row.createCell(7).setCellValue("CodeReg");
+        		row.createCell(7).setCellValue("halls");
         		break;
         	case 8:
-        		row.createCell(8).setCellValue("CtfId");
+        		row.createCell(8).setCellValue("storeys");
         		break;
         	case 9:
-        		row.createCell(9).setCellValue("Home");
-        		break;
-        	case 10:
-        		row.createCell(10).setCellValue("Gender");
-        		break;
-        	case 11:
-        		row.createCell(11).setCellValue("Birth");
-        		break;
-        	case 12:
-        		row.createCell(12).setCellValue("PostAddr");
-        		break;
-        	case 13:
-        		row.createCell(13).setCellValue("Mobile");
+        		row.createCell(9).setCellValue("direction");
         		break;
         	}
         }
@@ -157,52 +146,25 @@ public class Txt_Excel {
         for(int i=0;i<rds.size();i++)
         {
         	String element=rds.elementAt(i);
-			Txt_Excel poi = new Txt_Excel(element);
+			JSONObject obj=JSONObject.fromObject(element);
         	row = sheet.createRow(i+1); 
         	for(int k=0;k<=13;k++)
         	{
         		switch(k){
         		case 0:
-            		row.createCell(0).setCellValue(poi.Name);
+            		row.createCell(0).setCellValue(obj.getDouble(""));
             		break;
             	case 1:
-            		row.createCell(1).setCellValue(poi.PostCoorLN);
+            		row.createCell(1).setCellValue(obj.getDouble(""));
             		break;
             	case 2:
-            		row.createCell(2).setCellValue(poi.PostCoorLA);
+            		row.createCell(2).setCellValue(obj.getDouble(""));
             		break;
             	case 3:
-            		row.createCell(3).setCellValue(poi.PostReg);
+            		row.createCell(3).setCellValue(obj.getDouble(""));
             		break;
             	case 4:
-            		row.createCell(4).setCellValue(poi.Code);
-            		break;
-            	case 5:
-            		row.createCell(5).setCellValue(poi.CodeCoorLN);
-            		break;
-            	case 6:
-            		row.createCell(6).setCellValue(poi.CodeCoorLA);
-            		break;
-            	case 7:
-            		row.createCell(7).setCellValue(poi.CodeReg);
-            		break;
-            	case 8:
-            		row.createCell(8).setCellValue(poi.CtfId);
-            		break;
-            	case 9:
-            		row.createCell(9).setCellValue(poi.Home);
-            		break;
-            	case 10:
-            		row.createCell(10).setCellValue(poi.Gender);
-            		break;
-            	case 11:
-            		row.createCell(11).setCellValue(poi.Birth);
-            		break;
-            	case 12:
-            		row.createCell(12).setCellValue(poi.PostAddr);
-            		break;
-            	case 13:
-            		row.createCell(13).setCellValue(poi.Mobile);
+            		row.createCell(4).setCellValue(obj.getDouble(""));
             		break;
             	}
         		
@@ -216,110 +178,6 @@ public class Txt_Excel {
             fos.close();  
         }  
     }
-	Txt_Excel(String line) throws IOException
-	{
-		try{
-			 if(line.indexOf("<Name>")!=-1)
-				 Name=getStrByKey(line,"<Name>","</Name>");
-			 if(line.indexOf("<PostCoor>")!=-1){
-				 PostCoor=getStrByKey(line,"<PostCoor>","</PostCoor>").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","");
-				 String[] arry=PostCoor.split(";");
-				 PostCoorLN=arry[0];
-				 PostCoorLA=arry[1];
-				 
-			 }
-				 if(line.indexOf("<PostReg>")!=-1)
-				 PostReg=getStrByKey(line,"<PostReg>","</PostReg>").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","").replace(";","");
-			 if(line.indexOf("<Code>")!=-1)
-				 Code= getStrByKey(line,"<Code>","</Code>").replace("[面议]","").replace("[押一付三]","").replace("元/月","").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","").replace(";","");
-			 if(line.indexOf("<CodeCoor>")!=-1){
-				 CodeCoor=getStrByKey(line,"<CodeCoor>","</CodeCoor>").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","");
-				 String[] arry=CodeCoor.split(";");
-				 CodeCoorLN=arry[0];
-				 CodeCoorLA=arry[1];
-			 }
-			if(line.indexOf("<CodeReg>")!=-1)
-				 CodeReg=getStrByKey(line,"<CodeReg>","</CodeReg>").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","").replace(";","");
-			 if(line.indexOf("<CtfId>")!=-1)
-				 CtfId=getStrByKey(line,"<CtfId>","</CtfId>").replace("(地图)","").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","").replace(";","");
-			 if(line.indexOf("<Home>")!=-1)
-				 Home=getStrByKey(line,"<Home>","</Home>").replace("(地图)","").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","").replace(";","");	
-			 if(line.indexOf("<Gender>")!=-1)
-				 Gender=getStrByKey(line,"<Gender>","</Gender>").replace("(地图)","").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","").replace(";","");	
-			 if(line.indexOf("<Birth>")!=-1)
-				 Birth=getStrByKey(line,"<Birth>","</Birth>").replace("(地图)","").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","").replace(";","");				 	 
-			 if(line.indexOf("<PostAddr>")!=-1)
-				 PostAddr=getStrByKey(line,"<PostAddr>","</PostAddr>").replace("(小型小区)","").replace("(中型小区)","").replace("(大型小区)","").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","").replace(";","");				 	 
-			 if(line.indexOf("<Mobile>")!=-1)
-				 Mobile=getStrByKey(line,"<Mobile>","</Mobile>").replace("户","").replace("&nbsp;", "").replace("&amp;","").replace("nb;","").replace("nbsp","").replace("|","").replace(";","");				 	 
-	 }catch (NullPointerException e) {
-			
-		     e.printStackTrace();
-			 System.out.println(e.getMessage());
-			 write_append(line,Folder.replace(".txt", "")+"_exception.txt");	
-		}
-			 	 
-	}
-
-	//提取每个标签里的内容
-	public static String getStrByKey(String sContent, String sStart, String sEnd) {
-		String sOut ="";
-		int fromIndex = 0;
-		int iBegin = 0;
-		int iEnd = 0;
-		int iStart=sContent.indexOf("</Version>");
-		String temp=" ";
-		if (iStart < 0) {
-		  return null;
-		  }
-		for (int i = 0; i < iStart; i++) {
-		  // 找出某位置，并找出该位置后的最近的一个匹配
-		  iBegin = sContent.indexOf(sStart, fromIndex);
-		  if (iBegin >= 0) 
-		  {
-		    iEnd = sContent.indexOf(sEnd, iBegin + sStart.length());
-		    if (iEnd <= iBegin)
-		    {
-		      return null;
-		    }
-		  }
-		  else 
-		  {
-				return sOut;
-		  }
-          if (iEnd > 0&&iEnd!=iBegin + sStart.length())
-          {
-		   sOut += sContent.substring(iBegin + sStart.length(), iEnd);
-		  }
-          else
-        	  return temp;
-		  if (iEnd > 0) 
-		  {
-		   fromIndex = iEnd + sEnd.length();
-		  }
-		}
-		  return sOut;
-	}
-	public static void write_append(String line,String pathname)  throws IOException
-	{
-		try
-		{
-		
-          File writefile=new File(pathname);
-          if(!writefile.exists())
-          {
-        	  writefile.createNewFile();
-          }
-          OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(writefile,true),"UTF-8");
-          BufferedWriter writer = new BufferedWriter(write);
-          writer.write(line);
-          writer.write("\r\n"); 
-          writer.close();
-          }catch(Exception e) {
-			e.printStackTrace();
-		
-		}	
-	}
 
 
 }
