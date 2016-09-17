@@ -64,9 +64,10 @@ public class ContourGeneration {
                 average_price=0;
             }
 
-            int[] rowcol=codeToRowCol(code,N);
-            int row=rowcol[0];
-            int col=rowcol[1];
+            String rowcol_str=codeToRowCol(code,N);
+            String[] rowcol=rowcol_str.split(",");
+            int row=Integer.parseInt(rowcol[0]);
+            int col=Integer.parseInt(rowcol[1]);
             String color=setColorRegion(average_price);
 
             obj=new JSONObject();
@@ -110,11 +111,11 @@ public class ContourGeneration {
     }
 
     /**调用mongodb生成网格值*/
+    /**13、找出区域中不同价格区间内的网格，并进行分类*/
     public static void callMongo(){
         String time="2015-10";
         int N=5;
 
-        Map<Integer,JSONObject> mergedata=new HashMap<>();
         DBCollection coll = db.getDB().getCollection("resold_woaiwojia_interpolation");
         List code_array=new ArrayList<>();
         code_array=coll.find().toArray();
@@ -123,8 +124,13 @@ public class ContourGeneration {
         double average_price;
         JSONObject timeseries;
         List<JSONObject> data=new ArrayList<>();
+        Map<Integer,List<JSONObject>> contour=new HashMap<>();
 
+        int row;
+        int col;
         for(int i=0;i<code_array.size();i++){
+            //System.out.println(i);
+
             temp=code_array.get(i).toString();
             obj=JSONObject.fromObject(temp);
             //System.out.println(obj);
@@ -144,37 +150,97 @@ public class ContourGeneration {
                 average_price=0;
             }
 
-            int[] rowcol=codeToRowCol(code,N);
-            int row=rowcol[0];
-            int col=rowcol[1];
-            String color=setColorRegion(average_price);
+            String rowcol_str=codeToRowCol(code,N);
+            String[] rowcol=rowcol_str.split(",");
+            row=Integer.parseInt(rowcol[0]);
+            col=Integer.parseInt(rowcol[1]);
 
             obj=new JSONObject();
             obj.put("code",code);
             obj.put("average_price",average_price);
             obj.put("row",row);
             obj.put("col",col);
-            obj.put("color",color);
             obj.put("corners",getLngLat(row,col,N));
             //System.out.println(obj);
-            data.add(obj);
+
+            int arrangement;
+            if(average_price>8){
+                arrangement=8;
+            }else if(average_price>=7&&average_price<8){
+                arrangement=7;
+            }else if(average_price>=6&&average_price<7){
+                arrangement=6;
+            }else if(average_price>=5&&average_price<6){
+                arrangement=5;
+            }else if(average_price>=4&&average_price<5){
+                arrangement=4;
+            }else if(average_price>=3&&average_price<4){
+                arrangement=3;
+            }else {
+                arrangement=2;
+            }
+
+            if(contour.containsKey(arrangement)){
+                data=contour.get(arrangement);
+                data.add(obj);
+                //System.out.println(data);
+                contour.put(arrangement,data);
+            }else{
+                data=new ArrayList<>();
+                data.add(obj);
+                contour.put(arrangement,data);
+            }
         }
-        System.out.println("开始排序：");
-        Collections.sort(data, new UtilFile.CodeComparator());
 
-        JSONObject result=new JSONObject();
-        int r_min=1;
-        int r_max=2000/N;
-        int c_min=1;
-        int c_max=2000/N;
-        result.put("r_min",r_min);
-        result.put("r_max",r_max);
-        result.put("c_min",c_min);
-        result.put("c_max",c_max);
-        result.put("N",N);
-        result.put("data",data);
+        System.out.println("选取网格：");
+        data=contour.get(8);
+        for(int i=0;i<data.size();i++){
+            obj=data.get(i);
+            //System.out.println(obj);
+            FileTool.Dump(obj.toString(),"D:\\contour_8.txt","utf-8");
+        }
 
-        System.out.println("ok");
+        data=contour.get(7);
+        for(int i=0;i<data.size();i++){
+            obj=data.get(i);
+            //System.out.println(obj);
+            FileTool.Dump(obj.toString(),"D:\\contour_7.txt","utf-8");
+        }
+
+        data=contour.get(6);
+        for(int i=0;i<data.size();i++){
+            obj=data.get(i);
+            //System.out.println(obj);
+            FileTool.Dump(obj.toString(),"D:\\contour_6.txt","utf-8");
+        }
+
+        data=contour.get(5);
+        for(int i=0;i<data.size();i++){
+            obj=data.get(i);
+            //System.out.println(obj);
+            FileTool.Dump(obj.toString(),"D:\\contour_5.txt","utf-8");
+        }
+
+        data=contour.get(4);
+        for(int i=0;i<data.size();i++){
+            obj=data.get(i);
+            //System.out.println(obj);
+            FileTool.Dump(obj.toString(),"D:\\contour_4.txt","utf-8");
+        }
+
+        data=contour.get(3);
+        for(int i=0;i<data.size();i++){
+            obj=data.get(i);
+            //System.out.println(obj);
+            FileTool.Dump(obj.toString(),"D:\\contour_3.txt","utf-8");
+        }
+
+        data=contour.get(2);
+        for(int i=0;i<data.size();i++){
+            obj=data.get(i);
+            //System.out.println(obj);
+            FileTool.Dump(obj.toString(),"D:\\contour_2.txt","utf-8");
+        }
     }
     /**生成最后的插值*/
     public static void run(){
@@ -466,9 +532,10 @@ public class ContourGeneration {
                     average_price=0;
                 }
 
-                int[] rowcol=codeToRowCol(code,N);
-                int row=rowcol[0];
-                int col=rowcol[1];
+                String rowcol_str=codeToRowCol(code,N);
+                String[] rowcol=rowcol_str.split(",");
+                int row=Integer.parseInt(rowcol[0]);
+                int col=Integer.parseInt(rowcol[1]);
                 String color=setColorRegion(average_price);
 
                 obj=new JSONObject();
@@ -514,18 +581,17 @@ public class ContourGeneration {
     }
 
     /**10、建立N00*N00的行列号与code的映射关系*/
-    public static int[] codeToRowCol(int code,int N){
+    public static String codeToRowCol(int code,int N){
 
-        Map<Integer,int[]> map=new HashMap<>();
+        Map<Integer,String> map=new HashMap<>();
         int rows=2000/N;
         int cols=2000/N;
         int gridcode;
-        int[] rowcol=new int[2];
+        String rowcol="";
         for(int r=1;r<=rows;r++){
             for(int c=1;c<=cols;c++){
                 gridcode=c+(r-1)*cols;
-                rowcol[0]=r;
-                rowcol[1]=c;
+                rowcol=r+","+c;
                 map.put(gridcode,rowcol);
             }
         }
@@ -535,35 +601,45 @@ public class ContourGeneration {
         }else {
             System.out.println("无对应的行列号:"+code);
         }
-
         return rowcol;
-
     }
 
     /**11、建立更密集的配色方案*/
     public static String setColorRegion(double price){
         String color="";
-        if(price>10){
-            color="#934320";
-        }else if(price>9&&price<=10){
-            color="#B35227";
+
+        if(price>9){
+            color="#C70305";
         }else if(price>8&&price<=9){
-            color="#D46724";
-        }else if(price>7&&price<=8){
-            color="#DA6F21";
-        }else if(price>6&&price<=7){
-            color="#DE7B24";
-        }else if(price>5&&price<=6){
-            color="#E08324";
-        }else if(price>4&&price<=5){
-            color="#E59035";
-        }else if(price>3&&price<=4){
-            color="#E49844";
-        }else if(price>2&&price<=3){
-            color="#E1A55C";
+            color="#EA4706";
+        }else if(price>7.5&&price<=8){
+            color="#E97A04";
+        }else if(price>7&&price<=7.5){
+            color="#E9A708";
+        }else if(price>6.5&&price<=7){
+            color="#E6CC05";
+        }else if(price>6&&price<=6.5){
+            color="#E9E507";
+        }else if(price>5.5&&price<=6){
+            color="#D8EB00";
+        }else if(price>5&&price<=5.5){
+            color="#B8E705";
+        }else if(price>4.5&&price<=5){
+            color="#04E738";
+        }else if(price>4&&price<=4.5){
+            color="#06E884";
+        }else if(price>3.5&&price<=4){
+            color="#08E9C7";
+        }else if(price>3&&price<=3.5){
+            color="#03EAE4";
+        }else if(price>2.5&&price<=3){
+            color="#09BAEC";
+        }else if(price>2&&price<=2.5){
+            color="#077BEA";
         }else{
-            color="#E6AC63";
+            color="#1411D2";
         }
+
         return color;
     }
 
@@ -597,5 +673,28 @@ public class ContourGeneration {
             e.printStackTrace();
         }
     }
+
+    /**13、画等高线*/
+    public static void drawContour(String file){
+
+        Vector<String> pois=FileTool.Load(file,"utf-8");
+
+        String poi="";
+        JSONObject obj;
+        int row;
+        int col;
+
+        for(int i=0;i<pois.size();i++){
+
+            poi=pois.elementAt(i);
+            obj=JSONObject.fromObject(poi);
+            row=obj.getInt("row");
+            col=obj.getInt("col");
+
+        }
+    }
+
+
+
 
 }

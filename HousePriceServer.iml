@@ -18,5 +18,6 @@
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.7" level="project" />
     <orderEntry type="library" name="json-lib-21" level="project" />
     <orderEntry type="library" name="com.github.timeloveboy:moeserver:0.0.1" level="project" />
+    <orderEntry type="library" name="cpdetector-1.0" level="project" />
   </component>
 </module>
