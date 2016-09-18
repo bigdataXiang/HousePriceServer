@@ -151,7 +151,7 @@ public class Txt_Excel {
 
 			price=obj.getDouble("price");
 			area=obj.getDouble("area");
-			unit_price=obj.getDouble("unit_price");
+			unit_price= Math.log(obj.getDouble("unit_price"));
 
 			if(obj.containsKey("fitment")){
 				fitment=setFitment(obj.getString("fitment"));
