@@ -29,12 +29,25 @@ public class Txt_Excel {
 	public  int bathrooms;
 	public  double  floor;
 	public  double direction;
+	public double ln_price;
+	public double ln_unitprice;
 	public static String Folder = "D:\\test\\woaiwojia_rentout_2016_0401.txt";
 
 	public static void main(String argv[]) throws Exception {
-		System.out.println("测试开始!");
+		/*System.out.println("测试开始!");
 		writeExcel();
-		System.out.println("测试结束!");
+		System.out.println("测试结束!");*/
+
+		double e=Math.E;
+		double result =test_Regression_Results(58,4,2,1,1,17.5,1);
+		double price=Math.pow(e,result);
+		System.out.println(price);
+		result =test_Regression_Results(78,3,3,1,1,4,10);
+		price=Math.pow(e,result);
+		System.out.println(price);
+		result =test_Regression_Results(60,4,2,1,1,1,6);
+		price=Math.pow(e,result);
+		System.out.println(price);
 
 	}
 
@@ -74,23 +87,29 @@ public class Txt_Excel {
 					case 3:
 						row.createCell(3).setCellValue(te.fitment);
 						break;
+					case 4:
+						row.createCell(4).setCellValue(te.rooms);
+						break;
+					case 5:
+						row.createCell(5).setCellValue(te.halls);
+						break;
 					case 6:
-						row.createCell(6).setCellValue(te.rooms);
+						row.createCell(6).setCellValue(te.kitchen);
 						break;
 					case 7:
-						row.createCell(7).setCellValue(te.halls);
+						row.createCell(7).setCellValue(te.bathrooms);
 						break;
 					case 8:
-						row.createCell(8).setCellValue(te.kitchen);
+						row.createCell(8).setCellValue(te.floor);
 						break;
 					case 9:
-						row.createCell(9).setCellValue(te.bathrooms);
+						row.createCell(9).setCellValue(te.direction);
 						break;
 					case 10:
-						row.createCell(10).setCellValue(te.floor);
+						row.createCell(10).setCellValue(te.ln_price);
 						break;
 					case 11:
-						row.createCell(11).setCellValue(te.direction);
+						row.createCell(11).setCellValue(te.ln_unitprice);
 						break;
 				}
 
@@ -124,23 +143,29 @@ public class Txt_Excel {
 				case 3:
 					row.createCell(3).setCellValue("fitment");
 					break;
+				case 4:
+					row.createCell(4).setCellValue("rooms");
+					break;
+				case 5:
+					row.createCell(5).setCellValue("halls");
+					break;
 				case 6:
-					row.createCell(6).setCellValue("rooms");
+					row.createCell(6).setCellValue("kitchen");
 					break;
 				case 7:
-					row.createCell(7).setCellValue("halls");
+					row.createCell(7).setCellValue("bathroom");
 					break;
 				case 8:
-					row.createCell(8).setCellValue("kitchen");
+					row.createCell(8).setCellValue("floor");
 					break;
 				case 9:
-					row.createCell(9).setCellValue("bathroom");
+					row.createCell(9).setCellValue("direction");
 					break;
 				case 10:
-					row.createCell(10).setCellValue("floor");
+					row.createCell(10).setCellValue("ln_price");
 					break;
 				case 11:
-					row.createCell(11).setCellValue("direction");
+					row.createCell(11).setCellValue("ln_unitprice");
 					break;
 			}
 		}
@@ -150,8 +175,10 @@ public class Txt_Excel {
 		try{
 
 			price=obj.getDouble("price");
+			ln_price=Math.log(obj.getDouble("price"));
 			area=obj.getDouble("area");
-			unit_price= Math.log(obj.getDouble("unit_price"));
+			unit_price= obj.getDouble("unit_price");
+			ln_unitprice=Math.log(obj.getDouble("unit_price"));
 
 			if(obj.containsKey("fitment")){
 				fitment=setFitment(obj.getString("fitment"));
@@ -228,25 +255,25 @@ public class Txt_Excel {
 		double value=0;
 
 		switch (direction){
-			case "南北": value=2;
+			case "南北": value=10;
 				break;
-			case "南": value=1.5;
+			case "南": value=9;
 				break;
-			case "东南": value=1;
+			case "东南": value=8;
 				break;
-			case "西南": value=0.5;
+			case "西南": value=7;
 				break;
-			case "东西": value=0.1;
+			case "东西": value=6;
 				break;
-			case "东": value=-0.5;
+			case "东": value=5;
 				break;
-			case "西": value=-1;
+			case "西": value=4;
 				break;
-			case "东北": value=-1.5;
+			case "东北": value=-3;
 				break;
-			case "西北": value=-2;
+			case "西北": value=2;
 				break;
-			case "北": value=-2.5;
+			case "北": value=1;
 				break;
 		}
 		return value;
@@ -281,39 +308,25 @@ public class Txt_Excel {
 		}
 
 		//6层：3-4；12层：8-10；18层：13-15；33层：26-28
-		if(floors<=6){
-			if(ratio==1){
-				value=102;
-			}else if(ratio==2){
-				value=109;
-			}else{
-				value=87;
-			}
-		}else if(floors>6&&floors<=12){
-			if(ratio==1){
-				value=96;
-			}else if(ratio==2){
-				value=103;
-			}else{
-				value=105;
-			}
-		}else if(floors>12&&floors<18){
-			if(ratio==1){
-				value=94;
-			}else if(ratio==2){
-				value=103;
-			}else{
-				value=105;
-			}
-		}else if(floors>18){
-			if(ratio==1){
-				value=96;
-			}else if(ratio==2){
-				value=104;
-			}else{
-				value=102;
-			}
+		if(ratio==1){
+			value=((1.0/3.0)*floors)/2;
+		}else if(ratio==2){
+			value=(2.0/3.0)*floors;
+		}else if(ratio==3){
+			value=((3.0/3.0)*floors+(2.0/3.0)*floors)/2;
 		}
+
+
 		return value;
 	}
+
+	public static double test_Regression_Results(double area,double fitment,double rooms,double halls,double bathroom,double floor,double direction){
+
+		//double result=4.223+(-0.005)*area+0.011*fitment+(-0.01)*rooms+0.247*halls+0.221*bathroom+0.007*floor+(-0.029)*direction;
+		double result=7.346+(6.27240697056394E-5)*area+0.05*fitment+(0.041)*rooms+0.334*halls+0.320*bathroom+0.02*floor+(0.001)*direction;
+
+		//System.out.println(result);
+		return result;
+	}
+
 }
