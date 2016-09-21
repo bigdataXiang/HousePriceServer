@@ -9,7 +9,13 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args)  throws Exception{
 
-        jinZhiZhuanHuan(5);
+        //jinZhiZhuanHuan(5);
+        System.out.println(Integer.toBinaryString(10));
+        System.out.println(Integer.toBinaryString(6));
+        System.out.println(10&6);
+        System.out.println(10|6);
+        System.out.println(~6);
+        System.out.println(10^6);
     }
     public static void guShen(){
         Scanner in = new Scanner(System.in);
