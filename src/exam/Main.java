@@ -9,10 +9,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args)  throws Exception{
 
-        Scanner in = new Scanner(System.in);
-        while(in.hasNext()){
-            String str=in.nextLine();
-        }
+        jinZhiZhuanHuan(5);
     }
     public static void guShen(){
         Scanner in = new Scanner(System.in);
@@ -62,5 +59,20 @@ public class Main {
             else
                 System.out.println("no");
         }
+    }
+    public static void jinZhiZhuanHuan(int i){
+
+        //十进制转成十六进制：
+        System.out.println(Integer.toHexString(i));
+        //十进制转成八进制
+        System.out.println(Integer.toOctalString(i));
+        //十进制转成二进制
+        System.out.println(Integer.toBinaryString(i));
+        //十六进制转成十进制
+        System.out.println(Integer.valueOf("FFFF",16).toString());
+        //八进制转成十进制
+        System.out.println(Integer.valueOf("376",8).toString());
+        //二进制转十进制
+        System.out.println(Integer.valueOf("0101",2).toString());
     }
 }
