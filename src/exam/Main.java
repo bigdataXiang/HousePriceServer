@@ -1,84 +1,150 @@
 package exam;
 
-import java.util.Arrays;
-import java.util.Scanner;
+import com.sun.xml.internal.fastinfoset.util.CharArray;
 
-/**
- * Created by ZhouXiang on 2016/9/20.
- */
+import java.util.*;
+
 public class Main {
     public static void main(String[] args)  throws Exception{
-
-        //jinZhiZhuanHuan(5);
-        System.out.println(Integer.toBinaryString(10));
-        System.out.println(Integer.toBinaryString(6));
-        System.out.println(10&6);
-        System.out.println(10|6);
-        System.out.println(~6);
-        System.out.println(10^6);
-    }
-    public static void guShen(){
-        Scanner in = new Scanner(System.in);
-        Integer n = null;
-        while((n = in.nextInt())!=null){
-            int price = 1;
-            int i=2;int j=3;
-            for(int m=1;m<n;m++){
-                if(m==i){
-                    price--;
-                    i=i+j;
-                    j++;
+        Scanner sc = new Scanner(System.in);
+        List<Integer> array=new ArrayList<>();
+        List<String> strlist=new ArrayList<>();
+        while(sc.hasNext()){
+            int n=sc.nextInt();
+            for(int i=0;i<n;i++){
+                String str=sc.nextLine();
+                char[] strchar=str.toCharArray();
+                for(int j=0;j<strchar.length;j++){
+                    strlist.add(""+strchar[j]);
                 }
-                else{
-                    price++;}
-            }
-            System.out.println(price);
+                //strlist=str.toCharArray();
+                //str.
+                int len=str.length();
+                while(len>0){
+                    if(len>=4&&str.indexOf("Z")!=0&&str.indexOf("E")!=0&&str.indexOf("R")!=0&&str.indexOf("O")!=0){
+                        array.add(0);
+                        len=len-4;
+                        strlist.remove("Z");
+                        strlist.remove("E");
+                        strlist.remove("R");
+                        strlist.remove("O");
+                    }
 
+                    str=strlist.toString();
+                    if(len>=3&&str.indexOf("O")!=0&&str.indexOf("N")!=0&&str.indexOf("E")!=0){
+                        array.add(1);
+                        len=len-3;
+                        strlist.remove("O");
+                        strlist.remove("E");
+                        strlist.remove("N");
+                    }
+
+                    str=strlist.toString();
+                    if(len>=3&&str.indexOf("T")!=0&&str.indexOf("W")!=0&&str.indexOf("O")!=0){
+                        array.add(2);
+                        len=len-3;
+                        strlist.remove("T");
+                        strlist.remove("W");
+                        strlist.remove("O");
+                    }
+
+                    str=strlist.toString();
+                    if(len>=5&&str.indexOf("T")!=0&&str.indexOf("H")!=0&&str.indexOf("R")!=0&&str.indexOf("E")!=0&&str.indexOf("E")!=0){
+                        array.add(3);
+                        len=len-5;
+                        strlist.remove("T");
+                        strlist.remove("H");
+                        strlist.remove("R");
+                        strlist.remove("E");
+                        strlist.remove("E");
+                    }
+
+                    str=strlist.toString();
+                    if(len>=4&&str.indexOf("F")!=0&&str.indexOf("O")!=0&&str.indexOf("U")!=0&&str.indexOf("R")!=0){
+                        array.add(4);
+                        len=len-4;
+                        strlist.remove("F");
+                        strlist.remove("O");
+                        strlist.remove("U");
+                        strlist.remove("R");
+                    }
+
+                    str=strlist.toString();
+                    if(len>=4&&str.indexOf("F")!=0&&str.indexOf("I")!=0&&str.indexOf("V")!=0&&str.indexOf("E")!=0){
+                        array.add(5);
+                        len=len-4;
+                        strlist.remove("F");
+                        strlist.remove("I");
+                        strlist.remove("V");
+                        strlist.remove("E");
+                    }
+
+                    str=strlist.toString();
+                    if(len>=3&&str.indexOf("S")!=0&&str.indexOf("I")!=0&&str.indexOf("X")!=0){
+                        array.add(6);
+                        len=len-3;
+                        strlist.remove("S");
+                        strlist.remove("I");
+                        strlist.remove("X");
+                    }
+
+                    str=strlist.toString();
+                    if(len>=5&&str.indexOf("S")!=0&&str.indexOf("E")!=0&&str.indexOf("V")!=0&&str.indexOf("E")!=0&&str.indexOf("N")!=0){
+                        array.add(7);
+                        len=len-5;
+                        strlist.remove("S");
+                        strlist.remove("E");
+                        strlist.remove("V");
+                        strlist.remove("E");
+                        strlist.remove("N");
+                    }
+
+                    str=strlist.toString();
+                    if(len>=5&&str.indexOf("E")!=0&&str.indexOf("I")!=0&&str.indexOf("G")!=0&&str.indexOf("H")!=0&&str.indexOf("T")!=0){
+                        array.add(8);
+                        len=len-5;
+                        strlist.remove("E");
+                        strlist.remove("I");
+                        strlist.remove("G");
+                        strlist.remove("H");
+                        strlist.remove("T");
+                    }
+
+                    str=strlist.toString();
+                    if(len>=4&&str.indexOf("N")!=0&&str.indexOf("I")!=0&&str.indexOf("N")!=0&&str.indexOf("E")!=0){
+                        array.add(8);
+                        len=len-4;
+                        strlist.remove("N");
+                        strlist.remove("I");
+                        strlist.remove("N");
+                        strlist.remove("E");
+                    }
+                }
+
+                for(int m=0;m<array.size();m++){
+                    System.out.println(array.get(m));
+                }
+
+            }
         }
-    }
-    public static void fanZhuanShuZu(){
-        Scanner scanner = new Scanner(System.in);
-        while(scanner.hasNextInt())
-        {
-            int len = scanner.nextInt();
-            int[] array = new int[len];
-            int[] copy = new int[len];
-            for(int i=0;i<len;i++)
-            {
-                array[i] = scanner.nextInt();
-                copy[i] = array[i];
-            }
-            Arrays.sort(copy);
-            int left = 0,right = len-1;
-            while(left<len && copy[left]==array[left]) left++;
-            while(right>=0 && copy[right]==array[right]) right--;
 
 
-            int i;
-            for(i=0;i<=right-left;i++)
-            {
-                if(copy[left+i]!=array[right-i])
-                    break;
-            }
-            if(i>right-left)
-                System.out.println("yes");
-            else
-                System.out.println("no");
-        }
-    }
-    public static void jinZhiZhuanHuan(int i){
 
-        //十进制转成十六进制：
-        System.out.println(Integer.toHexString(i));
-        //十进制转成八进制
-        System.out.println(Integer.toOctalString(i));
-        //十进制转成二进制
-        System.out.println(Integer.toBinaryString(i));
-        //十六进制转成十进制
-        System.out.println(Integer.valueOf("FFFF",16).toString());
-        //八进制转成十进制
-        System.out.println(Integer.valueOf("376",8).toString());
-        //二进制转十进制
-        System.out.println(Integer.valueOf("0101",2).toString());
     }
 }
+/**
+ *  Map<Integer,String> root=new HashMap<>();
+ Map<Integer,String> leaf=new HashMap<>();
+
+ int len = sc.nextInt();
+ for(int i=0;i<len-1;i++){
+ int rt=sc.nextInt();
+ int lf=sc.nextInt();
+
+ root.put(rt,"");
+ leaf.put(lf,"");
+ System.out.println("rt"+rt);
+ System.out.println("lf"+lf);
+ }
+ System.out.println(root.size()+1);
+ */
