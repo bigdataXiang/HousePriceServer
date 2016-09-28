@@ -47,7 +47,12 @@
                 <span class="icon-bar"></span>
             </a>
             <form>
-            数据来源:
+                数据显示方式:
+                <select id="style" style='width:110px;'>
+                    <option>原始数据</option>
+                    <option>插值数据</option>
+                </select>
+                数据来源:
                 <select id="source" style='width:110px;'>
                     <option>我爱我家</option>
                     <option>房天下</option>
@@ -157,11 +162,6 @@
 
 <script type="text/javascript">
 
-    function displayResult(){
-        var x=document.getElementById("schoolType").selectedIndex;
-        var y=document.getElementById("schoolType").options;
-        alert("索引: " + y[x].index + " is " + y[x].text);
-    }
 
     /*var index=document.getElementById("schoolType").selectedIndex;
     var option=document.getElementById("schoolType").options;
@@ -281,8 +281,20 @@
         }
     });
 
-    //拖动地图时能实现不同网格的生成
-    /*map.on('dragend',function(e){
+
+    function displayResult(){
+        var x=document.getElementById("style").selectedIndex;
+        var y=document.getElementById("style").options;
+        var style=y[x].text;
+        if(style="原始数据"){
+
+        }else if(style="插值数据"){
+
+        }
+    }
+
+    //拖动地图时能实现不同网格的生成，主要用于同一zoom下的不同范围内的网格生成
+    map.on('dragend',function(e){
         console.log("dragend");
         var bounds=map.getBounds();
         console.log(bounds);
@@ -350,12 +362,10 @@
         }
 
         //draw_multiPolyline();画多线
-    });*/
+    });
 
-    //缩放地图时能实现不同分辨率下网格的生成
-
-    //zoomend:地图缩放之后触发
-    /*map.on('zoomend', function(e) {
+    //缩放地图时能实现不同分辨率下网格的生成，主要用于不同zoom下当前屏幕范围内的网格生成
+    map.on('zoomend', function(e) {
         console.log("contetmenux");
         //这里先删除旧的layer
         for (var i=0;i<rects.length;i++){
@@ -430,12 +440,10 @@
             });
         }
 
-    });*/
-    map.on('zoomstart', function(e) {
-        console.log("zoomstart");
     });
 
-    //load:当地图初始化时触发。（当地图的中心点和缩放初次设置时）
+
+    //画插值后的网格图
     map.on('zoomend', function(e) {
         console.log("zoomend");
         //这里先删除旧的layer
@@ -445,7 +453,6 @@
         if(zoom==11){
             if(rects.length==0){
                 var json={
-                    //"zoom":zoom,
                     "gridTime":"2015年10月"
                 };
                 $.post("/gridcolor_interpolation",""+JSON.stringify(json), function(result){

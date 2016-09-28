@@ -21,8 +21,8 @@
 
                 int year=2015;
                 int month=10;
-                String source="woaiwojia";
-                int code=1092942;
+                String source="fang";
+                int code=1102865;
 
                 JSONObject condition=new JSONObject();
                 condition.put("code",code);
@@ -40,8 +40,8 @@
         DBCollection coll = db.getDB().getCollection(collName);
 
         int code=condition.getInt("code");
-        //int year=condition.getInt("year");
-       // int month=condition.getInt("month");
+        int year=condition.getInt("year");
+        int month=condition.getInt("month");
         String source=condition.getString("source");
 
         BasicDBObject document = new BasicDBObject();
