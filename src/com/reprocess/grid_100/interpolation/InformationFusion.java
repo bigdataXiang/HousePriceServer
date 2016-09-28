@@ -21,7 +21,7 @@
 
                 int year=2015;
                 int month=10;
-                String source="fang";
+                String source="woaiwojia";
                 int code=1092942;
 
                 JSONObject condition=new JSONObject();
@@ -57,7 +57,7 @@
             while (cursor.hasNext()) {
                 poi=cursor.next().toString();
                 System.out.println(poi);
-                FileTool.Dump(poi.toString(),"D:\\test\\infofusion\\"+source+".txt","utf-8");
+               // FileTool.Dump(poi.toString(),"D:\\test\\infofusion\\grid\\"+source+".txt","utf-8");
             }
         }
 
