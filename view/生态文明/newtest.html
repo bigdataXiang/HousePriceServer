@@ -282,189 +282,188 @@
     });
 
 
-    function displayResult(){
+    map.on('dragstart',function(e){
+
         var x=document.getElementById("style").selectedIndex;
         var y=document.getElementById("style").options;
-        var style=y[x].text;
-        if(style="原始数据"){
+        var styles=y[x].text;
+        if(styles="原始数据"){
 
-        }else if(style="插值数据"){
-
-        }
-    }
-
-    //拖动地图时能实现不同网格的生成，主要用于同一zoom下的不同范围内的网格生成
-    map.on('dragend',function(e){
-        console.log("dragend");
-        var bounds=map.getBounds();
-        console.log(bounds);
-        var west=bounds.getWest();
-        var east=bounds.getEast();
-        var south=bounds.getSouth();
-        var north=bounds.getNorth();
-        var zoom=map.getZoom();
-        console.log(zoom);
+            //拖动地图时能实现不同网格的生成，主要用于同一zoom下的不同范围内的网格生成
+            map.on('dragend',function(e){
+                console.log("dragend");
+                var bounds=map.getBounds();
+                console.log(bounds);
+                var west=bounds.getWest();
+                var east=bounds.getEast();
+                var south=bounds.getSouth();
+                var north=bounds.getNorth();
+                var zoom=map.getZoom();
+                console.log(zoom);
 
 
-        var x=document.getElementById("gridValue").selectedIndex;
-        var y=document.getElementById("gridValue").options;
-        var gridValue=y[x].text;
-        if(gridValue=="房价加速度"){
-            x=document.getElementById("startTime").selectedIndex;
-            y=document.getElementById("startTime").options;
-            var startTime=y[x].text;
+                var x=document.getElementById("gridValue").selectedIndex;
+                var y=document.getElementById("gridValue").options;
+                var gridValue=y[x].text;
+                if(gridValue=="房价加速度"){
+                    x=document.getElementById("startTime").selectedIndex;
+                    y=document.getElementById("startTime").options;
+                    var startTime=y[x].text;
 
-            x=document.getElementById("endTime").selectedIndex;
-            y=document.getElementById("endTime").options;
-            var endTime=y[x].text;
+                    x=document.getElementById("endTime").selectedIndex;
+                    y=document.getElementById("endTime").options;
+                    var endTime=y[x].text;
 
-            x=document.getElementById("source").selectedIndex;
-            y=document.getElementById("source").options;
-            var source=y[x].text;
+                    x=document.getElementById("source").selectedIndex;
+                    y=document.getElementById("source").options;
+                    var source=y[x].text;
 
-            var json={
-                "west":west,
-                "east":east,
-                "south":south,
-                "north":north,
-                "zoom":zoom,
-                "starttime":startTime,
-                "endtime":endTime,
-                "source":source
-            };
-            $.post("/gridacceleration",""+JSON.stringify(json), function(result){
-                var price= JSON.parse(result);
-                draw_rectangle_Acceleration(bounds,price);
+                    var json={
+                        "west":west,
+                        "east":east,
+                        "south":south,
+                        "north":north,
+                        "zoom":zoom,
+                        "starttime":startTime,
+                        "endtime":endTime,
+                        "source":source
+                    };
+                    $.post("/gridacceleration",""+JSON.stringify(json), function(result){
+                        var price= JSON.parse(result);
+                        draw_rectangle_Acceleration(bounds,price);
+                    });
+
+                }else if(gridValue=="房价"){
+                    x=document.getElementById("gridTime").selectedIndex;
+                    y=document.getElementById("gridTime").options;
+                    var gridTime=y[x].text;
+
+                    x=document.getElementById("source").selectedIndex;
+                    y=document.getElementById("source").options;
+                    var source=y[x].text;
+
+                    var json={
+                        "west":west,
+                        "east":east,
+                        "south":south,
+                        "north":north,
+                        "zoom":zoom,
+                        "gridTime":gridTime,
+                        "source":source
+                    };
+                    $.post("/gridcolor",""+JSON.stringify(json), function(result){
+                        var price= JSON.parse(result);
+                        draw_rectangle_houseprice(bounds,price);
+                    });
+                }
+
+                //draw_multiPolyline();画多线
             });
 
-        }else if(gridValue=="房价"){
-            x=document.getElementById("gridTime").selectedIndex;
-            y=document.getElementById("gridTime").options;
-            var gridTime=y[x].text;
+            //缩放地图时能实现不同分辨率下网格的生成，主要用于不同zoom下当前屏幕范围内的网格生成
+            map.on('zoomend', function(e) {
+                console.log("contetmenux");
+                //这里先删除旧的layer
+                for (var i=0;i<rects.length;i++){
+                    map=map.removeLayer(rects[i]);
+                }
+                rects=[];
 
-            x=document.getElementById("source").selectedIndex;
-            y=document.getElementById("source").options;
-            var source=y[x].text;
+                var bounds=map.getBounds();
+                console.log(bounds);
+                var west=bounds.getWest();
+                var east=bounds.getEast();
+                var south=bounds.getSouth();
+                var north=bounds.getNorth();
+                var zoom=map.getZoom();
+                console.log(zoom);
 
-            var json={
-                "west":west,
-                "east":east,
-                "south":south,
-                "north":north,
-                "zoom":zoom,
-                "gridTime":gridTime,
-                "source":source
-            };
-            $.post("/gridcolor",""+JSON.stringify(json), function(result){
-                var price= JSON.parse(result);
-                draw_rectangle(bounds,price);
+                var x=document.getElementById("gridValue").selectedIndex;
+                var y=document.getElementById("gridValue").options;
+                var gridValue=y[x].text;
+                if(gridValue=="房价加速度"){
+                    x=document.getElementById("startTime").selectedIndex;
+                    y=document.getElementById("startTime").options;
+                    var startTime=y[x].text;
+
+                    x=document.getElementById("endTime").selectedIndex;
+                    y=document.getElementById("endTime").options;
+                    var endTime=y[x].text;
+
+                    x=document.getElementById("source").selectedIndex;
+                    y=document.getElementById("source").options;
+                    var source=y[x].text;
+
+                    var json={
+                        "west":west,
+                        "east":east,
+                        "south":south,
+                        "north":north,
+                        "zoom":zoom,
+                        "starttime":startTime,
+                        "endtime":endTime,
+                        "source":source
+                    };
+                    $.post("/gridacceleration",""+JSON.stringify(json), function(result){
+                        var price= JSON.parse(result);
+                        draw_rectangle_Acceleration(bounds,price);
+                    });
+
+                }else if(gridValue=="房价"){
+                    x=document.getElementById("gridTime").selectedIndex;
+                    y=document.getElementById("gridTime").options;
+                    var gridTime=y[x].text;
+
+                    x=document.getElementById("source").selectedIndex;
+                    y=document.getElementById("source").options;
+                    var source=y[x].text;
+
+                    var json={
+                        "west":west,
+                        "east":east,
+                        "south":south,
+                        "north":north,
+                        "zoom":zoom,
+                        "gridTime":gridTime,
+                        "source":source
+                    };
+                    //  "/gridcolor_interpolation"
+                    //  "/gridcolor"
+                    $.post("/gridcolor",""+JSON.stringify(json), function(result){
+                        var price= JSON.parse(result);
+                        console.log("开始画网格");
+                        draw_rectangle_houseprice(price);
+                    });
+                }
+
+            });
+
+        }
+        else if(styles="插值数据"){
+
+            //画插值后的网格图
+            map.on('zoomend', function(e) {
+                console.log("zoomend");
+                //这里先删除旧的layer
+
+                var zoom=map.getZoom();
+                console.log(zoom);
+                if(zoom==11){
+                    if(rects.length==0){
+                        var json={
+                            "gridTime":"2015年10月"
+                        };
+                        $.post("/gridcolor_interpolation",""+JSON.stringify(json), function(result){
+                            var price= JSON.parse(result);
+                            console.log("开始画网格");
+                            draw_rectangle_interpolation(price);
+                        });
+                    }
+                }
             });
         }
 
-        //draw_multiPolyline();画多线
     });
-
-    //缩放地图时能实现不同分辨率下网格的生成，主要用于不同zoom下当前屏幕范围内的网格生成
-    map.on('zoomend', function(e) {
-        console.log("contetmenux");
-        //这里先删除旧的layer
-        for (var i=0;i<rects.length;i++){
-            map=map.removeLayer(rects[i]);
-        }
-        rects=[];
-
-        var bounds=map.getBounds();
-        console.log(bounds);
-        var west=bounds.getWest();
-        var east=bounds.getEast();
-        var south=bounds.getSouth();
-        var north=bounds.getNorth();
-        var zoom=map.getZoom();
-        console.log(zoom);
-
-        var x=document.getElementById("gridValue").selectedIndex;
-        var y=document.getElementById("gridValue").options;
-        var gridValue=y[x].text;
-        if(gridValue=="房价加速度"){
-            x=document.getElementById("startTime").selectedIndex;
-            y=document.getElementById("startTime").options;
-            var startTime=y[x].text;
-
-            x=document.getElementById("endTime").selectedIndex;
-            y=document.getElementById("endTime").options;
-            var endTime=y[x].text;
-
-            x=document.getElementById("source").selectedIndex;
-            y=document.getElementById("source").options;
-            var source=y[x].text;
-
-            var json={
-                "west":west,
-                "east":east,
-                "south":south,
-                "north":north,
-                "zoom":zoom,
-                "starttime":startTime,
-                "endtime":endTime,
-                "source":source
-            };
-            $.post("/gridacceleration",""+JSON.stringify(json), function(result){
-                var price= JSON.parse(result);
-                draw_rectangle_Acceleration(bounds,price);
-            });
-
-        }else if(gridValue=="房价"){
-            x=document.getElementById("gridTime").selectedIndex;
-            y=document.getElementById("gridTime").options;
-            var gridTime=y[x].text;
-
-            x=document.getElementById("source").selectedIndex;
-            y=document.getElementById("source").options;
-            var source=y[x].text;
-
-            var json={
-                "west":west,
-                "east":east,
-                "south":south,
-                "north":north,
-                "zoom":zoom,
-                "gridTime":gridTime,
-                "source":source
-            };
-            //  "/gridcolor_interpolation"
-            //  "/gridcolor"
-            $.post("/gridcolor",""+JSON.stringify(json), function(result){
-                var price= JSON.parse(result);
-                console.log("开始画网格");
-                draw_rectangle_houseprice(price);
-            });
-        }
-
-    });
-
-
-    //画插值后的网格图
-    map.on('zoomend', function(e) {
-        console.log("zoomend");
-        //这里先删除旧的layer
-
-        var zoom=map.getZoom();
-        console.log(zoom);
-        if(zoom==11){
-            if(rects.length==0){
-                var json={
-                    "gridTime":"2015年10月"
-                };
-                $.post("/gridcolor_interpolation",""+JSON.stringify(json), function(result){
-                    var price= JSON.parse(result);
-                    console.log("开始画网格");
-                    draw_rectangle_interpolation(price);
-                });
-            }
-        }
-    });
-
-
 
     var polygon_array=[];
     var polyline_array=[];
