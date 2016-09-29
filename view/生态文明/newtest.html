@@ -31,12 +31,12 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<style>.legend i{
-    height: 18px;
-    width:18px;
-    float: left;
-    margin-right: 8px;
-}</style>
+    <style>.legend i{
+      height: 18px;
+      width:18px;
+      float: left;
+      margin-right: 8px;
+    }</style>
 </head>
 <body>
 
@@ -104,9 +104,9 @@
 
                     </h1>
 
-                    <form>
+                    <form class="form-inline">
                         数据来源:
-                        <select id="source" style='width:110px;'>
+                        <select id="source" class ="form-control" style='width:110px;'>
                             <option>我爱我家</option>
                             <option>房天下</option>
                             <option>安居客</option>
@@ -115,7 +115,7 @@
                         </select>
 
                         房源类型:
-                        <select id="type" style='width:110px;'>
+                        <select id="type" class ="form-control" style='width:110px;'>
                             <option>新房</option>
                             <option>二手房</option>
                             <option>租房</option>
@@ -184,6 +184,38 @@
                         插值数据
                         <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
                     </h1>
+
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">数据来源</label>
+                            <select id="inputEmail3" class ="form-control" style='width:200px;'>
+                                <option>我爱我家</option>
+                                <option>房天下</option>
+                                <option>安居客</option>
+                                <option>链家</option>
+                                <option>全部</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword3" class="col-sm-2 control-label">房源类型</label>
+                            <select id="inputPassword3" class ="form-control" style='width:200px;'>
+                                <option>新房</option>
+                                <option>二手房</option>
+                                <option>租房</option>
+                                <option>求租</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gridValue1" class="col-sm-2 control-label">网格颜色意义</label>
+                            <select id="gridValue1" style='width:200px;'>
+                                <option>房价加速度</option>
+                                <option>房价</option>
+                            </select>
+                        </div>
+
+                    </form>
+
                 </div>
 
                 <div class="sidebar-pane" id="messages">
@@ -208,9 +240,9 @@
             </div>
         </div>
 
-        <div id="map" class="span9"></div>
+        <div id="map" class="sidebar-map"></div>
     </div>
-</div>
+    </div>
 <div id="myModal" style="margin: 3%;height: 90%; width: 90%"  class="modal fade bs-example-modal-sm" role="dialog" aria-labelledby="mySmallModalLabel">
     <div class="modal-dialog modal-sm" style="width: 85%;height: 85%;width: 85%;height: 90%;">
         <!--上一行是调节表格后面的白色模板的-->
@@ -942,8 +974,8 @@
 
     }
 
-    var layerControl = new L.Control.Layers();
-    layerControl.addTo(map);
+    /*var layerControl = new L.Control.Layers();
+    layerControl.addTo(map);*/
     resize();
 
 
