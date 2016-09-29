@@ -13,13 +13,16 @@
     <link href="/view/生态文明/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
     <!--<script type="text/javascript" src="./bootstrap/dist/js/bootstrap.min.js"></script>-->
     <link href="/view/生态文明/stylesheets/ui.css" rel="stylesheet">
-
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/view/生态文明/sidebar-v2-master/css/leaflet-sidebar.css" />
     <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
 
     <script type="text/javascript" src="/view/生态文明/lib/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/view/生态文明/lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="lib/leaflet/leaflet.js"></script>
     <script type="text/javascript" src="/view/dist/leaflet-dvf.js"></script>
+    <script type="text/javascript" src="/view/生态文明/sidebar-v2-master/js/jquery-sidebar.min.js"></script>
+    <script type="text/javascript" src="/view/生态文明/sidebar-v2-master/js/leaflet-sidebar.min.js"></script>
 
 
 
@@ -52,6 +55,13 @@
                     <option>原始数据</option>
                     <option>插值数据</option>
                 </select>
+                <script type="text/javascript">
+
+                    $("#style").on("onchange",function (e) {
+                          console.log(e);
+                        console.log($("#style").text());
+                    });
+                </script>
                 数据来源:
                 <select id="source" style='width:110px;'>
                     <option>我爱我家</option>
@@ -144,6 +154,54 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
+
+        <div id="sidebar" class="sidebar collapsed">
+            <!-- Nav tabs -->
+            <div class="sidebar-tabs">
+                <ul role="tablist">
+                    <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                    <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+                    <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+                </ul>
+
+                <ul role="tablist">
+                    <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+                </ul>
+            </div>
+
+            <!-- Tab panes -->
+            <div class="sidebar-content">
+                <div class="sidebar-pane" id="home">
+                    <h1 class="sidebar-header">
+                        sidebar-v2
+                        <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
+                    </h1>
+
+                    <p>A responsive sidebar for mapping libraries like <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
+
+                    <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+                    <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+                    <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+                    <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+                </div>
+
+                <div class="sidebar-pane" id="profile">
+                    <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-right"></i></span></h1>
+                </div>
+
+                <div class="sidebar-pane" id="messages">
+                    <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-right"></i></span></h1>
+                </div>
+
+                <div class="sidebar-pane" id="settings">
+                    <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-right"></i></span></h1>
+                </div>
+            </div>
+        </div>
+
         <div id="map" class="span9"></div>
     </div>
 </div>
@@ -161,42 +219,6 @@
 
 
 <script type="text/javascript">
-
-
-    /*var index=document.getElementById("schoolType").selectedIndex;
-    var option=document.getElementById("schoolType").options;
-    var time=option[index].text;
-    document.getElementById(time).onclick = function(){
-        var bounds=map.getBounds();
-        console.log(bounds);
-        var west=bounds.getWest();
-        var east=bounds.getEast();
-        var south=bounds.getSouth();
-        var north=bounds.getNorth();
-        var zoom=map.getZoom();
-        console.log(zoom);
-        var x=document.getElementById("gridTime").selectedIndex;
-        var y=document.getElementById("gridTime").options;
-        var gridTime=y[x].text;
-
-        x=document.getElementById("source").selectedIndex;
-        y=document.getElementById("source").options;
-        var source=y[x].text;
-
-        var json={
-            "west":west,
-            "east":east,
-            "south":south,
-            "north":north,
-            "zoom":zoom,
-            "gridTime":gridTime,
-            "source":source
-        };
-        $.post("/gridcolor",""+JSON.stringify(json), function(result){
-            var price= JSON.parse(result);
-            draw_rectangle(bounds,price);
-        });
-    };*/
 
     var map;
     var resize = function () {
@@ -225,6 +247,8 @@
         zoomControl:true
     }).setView([39.906985851984146, 116.39055488416854], 3);
     map.setView([39.906985851984146, 116.39055488416854], 3);
+
+    var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
     //开始移动地图时就生成学校poi的点
     map.on('dragstart',function(e){
@@ -281,12 +305,11 @@
         }
     });
 
-
     map.on('dragstart',function(e){
 
-        var x=document.getElementById("style").selectedIndex;
-        var y=document.getElementById("style").options;
-        var styles=y[x].text;
+        var xx=document.getElementById("style").selectedIndex;
+        var yy=document.getElementById("style").options;
+        var styles=yy[xx].text;
         if(styles="原始数据"){
 
             //拖动地图时能实现不同网格的生成，主要用于同一zoom下的不同范围内的网格生成
@@ -305,6 +328,7 @@
                 var x=document.getElementById("gridValue").selectedIndex;
                 var y=document.getElementById("gridValue").options;
                 var gridValue=y[x].text;
+                //console.log(gridValue);
                 if(gridValue=="房价加速度"){
                     x=document.getElementById("startTime").selectedIndex;
                     y=document.getElementById("startTime").options;
@@ -353,7 +377,8 @@
                     };
                     $.post("/gridcolor",""+JSON.stringify(json), function(result){
                         var price= JSON.parse(result);
-                        draw_rectangle_houseprice(bounds,price);
+                        console.log("每移动一次开始画网格");
+                        draw_rectangle_houseprice(price);
                     });
                 }
 
@@ -438,8 +463,7 @@
 
             });
 
-        }
-        else if(styles="插值数据"){
+        }else if(styles="插值数据"){
 
             //画插值后的网格图
             map.on('zoomend', function(e) {
@@ -464,6 +488,8 @@
         }
 
     });
+
+
 
     var polygon_array=[];
     var polyline_array=[];
