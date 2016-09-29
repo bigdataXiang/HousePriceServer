@@ -184,10 +184,11 @@
                         插值数据
                         <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
                     </h1>
+                    <!--<div class="row-fluid">-->
 
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label">数据来源</label>
+                            <label for="inputEmail3" class="col-sm-2 control-label" style="text-align:left">数据来源</label>
                             <select id="inputEmail3" class ="form-control" style='width:200px;'>
                                 <option>我爱我家</option>
                                 <option>房天下</option>
@@ -215,6 +216,7 @@
                         </div>
 
                     </form>
+                        <!--</div>-->
 
                 </div>
 
@@ -225,13 +227,31 @@
 
                     <form>
                         小学类型:
-                        <select id="schoolType" style='width:110px;'>
+                        <select id="schoolType"  style='width:110px;'>
                             <option>无</option>
                             <option>市重点小学</option>
                             <option>区重点小学</option>
                             <option>普通小学</option>
                         </select>
                     </form>
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#hom" role="tab" data-toggle="tab">Home</a></li>
+                        <li role="presentation"><a href="#profil" role="tab" data-toggle="tab">Profile</a></li>
+                        <li role="presentation"><a href="#message" role="tab" data-toggle="tab">Messages</a></li>
+                        <li role="presentation"><a href="#setting" role="tab" data-toggle="tab">Settings</a></li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="hom">1</div>
+                        <div role="tabpanel" class="tab-pane" id="profil">2</div>
+                        <div role="tabpanel" class="tab-pane" id="message">3</div>
+                        <div role="tabpanel" class="tab-pane" id="setting">5</div>
+                    </div>
+
+
                 </div>
 
                 <div class="sidebar-pane" id="settings">
@@ -257,6 +277,8 @@
 
 
 <script type="text/javascript">
+    $(document).ready(function () {
+
 
     var map;
     var resize = function () {
@@ -270,147 +292,207 @@
         resize();
     });
     resize();
-    var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map',{maxZoom:18,minZoom:10});
-    var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map',{maxZoom:18,minZoom:10});
-    var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:10});
+    var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {maxZoom: 18, minZoom: 10});
+    var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {maxZoom: 18, minZoom: 10});
+    var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {maxZoom: 18, minZoom: 10});
     var normal = L.layerGroup([normalm]),
-            image = L.layerGroup([imgm,imga]);
+            image = L.layerGroup([imgm, imga]);
     var baseLayers = {
-        "地图":normal,
-        "影像":image,
+        "地图": normal,
+        "影像": image,
     }
     var overlayLayers = {};
-    map = L.map("map",{
-        layers:[normal],
-        zoomControl:true
+    map = L.map("map", {
+        layers: [normal],
+        zoomControl: true
     }).setView([39.906985851984146, 116.39055488416854], 3);
     map.setView([39.906985851984146, 116.39055488416854], 3);
 
     var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
-    //开始移动地图时就生成学校poi的点
-    map.on('dragstart',function(e){
-        var x=document.getElementById("schoolType").selectedIndex;
-        var y=document.getElementById("schoolType").options;
-        var schoolType=y[x].text;
+    $("#schoolType").change(function () {
+        alert("changed");
+        var x = document.getElementById("schoolType").selectedIndex;
+        var y = document.getElementById("schoolType").options;
+        var schoolType = y[x].text;
 
-        if(schoolType=="市重点小学"){
-            for(var i=0;i<cityfocus.length;i++){
+        if (schoolType == "市重点小学") {
+            for (var i = 0; i < cityfocus.length; i++) {
                 map.removeLayer(cityfocus[i]);
             }
-            for(var i=0;i<regionfocus.length;i++){
+            for (var i = 0; i < regionfocus.length; i++) {
                 map.removeLayer(regionfocus[i]);
             }
-            for(var i=0;i<ordinary.length;i++){
+            for (var i = 0; i < ordinary.length; i++) {
                 map.removeLayer(ordinary[i]);
             }
             //市重点
-            $.post("/static/city_focused",""+map.getZoom(), function(result){
-                var school= JSON.parse(result);
+            $.post("/static/city_focused", "" + map.getZoom(), function (result) {
+                var school = JSON.parse(result);
                 draw_circle_cityfocus(school);
             });
 
-        }else if(schoolType=="区重点小学"){
-            for(var i=0;i<cityfocus.length;i++){
+        } else if (schoolType == "区重点小学") {
+            for (var i = 0; i < cityfocus.length; i++) {
                 map.removeLayer(cityfocus[i]);
             }
-            for(var i=0;i<regionfocus.length;i++){
+            for (var i = 0; i < regionfocus.length; i++) {
                 map.removeLayer(regionfocus[i]);
             }
-            for(var i=0;i<ordinary.length;i++){
+            for (var i = 0; i < ordinary.length; i++) {
                 map.removeLayer(ordinary[i]);
             }
             //区重点
-            $.post("/static/region_focused",""+map.getZoom(), function(result){
-                var school= JSON.parse(result);
+            $.post("/static/region_focused", "" + map.getZoom(), function (result) {
+                var school = JSON.parse(result);
                 draw_circle_regionfocus(school);
             });
-        }else if(schoolType=="普通小学"){
-            for(var i=0;i<cityfocus.length;i++){
+        } else if (schoolType == "普通小学") {
+            for (var i = 0; i < cityfocus.length; i++) {
                 map.removeLayer(cityfocus[i]);
             }
-            for(var i=0;i<regionfocus.length;i++){
+            for (var i = 0; i < regionfocus.length; i++) {
                 map.removeLayer(regionfocus[i]);
             }
-            for(var i=0;i<ordinary.length;i++){
+            for (var i = 0; i < ordinary.length; i++) {
                 map.removeLayer(ordinary[i]);
             }
             //普通小学
-            $.post("/static/ordinary_primary_school",""+map.getZoom(), function(result){
-                var school= JSON.parse(result);
+            $.post("/static/ordinary_primary_school", "" + map.getZoom(), function (result) {
+                var school = JSON.parse(result);
+                draw_circle_ordinary(school);
+            });
+        }
+    });
+/*这是一种可以触发的方式
+fun =function () {
+ alert("he")
+}
+*/
+
+    //开始移动地图时就生成学校poi的点
+    map.on('dragstart', function (e) {
+        var x = document.getElementById("schoolType").selectedIndex;
+        var y = document.getElementById("schoolType").options;
+        var schoolType = y[x].text;
+
+        if (schoolType == "市重点小学") {
+            for (var i = 0; i < cityfocus.length; i++) {
+                map.removeLayer(cityfocus[i]);
+            }
+            for (var i = 0; i < regionfocus.length; i++) {
+                map.removeLayer(regionfocus[i]);
+            }
+            for (var i = 0; i < ordinary.length; i++) {
+                map.removeLayer(ordinary[i]);
+            }
+            //市重点
+            $.post("/static/city_focused", "" + map.getZoom(), function (result) {
+                var school = JSON.parse(result);
+                draw_circle_cityfocus(school);
+            });
+
+        } else if (schoolType == "区重点小学") {
+            for (var i = 0; i < cityfocus.length; i++) {
+                map.removeLayer(cityfocus[i]);
+            }
+            for (var i = 0; i < regionfocus.length; i++) {
+                map.removeLayer(regionfocus[i]);
+            }
+            for (var i = 0; i < ordinary.length; i++) {
+                map.removeLayer(ordinary[i]);
+            }
+            //区重点
+            $.post("/static/region_focused", "" + map.getZoom(), function (result) {
+                var school = JSON.parse(result);
+                draw_circle_regionfocus(school);
+            });
+        } else if (schoolType == "普通小学") {
+            for (var i = 0; i < cityfocus.length; i++) {
+                map.removeLayer(cityfocus[i]);
+            }
+            for (var i = 0; i < regionfocus.length; i++) {
+                map.removeLayer(regionfocus[i]);
+            }
+            for (var i = 0; i < ordinary.length; i++) {
+                map.removeLayer(ordinary[i]);
+            }
+            //普通小学
+            $.post("/static/ordinary_primary_school", "" + map.getZoom(), function (result) {
+                var school = JSON.parse(result);
                 draw_circle_ordinary(school);
             });
         }
     });
 
-    var styles="";
-    if(styles="原始数据"){
+    var styles = "";
+    if (styles = "原始数据") {
 
         //拖动地图时能实现不同网格的生成，主要用于同一zoom下的不同范围内的网格生成
-        map.on('dragend',function(e){
+        map.on('dragend', function (e) {
             console.log("dragend");
-            var bounds=map.getBounds();
+            var bounds = map.getBounds();
             console.log(bounds);
-            var west=bounds.getWest();
-            var east=bounds.getEast();
-            var south=bounds.getSouth();
-            var north=bounds.getNorth();
-            var zoom=map.getZoom();
+            var west = bounds.getWest();
+            var east = bounds.getEast();
+            var south = bounds.getSouth();
+            var north = bounds.getNorth();
+            var zoom = map.getZoom();
             console.log(zoom);
 
 
-            var x=document.getElementById("gridValue").selectedIndex;
-            var y=document.getElementById("gridValue").options;
-            var gridValue=y[x].text;
+            var x = document.getElementById("gridValue").selectedIndex;
+            var y = document.getElementById("gridValue").options;
+            var gridValue = y[x].text;
             //console.log(gridValue);
-            if(gridValue=="房价加速度"){
-                x=document.getElementById("startTime").selectedIndex;
-                y=document.getElementById("startTime").options;
-                var startTime=y[x].text;
+            if (gridValue == "房价加速度") {
+                x = document.getElementById("startTime").selectedIndex;
+                y = document.getElementById("startTime").options;
+                var startTime = y[x].text;
 
-                x=document.getElementById("endTime").selectedIndex;
-                y=document.getElementById("endTime").options;
-                var endTime=y[x].text;
+                x = document.getElementById("endTime").selectedIndex;
+                y = document.getElementById("endTime").options;
+                var endTime = y[x].text;
 
-                x=document.getElementById("source").selectedIndex;
-                y=document.getElementById("source").options;
-                var source=y[x].text;
+                x = document.getElementById("source").selectedIndex;
+                y = document.getElementById("source").options;
+                var source = y[x].text;
 
-                var json={
-                    "west":west,
-                    "east":east,
-                    "south":south,
-                    "north":north,
-                    "zoom":zoom,
-                    "starttime":startTime,
-                    "endtime":endTime,
-                    "source":source
+                var json = {
+                    "west": west,
+                    "east": east,
+                    "south": south,
+                    "north": north,
+                    "zoom": zoom,
+                    "starttime": startTime,
+                    "endtime": endTime,
+                    "source": source
                 };
-                $.post("/gridacceleration",""+JSON.stringify(json), function(result){
-                    var price= JSON.parse(result);
-                    draw_rectangle_Acceleration(bounds,price);
+                $.post("/gridacceleration", "" + JSON.stringify(json), function (result) {
+                    var price = JSON.parse(result);
+                    draw_rectangle_Acceleration(bounds, price);
                 });
 
-            }else if(gridValue=="房价"){
-                x=document.getElementById("gridTime").selectedIndex;
-                y=document.getElementById("gridTime").options;
-                var gridTime=y[x].text;
+            } else if (gridValue == "房价") {
+                x = document.getElementById("gridTime").selectedIndex;
+                y = document.getElementById("gridTime").options;
+                var gridTime = y[x].text;
 
-                x=document.getElementById("source").selectedIndex;
-                y=document.getElementById("source").options;
-                var source=y[x].text;
+                x = document.getElementById("source").selectedIndex;
+                y = document.getElementById("source").options;
+                var source = y[x].text;
 
-                var json={
-                    "west":west,
-                    "east":east,
-                    "south":south,
-                    "north":north,
-                    "zoom":zoom,
-                    "gridTime":gridTime,
-                    "source":source
+                var json = {
+                    "west": west,
+                    "east": east,
+                    "south": south,
+                    "north": north,
+                    "zoom": zoom,
+                    "gridTime": gridTime,
+                    "source": source
                 };
-                $.post("/gridcolor",""+JSON.stringify(json), function(result){
-                    var price= JSON.parse(result);
+                $.post("/gridcolor", "" + JSON.stringify(json), function (result) {
+                    var price = JSON.parse(result);
                     console.log("每移动一次开始画网格");
                     draw_rectangle_houseprice(price);
                 });
@@ -420,76 +502,76 @@
         });
 
         //缩放地图时能实现不同分辨率下网格的生成，主要用于不同zoom下当前屏幕范围内的网格生成
-        map.on('zoomend', function(e) {
+        map.on('zoomend', function (e) {
             console.log("contetmenux");
             //这里先删除旧的layer
-            for (var i=0;i<rects.length;i++){
-                map=map.removeLayer(rects[i]);
+            for (var i = 0; i < rects.length; i++) {
+                map = map.removeLayer(rects[i]);
             }
-            rects=[];
+            rects = [];
 
-            var bounds=map.getBounds();
+            var bounds = map.getBounds();
             console.log(bounds);
-            var west=bounds.getWest();
-            var east=bounds.getEast();
-            var south=bounds.getSouth();
-            var north=bounds.getNorth();
-            var zoom=map.getZoom();
+            var west = bounds.getWest();
+            var east = bounds.getEast();
+            var south = bounds.getSouth();
+            var north = bounds.getNorth();
+            var zoom = map.getZoom();
             console.log(zoom);
 
-            var x=document.getElementById("gridValue").selectedIndex;
-            var y=document.getElementById("gridValue").options;
-            var gridValue=y[x].text;
-            if(gridValue=="房价加速度"){
-                x=document.getElementById("startTime").selectedIndex;
-                y=document.getElementById("startTime").options;
-                var startTime=y[x].text;
+            var x = document.getElementById("gridValue").selectedIndex;
+            var y = document.getElementById("gridValue").options;
+            var gridValue = y[x].text;
+            if (gridValue == "房价加速度") {
+                x = document.getElementById("startTime").selectedIndex;
+                y = document.getElementById("startTime").options;
+                var startTime = y[x].text;
 
-                x=document.getElementById("endTime").selectedIndex;
-                y=document.getElementById("endTime").options;
-                var endTime=y[x].text;
+                x = document.getElementById("endTime").selectedIndex;
+                y = document.getElementById("endTime").options;
+                var endTime = y[x].text;
 
-                x=document.getElementById("source").selectedIndex;
-                y=document.getElementById("source").options;
-                var source=y[x].text;
+                x = document.getElementById("source").selectedIndex;
+                y = document.getElementById("source").options;
+                var source = y[x].text;
 
-                var json={
-                    "west":west,
-                    "east":east,
-                    "south":south,
-                    "north":north,
-                    "zoom":zoom,
-                    "starttime":startTime,
-                    "endtime":endTime,
-                    "source":source
+                var json = {
+                    "west": west,
+                    "east": east,
+                    "south": south,
+                    "north": north,
+                    "zoom": zoom,
+                    "starttime": startTime,
+                    "endtime": endTime,
+                    "source": source
                 };
-                $.post("/gridacceleration",""+JSON.stringify(json), function(result){
-                    var price= JSON.parse(result);
-                    draw_rectangle_Acceleration(bounds,price);
+                $.post("/gridacceleration", "" + JSON.stringify(json), function (result) {
+                    var price = JSON.parse(result);
+                    draw_rectangle_Acceleration(bounds, price);
                 });
 
-            }else if(gridValue=="房价"){
-                x=document.getElementById("gridTime").selectedIndex;
-                y=document.getElementById("gridTime").options;
-                var gridTime=y[x].text;
+            } else if (gridValue == "房价") {
+                x = document.getElementById("gridTime").selectedIndex;
+                y = document.getElementById("gridTime").options;
+                var gridTime = y[x].text;
 
-                x=document.getElementById("source").selectedIndex;
-                y=document.getElementById("source").options;
-                var source=y[x].text;
+                x = document.getElementById("source").selectedIndex;
+                y = document.getElementById("source").options;
+                var source = y[x].text;
 
-                var json={
-                    "west":west,
-                    "east":east,
-                    "south":south,
-                    "north":north,
-                    "zoom":zoom,
-                    "gridTime":gridTime,
-                    "source":source
+                var json = {
+                    "west": west,
+                    "east": east,
+                    "south": south,
+                    "north": north,
+                    "zoom": zoom,
+                    "gridTime": gridTime,
+                    "source": source
                 };
                 //  "/gridcolor_interpolation"
                 //  "/gridcolor"
-                $.post("/gridcolor",""+JSON.stringify(json), function(result){
-                    var price= JSON.parse(result);
+                $.post("/gridcolor", "" + JSON.stringify(json), function (result) {
+                    var price = JSON.parse(result);
                     console.log("开始画网格");
                     draw_rectangle_houseprice(price);
                 });
@@ -497,22 +579,22 @@
 
         });
 
-    }else if(styles="插值数据"){
+    } else if (styles = "插值数据") {
 
         //画插值后的网格图
-        map.on('zoomend', function(e) {
+        map.on('zoomend', function (e) {
             console.log("zoomend");
             //这里先删除旧的layer
 
-            var zoom=map.getZoom();
+            var zoom = map.getZoom();
             console.log(zoom);
-            if(zoom==11){
-                if(rects.length==0){
-                    var json={
-                        "gridTime":"2015年10月"
+            if (zoom == 11) {
+                if (rects.length == 0) {
+                    var json = {
+                        "gridTime": "2015年10月"
                     };
-                    $.post("/gridcolor_interpolation",""+JSON.stringify(json), function(result){
-                        var price= JSON.parse(result);
+                    $.post("/gridcolor_interpolation", "" + JSON.stringify(json), function (result) {
+                        var price = JSON.parse(result);
                         console.log("开始画网格");
                         draw_rectangle_interpolation(price);
                     });
@@ -521,13 +603,13 @@
         });
     }
 
-    var polygon_array=[];
-    var polyline_array=[];
-    var cityfocus=[];
-    var regionfocus=[];
-    var ordinary=[];
+    var polygon_array = [];
+    var polyline_array = [];
+    var cityfocus = [];
+    var regionfocus = [];
+    var ordinary = [];
 
-    function draw_circle_cityfocus(school){
+    function draw_circle_cityfocus(school) {
         var myIcon = L.icon({
             iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
             iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
@@ -539,7 +621,7 @@
             shadowSize: [68, 95],
             shadowAnchor: [22, 94]
         });
-        var size=school.data.length;
+        var size = school.data.length;
         var lng;
         var lat;
         var info;
@@ -551,34 +633,35 @@
         var latlng;
         var popup;
 
-        gradeOptions.radius=10;
-        gradeOptions.color=gradeOptions.fillColor= 'hsl(' +  359+ ',100%,70%)';
+        gradeOptions.radius = 10;
+        gradeOptions.color = gradeOptions.fillColor = 'hsl(' + 359 + ',100%,70%)';
 
-        for(var i=0;i<size;i++){
-            info=school.data[i];
-            lng=info.longitude;
-            lat=info.latitude;
+        for (var i = 0; i < size; i++) {
+            info = school.data[i];
+            lng = info.longitude;
+            lat = info.latitude;
             /*var marker =L.marker([lat,lng,100],{icon: myIcon});*/
-            var marker =L.mapMarker([lat,lng,100], gradeOptions);
+            var marker = L.mapMarker([lat, lng, 100], gradeOptions);
             map.addLayer(marker);
 
-            title=info.school;
-            location=info.region;
-            address=info.address;
-            type=info.type;
-            content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">区域:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">地址:	</span> <span>" +address+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
-            latlng = L.latLng(lat,lng,100);
+            title = info.school;
+            location = info.region;
+            address = info.address;
+            type = info.type;
+            content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">区域:	</span> <span>" + location + "</span></DIV><DIV><span  style=\"font-weight:bold;\">地址:	</span> <span>" + address + "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
+            latlng = L.latLng(lat, lng, 100);
             popup = L.popup()
                     .setLatLng(latlng)
                     .setContent(content);
-                   // .openOn(map);
+            // .openOn(map);
             marker.bindPopup(popup);
 
             cityfocus.push(marker);
         }
 
     }
-    function draw_circle_regionfocus(school){
+
+    function draw_circle_regionfocus(school) {
         var myIcon = L.icon({
             iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
             iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
@@ -590,7 +673,7 @@
             shadowSize: [68, 95],
             shadowAnchor: [22, 94]
         });
-        var size=school.data.length;
+        var size = school.data.length;
         var lng;
         var lat;
         var info;
@@ -601,33 +684,34 @@
         var content;
         var latlng;
         var popup;
-        gradeOptions.radius=10;
-        gradeOptions.color=gradeOptions.fillColor= 'hsl(' +  285+ ',100%,70%)';
-        for(var i=0;i<size;i++){
-            info=school.data[i];
-            lng=info.longitude;
-            lat=info.latitude;
+        gradeOptions.radius = 10;
+        gradeOptions.color = gradeOptions.fillColor = 'hsl(' + 285 + ',100%,70%)';
+        for (var i = 0; i < size; i++) {
+            info = school.data[i];
+            lng = info.longitude;
+            lat = info.latitude;
 
             /*var marker =L.marker([lat,lng,100],{icon: myIcon});*/
-            var marker =L.mapMarker([lat,lng,100], gradeOptions);
+            var marker = L.mapMarker([lat, lng, 100], gradeOptions);
             map.addLayer(marker);
 
-            title=info.school;
-            location=info.region;
-            address=info.address;
-            type=info.type;
-            content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">区域:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">地址:	</span> <span>" +address+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
-            latlng = L.latLng(lat,lng,100);
+            title = info.school;
+            location = info.region;
+            address = info.address;
+            type = info.type;
+            content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">区域:	</span> <span>" + location + "</span></DIV><DIV><span  style=\"font-weight:bold;\">地址:	</span> <span>" + address + "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
+            latlng = L.latLng(lat, lng, 100);
             popup = L.popup()
                     .setLatLng(latlng)
                     .setContent(content);
-                    //.openOn(map);
+            //.openOn(map);
             marker.bindPopup(popup);
 
             regionfocus.push(marker);
         }
     }
-    function draw_circle_ordinary(school){
+
+    function draw_circle_ordinary(school) {
         var myIcon = L.icon({
             iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
             iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
@@ -639,7 +723,7 @@
             shadowSize: [68, 95],
             shadowAnchor: [22, 94]
         });
-        var size=school.data.length;
+        var size = school.data.length;
         var lng;
         var lat;
         var info;
@@ -650,57 +734,66 @@
         var content;
         var latlng;
         var popup;
-        gradeOptions.radius=10;
-        gradeOptions.color=gradeOptions.fillColor= 'hsl(' +  240+ ',100%,70%)';
+        gradeOptions.radius = 10;
+        gradeOptions.color = gradeOptions.fillColor = 'hsl(' + 240 + ',100%,70%)';
 
-        for(var i=0;i<size;i++){
-            info=school.data[i];
-            lng=info.longitude;
-            lat=info.latitude;
+        for (var i = 0; i < size; i++) {
+            info = school.data[i];
+            lng = info.longitude;
+            lat = info.latitude;
             /*var marker =L.marker([lat,lng,100],{icon: myIcon});*/
-            var marker =L.mapMarker([lat,lng,100], gradeOptions);
+            var marker = L.mapMarker([lat, lng, 100], gradeOptions);
             map.addLayer(marker);
 
-            title=info.school;
-            location=info.region;
-            address=info.address;
-            type=info.type;
-            content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">区域:	</span> <span>" +location+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">地址:	</span> <span>" +address+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
-            latlng = L.latLng(lat,lng,100);
+            title = info.school;
+            location = info.region;
+            address = info.address;
+            type = info.type;
+            content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + title + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">区域:	</span> <span>" + location + "</span></DIV><DIV><span  style=\"font-weight:bold;\">地址:	</span> <span>" + address + "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + type + "<span></DIV>";
+            latlng = L.latLng(lat, lng, 100);
             popup = L.popup()
                     .setLatLng(latlng)
                     .setContent(content);
-                   // .openOn(map);
+            // .openOn(map);
             marker.bindPopup(popup);
 
             ordinary.push(marker);
         }
     }
-    function  draw_multiPolyline() {
+
+    function draw_multiPolyline() {
 
         //将之前的多线图层删除
-        if(polyline_array.length!=0){
-            for (var i=0;i<polyline_array.length;i++){
-                map=map.removeLayer(polyline_array[i]);
+        if (polyline_array.length != 0) {
+            for (var i = 0; i < polyline_array.length; i++) {
+                map = map.removeLayer(polyline_array[i]);
             }
-            polyline_array=[];
+            polyline_array = [];
         }
         //将之前的多边形图层删除
-        if(polygon_array.length!=0){
-            for (var i=0;i<polygon_array.length;i++){
-                map=map.removeLayer(polygon_array[i]);
+        if (polygon_array.length != 0) {
+            for (var i = 0; i < polygon_array.length; i++) {
+                map = map.removeLayer(polygon_array[i]);
             }
-            polygon_array=[];
+            polygon_array = [];
         }
 
 
         var poly_points = [];//区域
-        var poly_line=new L.Polyline([],{color:mycolor(0,0,205),fillColor:mycolor(0,0,205),stroke:true,weight:5,smoothFactor:5,fillOpacity:1,opacity:1});//折线
-        var latlng1 = L.latLng(39.906985851984146,116.39055488416854);
-        var latlng2 = L.latLng(39.905779,116.319274);
-        var latlng3 = L.latLng(39.88311876796353,116.30383565962735);
-        var latlng4 = L.latLng(39.872028939237744,116.36803340806715);
-        var latlng6 = L.latLng(39.906985851984146,116.39055488416854);
+        var poly_line = new L.Polyline([], {
+            color: mycolor(0, 0, 205),
+            fillColor: mycolor(0, 0, 205),
+            stroke: true,
+            weight: 5,
+            smoothFactor: 5,
+            fillOpacity: 1,
+            opacity: 1
+        });//折线
+        var latlng1 = L.latLng(39.906985851984146, 116.39055488416854);
+        var latlng2 = L.latLng(39.905779, 116.319274);
+        var latlng3 = L.latLng(39.88311876796353, 116.30383565962735);
+        var latlng4 = L.latLng(39.872028939237744, 116.36803340806715);
+        var latlng6 = L.latLng(39.906985851984146, 116.39055488416854);
         //将坐标点加入到poly_points数组中去
         poly_points.push(latlng1);
         poly_points.push(latlng2);
@@ -723,8 +816,13 @@
         latlngs.push(latlng3);
         latlngs.push(latlng4);
         latlngs.push(latlng6);
-        var poly = new L.Polygon(latlngs,{color:mycolor(0,0,205),fillColor:mycolor(0,0,205),stroke:true,weight:1});
-        var content="<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" +"北京天安门"+ "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
+        var poly = new L.Polygon(latlngs, {
+            color: mycolor(0, 0, 205),
+            fillColor: mycolor(0, 0, 205),
+            stroke: true,
+            weight: 1
+        });
+        var content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "北京天安门" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
         var popup = L.popup()
                 .setLatLng(latlng1)
                 .setContent(content);
@@ -734,70 +832,78 @@
         polygon_array.push(poly);
 
     }
+
     function draw_rectangle_houseprice(price) {
-        var N=price.N;
-        var width=0.0011785999999997187*N;//每N00m的经度差
-        var length=9.003999999997348E-4*N;//每N00m的纬度差
-        var r_min=price.r_min;
-        var r_max=price.r_max;
-        var c_min=price.c_min;
-        var c_max=price.c_max;
+        var N = price.N;
+        var width = 0.0011785999999997187 * N;//每N00m的经度差
+        var length = 9.003999999997348E-4 * N;//每N00m的纬度差
+        var r_min = price.r_min;
+        var r_max = price.r_max;
+        var c_min = price.c_min;
+        var c_max = price.c_max;
 
         var row;
         var col;
 
         //将之前的图层删除
-        if(rects.length!=0){
-            for (var i=0;i<rects.length;i++){
-                map=map.removeLayer(rects[i]);
+        if (rects.length != 0) {
+            for (var i = 0; i < rects.length; i++) {
+                map = map.removeLayer(rects[i]);
             }
-            rects=[];
+            rects = [];
         }
 
-        var count=0;
-        for( row=r_min;row<=r_max;row++){
-            for(col=c_min;col<=c_max;col++){
+        var count = 0;
+        for (row = r_min; row <= r_max; row++) {
+            for (col = c_min; col <= c_max; col++) {
 
-                var gridcode_js=col+(2000/N)*(row-1);
+                var gridcode_js = col + (2000 / N) * (row - 1);
                 //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
-                var dist_wid=(col-1)*width;
-                var dist_len=(row-1)*length;
-                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [(39.438283+length)+dist_len,((115.417284+width)+dist_wid)]];//(左下角，右上角)
+                var dist_wid = (col - 1) * width;
+                var dist_len = (row - 1) * length;
+                var bounds = [[39.438283 + dist_len, (115.417284 + dist_wid)], [(39.438283 + length) + dist_len, ((115.417284 + width) + dist_wid)]];//(左下角，右上角)
                 var rect;
-                var gridvalue=price.data[count];
-                var gridcode_java=gridvalue.code;
-                var gridcolor=gridvalue.color;
-                var gridrow=gridvalue.row;
-                var gridcol=gridvalue.col;
-                var averageprice=gridvalue.average_price;
+                var gridvalue = price.data[count];
+                var gridcode_java = gridvalue.code;
+                var gridcolor = gridvalue.color;
+                var gridrow = gridvalue.row;
+                var gridcol = gridvalue.col;
+                var averageprice = gridvalue.average_price;
 
-                if(gridcode_js==gridcode_java){
-                    if(averageprice!=0){
+                if (gridcode_js == gridcode_java) {
+                    if (averageprice != 0) {
                         //console.log(count);
-                        rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_java});//,className:gridcode_java
-                        rect.index=count;
-                        rect.data=price.data[rect.index];
+                        rect = L.rectangle(bounds, {
+                            color: mycolor(255, 255, 255),
+                            opacity: 0.9,
+                            fillColor: gridcolor,
+                            weight: 1,
+                            fillOpacity: 0.6,
+                            className: "" + gridcode_java
+                        });//,className:gridcode_java
+                        rect.index = count;
+                        rect.data = price.data[rect.index];
 
-                        rect.on('click', function(e){
-                            var json={
-                                "row":this.data.row,
-                                "col":this.data.col,
-                                "code":this.data.code,
-                                "N":N
+                        rect.on('click', function (e) {
+                            var json = {
+                                "row": this.data.row,
+                                "col": this.data.col,
+                                "code": this.data.code,
+                                "N": N
                             };
 
                             $.post("/price", JSON.stringify(json),
-                                    function(data){
+                                    function (data) {
                                         var ctx = document.getElementById("myChart").getContext("2d");
-                                        pricedata= JSON.parse(data);
+                                        pricedata = JSON.parse(data);
 
-                                        var max=pricedata.suggestedMax;
-                                        var min=pricedata.suggestedMin;
+                                        var max = pricedata.suggestedMax;
+                                        var min = pricedata.suggestedMin;
 
-                                        var grid=JSON.stringify(json);
-                                        var gridinfo=JSON.parse(grid);
-                                        var info="编码："+gridinfo.code+","+gridinfo.row+"行"+gridinfo.col+"列";
-                                        window.myLine = new Chart(ctx, dataStruct(pricedata,info,max,min));
+                                        var grid = JSON.stringify(json);
+                                        var gridinfo = JSON.parse(grid);
+                                        var info = "编码：" + gridinfo.code + "," + gridinfo.row + "行" + gridinfo.col + "列";
+                                        window.myLine = new Chart(ctx, dataStruct(pricedata, info, max, min));
                                         $('#myModal').modal();
                                     }
                             )
@@ -813,70 +919,78 @@
         }
 
     }
+
     function draw_rectangle_interpolation(price) {
-        var N=price.N;
-        var width=0.0011785999999997187*N;//每N00m的经度差
-        var length=9.003999999997348E-4*N;//每N00m的纬度差
-        var r_min=price.r_min;
-        var r_max=price.r_max;
-        var c_min=price.c_min;
-        var c_max=price.c_max;
+        var N = price.N;
+        var width = 0.0011785999999997187 * N;//每N00m的经度差
+        var length = 9.003999999997348E-4 * N;//每N00m的纬度差
+        var r_min = price.r_min;
+        var r_max = price.r_max;
+        var c_min = price.c_min;
+        var c_max = price.c_max;
 
         var row;
         var col;
 
         //将之前的图层删除
-        if(rects.length!=0){
-            for (var i=0;i<rects.length;i++){
-                map=map.removeLayer(rects[i]);
+        if (rects.length != 0) {
+            for (var i = 0; i < rects.length; i++) {
+                map = map.removeLayer(rects[i]);
             }
-            rects=[];
+            rects = [];
         }
 
-        var count=0;
-        for( row=r_min;row<=r_max;row++){
-            for(col=c_min;col<=c_max;col++){
+        var count = 0;
+        for (row = r_min; row <= r_max; row++) {
+            for (col = c_min; col <= c_max; col++) {
 
-                var gridcode_js=col+(2000/N)*(row-1);
+                var gridcode_js = col + (2000 / N) * (row - 1);
                 //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
-                var dist_wid=(col-1)*width;
-                var dist_len=(row-1)*length;
-                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [(39.438283+length)+dist_len,((115.417284+width)+dist_wid)]];//(左下角，右上角)
+                var dist_wid = (col - 1) * width;
+                var dist_len = (row - 1) * length;
+                var bounds = [[39.438283 + dist_len, (115.417284 + dist_wid)], [(39.438283 + length) + dist_len, ((115.417284 + width) + dist_wid)]];//(左下角，右上角)
                 var rect;
-                var gridvalue=price.data[count];
-                var gridcode_java=gridvalue.code;
-                var gridcolor=gridvalue.color;
-                var gridrow=gridvalue.row;
-                var gridcol=gridvalue.col;
-                var averageprice=gridvalue.average_price;
+                var gridvalue = price.data[count];
+                var gridcode_java = gridvalue.code;
+                var gridcolor = gridvalue.color;
+                var gridrow = gridvalue.row;
+                var gridcol = gridvalue.col;
+                var averageprice = gridvalue.average_price;
 
-                if(gridcode_js==gridcode_java){
-                    if(averageprice!=0){
+                if (gridcode_js == gridcode_java) {
+                    if (averageprice != 0) {
                         //console.log(count);
-                        rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_java});//,className:gridcode_java
-                        rect.index=count;
-                        rect.data=price.data[rect.index];
+                        rect = L.rectangle(bounds, {
+                            color: mycolor(255, 255, 255),
+                            opacity: 0.9,
+                            fillColor: gridcolor,
+                            weight: 1,
+                            fillOpacity: 0.6,
+                            className: "" + gridcode_java
+                        });//,className:gridcode_java
+                        rect.index = count;
+                        rect.data = price.data[rect.index];
 
-                        rect.on('click', function(e){
-                            var json={
-                                "row":this.data.row,
-                                "col":this.data.col,
-                                "code":this.data.code,
-                                "N":N
+                        rect.on('click', function (e) {
+                            var json = {
+                                "row": this.data.row,
+                                "col": this.data.col,
+                                "code": this.data.code,
+                                "N": N
                             };
 
                             $.post("/price", JSON.stringify(json),
-                                    function(data){
+                                    function (data) {
                                         var ctx = document.getElementById("myChart").getContext("2d");
-                                        pricedata= JSON.parse(data);
+                                        pricedata = JSON.parse(data);
 
-                                        var max=pricedata.suggestedMax;
-                                        var min=pricedata.suggestedMin;
+                                        var max = pricedata.suggestedMax;
+                                        var min = pricedata.suggestedMin;
 
-                                        var grid=JSON.stringify(json);
-                                        var gridinfo=JSON.parse(grid);
-                                        var info="编码："+gridinfo.code+","+gridinfo.row+"行"+gridinfo.col+"列";
-                                        window.myLine = new Chart(ctx, dataStruct(pricedata,info,max,min));
+                                        var grid = JSON.stringify(json);
+                                        var gridinfo = JSON.parse(grid);
+                                        var info = "编码：" + gridinfo.code + "," + gridinfo.row + "行" + gridinfo.col + "列";
+                                        window.myLine = new Chart(ctx, dataStruct(pricedata, info, max, min));
                                         $('#myModal').modal();
                                     }
                             )
@@ -892,74 +1006,82 @@
         }
 
     }
-    function draw_rectangle_Acceleration(bounds,price) {
-        var west=bounds.getWest();
-        var east=bounds.getEast();
-        var south=bounds.getSouth();
-        var north=bounds.getNorth();
-        var N=price.N;
-        var width=0.0011785999999997187*N;//每N00m的经度差
-        var length=9.003999999997348E-4*N;//每N00m的纬度差
-        var r_min=price.r_min;
-        var r_max=price.r_max;
-        var c_min=price.c_min;
-        var c_max=price.c_max;
+
+    function draw_rectangle_Acceleration(bounds, price) {
+        var west = bounds.getWest();
+        var east = bounds.getEast();
+        var south = bounds.getSouth();
+        var north = bounds.getNorth();
+        var N = price.N;
+        var width = 0.0011785999999997187 * N;//每N00m的经度差
+        var length = 9.003999999997348E-4 * N;//每N00m的纬度差
+        var r_min = price.r_min;
+        var r_max = price.r_max;
+        var c_min = price.c_min;
+        var c_max = price.c_max;
 
         var row;
         var col;
 
         //将之前的图层删除
-        if(rects.length!=0){
-            for (var i=0;i<rects.length;i++){
-                map=map.removeLayer(rects[i]);
+        if (rects.length != 0) {
+            for (var i = 0; i < rects.length; i++) {
+                map = map.removeLayer(rects[i]);
             }
-            rects=[];
+            rects = [];
         }
 
-        var count=0;
-        for( row=r_min;row<=r_max;row++){
-            for(col=c_min;col<=c_max;col++){
+        var count = 0;
+        for (row = r_min; row <= r_max; row++) {
+            for (col = c_min; col <= c_max; col++) {
 
                 //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
-                var dist_wid=(col-1)*width;
-                var dist_len=(row-1)*length;
-                var bounds = [[39.438283+dist_len,(115.417284+dist_wid)], [(39.438283+length)+dist_len,((115.417284+width)+dist_wid)]];//(左下角，右上角)
+                var dist_wid = (col - 1) * width;
+                var dist_len = (row - 1) * length;
+                var bounds = [[39.438283 + dist_len, (115.417284 + dist_wid)], [(39.438283 + length) + dist_len, ((115.417284 + width) + dist_wid)]];//(左下角，右上角)
                 var rect;
-                var gridvalue=price.data[count];
+                var gridvalue = price.data[count];
 
-                var gridcode_java=gridvalue.code;
-                var gridcode_js=col+(row-1)*(2000/N);
+                var gridcode_java = gridvalue.code;
+                var gridcode_js = col + (row - 1) * (2000 / N);
 
-                var gridcolor=gridvalue.color;
-                var gridrow=gridvalue.row;
-                var gridcol=gridvalue.col;
-                var acceleration=gridvalue.acceleration;
+                var gridcolor = gridvalue.color;
+                var gridrow = gridvalue.row;
+                var gridcol = gridvalue.col;
+                var acceleration = gridvalue.acceleration;
 
-                if(acceleration!=0){
-                    rect= L.rectangle(bounds, {color:mycolor(255,255,255),opacity:0.9,fillColor:gridcolor,weight:1,fillOpacity:0.6,className:""+gridcode_js+","+row+","+col});//,className:gridcode_java
-                    rect.index=count;
-                    rect.data=price.data[rect.index];
+                if (acceleration != 0) {
+                    rect = L.rectangle(bounds, {
+                        color: mycolor(255, 255, 255),
+                        opacity: 0.9,
+                        fillColor: gridcolor,
+                        weight: 1,
+                        fillOpacity: 0.6,
+                        className: "" + gridcode_js + "," + row + "," + col
+                    });//,className:gridcode_java
+                    rect.index = count;
+                    rect.data = price.data[rect.index];
 
-                    rect.on('click', function(e){
-                        var json={
-                            "row":this.data.row,
-                            "col":this.data.col,
-                            "code":this.data.code,
-                            "N":N
+                    rect.on('click', function (e) {
+                        var json = {
+                            "row": this.data.row,
+                            "col": this.data.col,
+                            "code": this.data.code,
+                            "N": N
                         };
 
                         $.post("/price", JSON.stringify(json),
-                                function(data){
+                                function (data) {
                                     var ctx = document.getElementById("myChart").getContext("2d");
-                                    pricedata= JSON.parse(data);
+                                    pricedata = JSON.parse(data);
 
-                                    var max=pricedata.suggestedMax;
-                                    var min=pricedata.suggestedMin;
+                                    var max = pricedata.suggestedMax;
+                                    var min = pricedata.suggestedMin;
 
-                                    var grid=JSON.stringify(json);
-                                    var gridinfo=JSON.parse(grid);
-                                    var info="编码："+gridinfo.code+","+gridinfo.row+"行"+gridinfo.col+"列";
-                                    window.myLine = new Chart(ctx, dataStruct(pricedata,info,max,min));
+                                    var grid = JSON.stringify(json);
+                                    var gridinfo = JSON.parse(grid);
+                                    var info = "编码：" + gridinfo.code + "," + gridinfo.row + "行" + gridinfo.col + "列";
+                                    window.myLine = new Chart(ctx, dataStruct(pricedata, info, max, min));
                                     $('#myModal').modal();
                                 }
                         )
@@ -992,8 +1114,8 @@
     };
 
     //表格所需要的数据结构
-    function dataStruct(parameter,code,max,min){
-        var text=""+code;
+    function dataStruct(parameter, code, max, min){
+        var text= ""+ code;
         var config = {
             type: 'line',
             data: {
@@ -1012,8 +1134,8 @@
             options:{
                 responsive: true,
                 title:{
-                    display:true,
-                    text:"房价曲线图"
+                    display: true,
+                    text: "房价曲线图"
                 },
                 tooltips: {
                     mode: 'label',
@@ -1066,22 +1188,21 @@
                 }
             }
         };
-        for(var i=0;i<parameter.data.length;i++){
+        for(var i=0; i < parameter.data.length; i++){
             config.data.labels.push(parameter.data[i].date);
         }
-        for(var i=0;i<parameter.data.length;i++){
+        for(var i= 0; i< parameter.data.length; i++){
             config.data.datasets[0].data.push(parameter.data[i].average_price);
         }
-        for(var i=0;i<parameter.data.length;i++){
+        for(var i=0; i < parameter.data.length; i++){
             config.data.datasets[1].data.push(parameter.data[i].average_price);
         }
         //设置曲线的最大和最小值
         config.options.scales.yAxes[0].ticks.suggestedMin=min;
         config.options.scales.yAxes[0].ticks.suggestedMax=max;
         //展示曲线对应的具体网格值
-        config.options.title.text="房价曲线图（:"+code+"）";
-        //给曲线随机赋颜色值
-        for(var i=0;i<config.data.datasets.length;i++){
+        config.options.title.text="房价曲线图（:"+ code+"）"; //给曲线随机赋颜色值
+        for(var i=0; i<config.data.datasets.length; i++){
             config.data.datasets[i].borderColor = randomColor(0.4);
             config.data.datasets[i].backgroundColor = randomColor(0.5);
             config.data.datasets[i].pointBorderColor = randomColor(0.7);
@@ -1096,7 +1217,7 @@
     var pricedata;
 
     function mycolor(r,g,b) {
-        var color="rgb("+r+","+g+","+b+")";
+        var color= "rgb("+r+","+g+","+b+")";
         return color;
     }
 
@@ -1105,14 +1226,10 @@
     legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
-                color = ['#C70305', '#EA4706','#E97A04', '#E9A708', '#E6CC05', '#E9E507', '#D8EB00', '#B8E705', '#04E738','#06E884','#08E9C7','#03EAE4','#09BAEC','#077BEA','#1411D2'],
-                labels =[],
-                grades=["[8,+∞]","[8,9]","[7.5,8]","[7,7.5]","[6.5,7]","[6,6.5]","[5.5,6]",
-                    "[5,5.5]","[4.5,5]","[4,4.5]","[3.5,4]","[3,3.5]","[2.5,3]","[2,2.5]","[0,2]"],
+                color = ['#C70305', '#EA4706','#E97A04', '#E9A708', '#E6CC05', '#E9E507', '#D8EB00', '#B8E705', '#04E738','#06E884','#08E9C7','#03EAE4','#09BAEC','#077BEA', '#1411D2'], labels =[], grades=["[8,+∞]","[8,9]", "[7.5,8]","[7,7.5]","[6.5,7]","[6,6.5]", "[5.5,6]", "[5,5.5]","[4.5,5]","[4,4.5]", "[3.5,4]", "[3,3.5]", "[2.5,3]", "[2,2.5]","[0,2]"],
                 from, to;
 
         for (var i = 0; i < color.length; i++) {
-
             labels.push(
                     '<i style=\"background:' +  color[i] + '\"></i> ' +grades[i]);
         }
@@ -1120,7 +1237,6 @@
         div.innerHTML = labels.join('<br>');
         return div;
     };
-
     legend.addTo(map);
 
     var gradeOptions = {
@@ -1135,6 +1251,7 @@
         offset: 0,
         innerRadius: 0,
     };
+    })
 </script>
 </body>
 </html>
