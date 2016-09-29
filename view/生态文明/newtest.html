@@ -311,7 +311,7 @@
     var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
     $("#schoolType").change(function () {
-        alert("changed");
+        //alert("changed");
         var x = document.getElementById("schoolType").selectedIndex;
         var y = document.getElementById("schoolType").options;
         var schoolType = y[x].text;
@@ -364,66 +364,11 @@
             });
         }
     });
-/*这是一种可以触发的方式
-fun =function () {
- alert("he")
-}
-*/
-
-    //开始移动地图时就生成学校poi的点
-    map.on('dragstart', function (e) {
-        var x = document.getElementById("schoolType").selectedIndex;
-        var y = document.getElementById("schoolType").options;
-        var schoolType = y[x].text;
-
-        if (schoolType == "市重点小学") {
-            for (var i = 0; i < cityfocus.length; i++) {
-                map.removeLayer(cityfocus[i]);
-            }
-            for (var i = 0; i < regionfocus.length; i++) {
-                map.removeLayer(regionfocus[i]);
-            }
-            for (var i = 0; i < ordinary.length; i++) {
-                map.removeLayer(ordinary[i]);
-            }
-            //市重点
-            $.post("/static/city_focused", "" + map.getZoom(), function (result) {
-                var school = JSON.parse(result);
-                draw_circle_cityfocus(school);
-            });
-
-        } else if (schoolType == "区重点小学") {
-            for (var i = 0; i < cityfocus.length; i++) {
-                map.removeLayer(cityfocus[i]);
-            }
-            for (var i = 0; i < regionfocus.length; i++) {
-                map.removeLayer(regionfocus[i]);
-            }
-            for (var i = 0; i < ordinary.length; i++) {
-                map.removeLayer(ordinary[i]);
-            }
-            //区重点
-            $.post("/static/region_focused", "" + map.getZoom(), function (result) {
-                var school = JSON.parse(result);
-                draw_circle_regionfocus(school);
-            });
-        } else if (schoolType == "普通小学") {
-            for (var i = 0; i < cityfocus.length; i++) {
-                map.removeLayer(cityfocus[i]);
-            }
-            for (var i = 0; i < regionfocus.length; i++) {
-                map.removeLayer(regionfocus[i]);
-            }
-            for (var i = 0; i < ordinary.length; i++) {
-                map.removeLayer(ordinary[i]);
-            }
-            //普通小学
-            $.post("/static/ordinary_primary_school", "" + map.getZoom(), function (result) {
-                var school = JSON.parse(result);
-                draw_circle_ordinary(school);
-            });
-        }
-    });
+   /*这是一种可以触发的方式
+     fun =function () {
+     alert("he")
+     }
+   */
 
     var styles = "";
     if (styles = "原始数据") {
