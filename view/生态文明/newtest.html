@@ -103,33 +103,36 @@
                         <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
 
                     </h1>
-
-                    <form class="form-inline">
-                        数据来源:
-                        <select id="source" class ="form-control" style='width:110px;'>
+                    <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="source" class="col-sm-2 control-label">数据来源</label>
+                        <select id="source" class ="form-control" style='width:200px;'>
                             <option>我爱我家</option>
                             <option>房天下</option>
                             <option>安居客</option>
                             <option>链家</option>
                             <option>全部</option>
                         </select>
-
-                        房源类型:
-                        <select id="type" class ="form-control" style='width:110px;'>
+                    </div>
+                    <div class="form-group">
+                        <label for="type" class="col-sm-2 control-label">房源类型</label>
+                        <select id="type" class ="form-control" style='width:200px;'>
                             <option>新房</option>
                             <option>二手房</option>
                             <option>租房</option>
                             <option>求租</option>
                         </select>
-
-                        网格颜色意义:
-                        <select id="gridValue" style='width:110px;'>
+                    </div>
+                    <div class="form-group">
+                        <label for="gridValue" class="col-sm-2 control-label">网格颜色意义</label>
+                        <select id="gridValue" style='width:200px;'>
                             <option>房价加速度</option>
                             <option>房价</option>
                         </select>
-
-                        网格房价时间:
-                        <select id="gridTime" style='width:110px;'>
+                    </div>
+                    <div class="form-group">
+                        <label for="gridTime" class="col-sm-2 control-label">网格房价时间</label>
+                        <select id="gridTime" style='width:200px;'>
                             <option id="201507">2015年07月</option>
                             <option id="201508">2015年08月</option>
                             <option id="201509">2015年09月</option>
@@ -143,9 +146,27 @@
                             <option id="201605">2016年05月</option>
                             <option id="201606">2016年06月</option>
                         </select>
-
-                        网格房价加速度起始时间:
-                        <select id="startTime" style='width:110px;'>
+                    </div>
+                    <div class="form-group">
+                    <label for="startTime" class="col-sm-2 control-label">加速度起始时间</label>
+                    <select id="startTime" style='width:200px;'>
+                        <option>2015年07月</option>
+                        <option>2015年08月</option>
+                        <option>2015年09月</option>
+                        <option>2015年10月</option>
+                        <option>2015年11月</option>
+                        <option>2015年12月</option>
+                        <option>2016年01月</option>
+                        <option>2016年02月</option>
+                        <option>2016年03月</option>
+                        <option>2016年04月</option>
+                        <option>2016年05月</option>
+                        <option>2016年06月</option>
+                    </select>
+                  </div>
+                    <div class="form-group">
+                        <label for="endTime" class="col-sm-2 control-label">加速度终止时间</label>
+                        <select id="endTime" style='width:200px;'>
                             <option>2015年07月</option>
                             <option>2015年08月</option>
                             <option>2015年09月</option>
@@ -159,24 +180,8 @@
                             <option>2016年05月</option>
                             <option>2016年06月</option>
                         </select>
-                        网格房价加速度终止时间:
-                        <select id="endTime" style='width:110px;'>
-                            <option>2015年07月</option>
-                            <option>2015年08月</option>
-                            <option>2015年09月</option>
-                            <option>2015年10月</option>
-                            <option>2015年11月</option>
-                            <option>2015年12月</option>
-                            <option>2016年01月</option>
-                            <option>2016年02月</option>
-                            <option>2016年03月</option>
-                            <option>2016年04月</option>
-                            <option>2016年05月</option>
-                            <option>2016年06月</option>
-                        </select>
-
+                    </div>
                     </form>
-
                 </div>
 
                 <div class="sidebar-pane" id="profile">
@@ -216,7 +221,6 @@
                         </div>
 
                     </form>
-                        <!--</div>-->
 
                 </div>
 
@@ -311,7 +315,6 @@
     var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
     $("#schoolType").change(function () {
-        //alert("changed");
         var x = document.getElementById("schoolType").selectedIndex;
         var y = document.getElementById("schoolType").options;
         var schoolType = y[x].text;
@@ -364,12 +367,12 @@
             });
         }
     });
-   /*这是一种可以触发的方式
-     fun =function () {
-     alert("he")
-     }
-   */
-
+    $("#").change(function () {
+        var x = document.getElementById("").selectedIndex;
+        var y = document.getElementById("").options;
+        var schoolType = y[x].text;
+        
+    });
     var styles = "";
     if (styles = "原始数据") {
 
