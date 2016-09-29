@@ -40,7 +40,7 @@
 </head>
 <body>
 
-<div class="navbar navbar-default">
+<!--div class="navbar navbar-default">
   <div class="navbar-inner">
         <div class="container">
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -48,95 +48,25 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <form>
-                <!--<script type="text/javascript">
+
+                &lt;!&ndash;<script type="text/javascript">
 
                     $("#style").on("onchange",function (e) {
                           console.log(e);
                         console.log($("#style").text());
                     });
-                </script>-->
-                数据来源:
-                <select id="source" style='width:110px;'>
-                    <option>我爱我家</option>
-                    <option>房天下</option>
-                    <option>安居客</option>
-                    <option>链家</option>
-                    <option>全部</option>
-                </select>
-
-                房源类型:
-                <select id="type" style='width:110px;'>
-                    <option>新房</option>
-                    <option>二手房</option>
-                    <option>租房</option>
-                    <option>求租</option>
-                </select>
-
-                网格颜色意义:
-                <select id="gridValue" style='width:110px;'>
-                    <option>房价加速度</option>
-                    <option>房价</option>
-                </select>
-
-                网格房价时间:
-                <select id="gridTime" style='width:110px;'>
-                    <option id="201507">2015年07月</option>
-                    <option id="201508">2015年08月</option>
-                    <option id="201509">2015年09月</option>
-                    <option id="201510">2015年10月</option>
-                    <option id="201511">2015年11月</option>
-                    <option id="201512">2015年12月</option>
-                    <option id="201601">2016年01月</option>
-                    <option id="201602">2016年02月</option>
-                    <option id="201603">2016年03月</option>
-                    <option id="201604">2016年04月</option>
-                    <option id="201605">2016年05月</option>
-                    <option id="201606">2016年06月</option>
-                </select>
-
-                网格房价加速度起始时间:
-                <select id="startTime" style='width:110px;'>
-                    <option>2015年07月</option>
-                    <option>2015年08月</option>
-                    <option>2015年09月</option>
-                    <option>2015年10月</option>
-                    <option>2015年11月</option>
-                    <option>2015年12月</option>
-                    <option>2016年01月</option>
-                    <option>2016年02月</option>
-                    <option>2016年03月</option>
-                    <option>2016年04月</option>
-                    <option>2016年05月</option>
-                    <option>2016年06月</option>
-                </select>
-                网格房价加速度终止时间:
-                <select id="endTime" style='width:110px;'>
-                    <option>2015年07月</option>
-                    <option>2015年08月</option>
-                    <option>2015年09月</option>
-                    <option>2015年10月</option>
-                    <option>2015年11月</option>
-                    <option>2015年12月</option>
-                    <option>2016年01月</option>
-                    <option>2016年02月</option>
-                    <option>2016年03月</option>
-                    <option>2016年04月</option>
-                    <option>2016年05月</option>
-                    <option>2016年06月</option>
-                </select>
-
-            </form>
-            <!--用来显示索引<button type="button" onclick="displayResult()">显示索引</button>-->
+                </script>&ndash;&gt;
+            &lt;!&ndash;用来显示索引<button type="button" onclick="displayResult()">显示索引</button>&ndash;&gt;
 
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     <li class="active">中国科学院地理科学与资源研究所</li>
                 </ul>
-            </div><!--/.nav-collapse -->
+            </div>&lt;!&ndash;/.nav-collapse &ndash;&gt;
         </div>
     </div>
-</div>
+</div>-->
+<!--默认导航栏在这里，被注释了-->
 
 
 <div class="container-fluid">
@@ -148,13 +78,15 @@
                 <ul role="tablist">
                     <li>
                         <a href="#home" role="tab">
-                          <!--<i class="fa fa-bars">-->
-                            <span class="glyphicon glyphicon-star"></span>
-                         <!--</i>-->
+                            <span class="glyphicon glyphicon-align-center"></span>
                         </a>
                     </li>
-                    <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
-                    <li><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+                    <li><a href="#profile" role="tab">
+                        <span class="glyphicon glyphicon-align-justify"></span>
+                    </a></li>
+                    <li><a href="#messages" role="tab">
+                        <span class="glyphicon glyphicon-map-marker"></span>
+                    </a></li>
                 </ul>
 
                 <ul role="tablist">
@@ -169,8 +101,82 @@
                     <h1 class="sidebar-header">
                         原始数据
                         <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
-                        <span class="glyphicon glyphicon-star"></span>
+
                     </h1>
+
+                    <form>
+                        数据来源:
+                        <select id="source" style='width:110px;'>
+                            <option>我爱我家</option>
+                            <option>房天下</option>
+                            <option>安居客</option>
+                            <option>链家</option>
+                            <option>全部</option>
+                        </select>
+
+                        房源类型:
+                        <select id="type" style='width:110px;'>
+                            <option>新房</option>
+                            <option>二手房</option>
+                            <option>租房</option>
+                            <option>求租</option>
+                        </select>
+
+                        网格颜色意义:
+                        <select id="gridValue" style='width:110px;'>
+                            <option>房价加速度</option>
+                            <option>房价</option>
+                        </select>
+
+                        网格房价时间:
+                        <select id="gridTime" style='width:110px;'>
+                            <option id="201507">2015年07月</option>
+                            <option id="201508">2015年08月</option>
+                            <option id="201509">2015年09月</option>
+                            <option id="201510">2015年10月</option>
+                            <option id="201511">2015年11月</option>
+                            <option id="201512">2015年12月</option>
+                            <option id="201601">2016年01月</option>
+                            <option id="201602">2016年02月</option>
+                            <option id="201603">2016年03月</option>
+                            <option id="201604">2016年04月</option>
+                            <option id="201605">2016年05月</option>
+                            <option id="201606">2016年06月</option>
+                        </select>
+
+                        网格房价加速度起始时间:
+                        <select id="startTime" style='width:110px;'>
+                            <option>2015年07月</option>
+                            <option>2015年08月</option>
+                            <option>2015年09月</option>
+                            <option>2015年10月</option>
+                            <option>2015年11月</option>
+                            <option>2015年12月</option>
+                            <option>2016年01月</option>
+                            <option>2016年02月</option>
+                            <option>2016年03月</option>
+                            <option>2016年04月</option>
+                            <option>2016年05月</option>
+                            <option>2016年06月</option>
+                        </select>
+                        网格房价加速度终止时间:
+                        <select id="endTime" style='width:110px;'>
+                            <option>2015年07月</option>
+                            <option>2015年08月</option>
+                            <option>2015年09月</option>
+                            <option>2015年10月</option>
+                            <option>2015年11月</option>
+                            <option>2015年12月</option>
+                            <option>2016年01月</option>
+                            <option>2016年02月</option>
+                            <option>2016年03月</option>
+                            <option>2016年04月</option>
+                            <option>2016年05月</option>
+                            <option>2016年06月</option>
+                        </select>
+
+                    </form>
+
                 </div>
 
                 <div class="sidebar-pane" id="profile">
@@ -305,191 +311,183 @@
         }
     });
 
-    map.on('dragstart',function(e){
+    var styles="";
+    if(styles="原始数据"){
 
-        var xx=document.getElementById("style").selectedIndex;
-        var yy=document.getElementById("style").options;
-        var styles=yy[xx].text;
-        if(styles="原始数据"){
-
-            //拖动地图时能实现不同网格的生成，主要用于同一zoom下的不同范围内的网格生成
-            map.on('dragend',function(e){
-                console.log("dragend");
-                var bounds=map.getBounds();
-                console.log(bounds);
-                var west=bounds.getWest();
-                var east=bounds.getEast();
-                var south=bounds.getSouth();
-                var north=bounds.getNorth();
-                var zoom=map.getZoom();
-                console.log(zoom);
+        //拖动地图时能实现不同网格的生成，主要用于同一zoom下的不同范围内的网格生成
+        map.on('dragend',function(e){
+            console.log("dragend");
+            var bounds=map.getBounds();
+            console.log(bounds);
+            var west=bounds.getWest();
+            var east=bounds.getEast();
+            var south=bounds.getSouth();
+            var north=bounds.getNorth();
+            var zoom=map.getZoom();
+            console.log(zoom);
 
 
-                var x=document.getElementById("gridValue").selectedIndex;
-                var y=document.getElementById("gridValue").options;
-                var gridValue=y[x].text;
-                //console.log(gridValue);
-                if(gridValue=="房价加速度"){
-                    x=document.getElementById("startTime").selectedIndex;
-                    y=document.getElementById("startTime").options;
-                    var startTime=y[x].text;
+            var x=document.getElementById("gridValue").selectedIndex;
+            var y=document.getElementById("gridValue").options;
+            var gridValue=y[x].text;
+            //console.log(gridValue);
+            if(gridValue=="房价加速度"){
+                x=document.getElementById("startTime").selectedIndex;
+                y=document.getElementById("startTime").options;
+                var startTime=y[x].text;
 
-                    x=document.getElementById("endTime").selectedIndex;
-                    y=document.getElementById("endTime").options;
-                    var endTime=y[x].text;
+                x=document.getElementById("endTime").selectedIndex;
+                y=document.getElementById("endTime").options;
+                var endTime=y[x].text;
 
-                    x=document.getElementById("source").selectedIndex;
-                    y=document.getElementById("source").options;
-                    var source=y[x].text;
+                x=document.getElementById("source").selectedIndex;
+                y=document.getElementById("source").options;
+                var source=y[x].text;
 
+                var json={
+                    "west":west,
+                    "east":east,
+                    "south":south,
+                    "north":north,
+                    "zoom":zoom,
+                    "starttime":startTime,
+                    "endtime":endTime,
+                    "source":source
+                };
+                $.post("/gridacceleration",""+JSON.stringify(json), function(result){
+                    var price= JSON.parse(result);
+                    draw_rectangle_Acceleration(bounds,price);
+                });
+
+            }else if(gridValue=="房价"){
+                x=document.getElementById("gridTime").selectedIndex;
+                y=document.getElementById("gridTime").options;
+                var gridTime=y[x].text;
+
+                x=document.getElementById("source").selectedIndex;
+                y=document.getElementById("source").options;
+                var source=y[x].text;
+
+                var json={
+                    "west":west,
+                    "east":east,
+                    "south":south,
+                    "north":north,
+                    "zoom":zoom,
+                    "gridTime":gridTime,
+                    "source":source
+                };
+                $.post("/gridcolor",""+JSON.stringify(json), function(result){
+                    var price= JSON.parse(result);
+                    console.log("每移动一次开始画网格");
+                    draw_rectangle_houseprice(price);
+                });
+            }
+
+            //draw_multiPolyline();画多线
+        });
+
+        //缩放地图时能实现不同分辨率下网格的生成，主要用于不同zoom下当前屏幕范围内的网格生成
+        map.on('zoomend', function(e) {
+            console.log("contetmenux");
+            //这里先删除旧的layer
+            for (var i=0;i<rects.length;i++){
+                map=map.removeLayer(rects[i]);
+            }
+            rects=[];
+
+            var bounds=map.getBounds();
+            console.log(bounds);
+            var west=bounds.getWest();
+            var east=bounds.getEast();
+            var south=bounds.getSouth();
+            var north=bounds.getNorth();
+            var zoom=map.getZoom();
+            console.log(zoom);
+
+            var x=document.getElementById("gridValue").selectedIndex;
+            var y=document.getElementById("gridValue").options;
+            var gridValue=y[x].text;
+            if(gridValue=="房价加速度"){
+                x=document.getElementById("startTime").selectedIndex;
+                y=document.getElementById("startTime").options;
+                var startTime=y[x].text;
+
+                x=document.getElementById("endTime").selectedIndex;
+                y=document.getElementById("endTime").options;
+                var endTime=y[x].text;
+
+                x=document.getElementById("source").selectedIndex;
+                y=document.getElementById("source").options;
+                var source=y[x].text;
+
+                var json={
+                    "west":west,
+                    "east":east,
+                    "south":south,
+                    "north":north,
+                    "zoom":zoom,
+                    "starttime":startTime,
+                    "endtime":endTime,
+                    "source":source
+                };
+                $.post("/gridacceleration",""+JSON.stringify(json), function(result){
+                    var price= JSON.parse(result);
+                    draw_rectangle_Acceleration(bounds,price);
+                });
+
+            }else if(gridValue=="房价"){
+                x=document.getElementById("gridTime").selectedIndex;
+                y=document.getElementById("gridTime").options;
+                var gridTime=y[x].text;
+
+                x=document.getElementById("source").selectedIndex;
+                y=document.getElementById("source").options;
+                var source=y[x].text;
+
+                var json={
+                    "west":west,
+                    "east":east,
+                    "south":south,
+                    "north":north,
+                    "zoom":zoom,
+                    "gridTime":gridTime,
+                    "source":source
+                };
+                //  "/gridcolor_interpolation"
+                //  "/gridcolor"
+                $.post("/gridcolor",""+JSON.stringify(json), function(result){
+                    var price= JSON.parse(result);
+                    console.log("开始画网格");
+                    draw_rectangle_houseprice(price);
+                });
+            }
+
+        });
+
+    }else if(styles="插值数据"){
+
+        //画插值后的网格图
+        map.on('zoomend', function(e) {
+            console.log("zoomend");
+            //这里先删除旧的layer
+
+            var zoom=map.getZoom();
+            console.log(zoom);
+            if(zoom==11){
+                if(rects.length==0){
                     var json={
-                        "west":west,
-                        "east":east,
-                        "south":south,
-                        "north":north,
-                        "zoom":zoom,
-                        "starttime":startTime,
-                        "endtime":endTime,
-                        "source":source
+                        "gridTime":"2015年10月"
                     };
-                    $.post("/gridacceleration",""+JSON.stringify(json), function(result){
-                        var price= JSON.parse(result);
-                        draw_rectangle_Acceleration(bounds,price);
-                    });
-
-                }else if(gridValue=="房价"){
-                    x=document.getElementById("gridTime").selectedIndex;
-                    y=document.getElementById("gridTime").options;
-                    var gridTime=y[x].text;
-
-                    x=document.getElementById("source").selectedIndex;
-                    y=document.getElementById("source").options;
-                    var source=y[x].text;
-
-                    var json={
-                        "west":west,
-                        "east":east,
-                        "south":south,
-                        "north":north,
-                        "zoom":zoom,
-                        "gridTime":gridTime,
-                        "source":source
-                    };
-                    $.post("/gridcolor",""+JSON.stringify(json), function(result){
-                        var price= JSON.parse(result);
-                        console.log("每移动一次开始画网格");
-                        draw_rectangle_houseprice(price);
-                    });
-                }
-
-                //draw_multiPolyline();画多线
-            });
-
-            //缩放地图时能实现不同分辨率下网格的生成，主要用于不同zoom下当前屏幕范围内的网格生成
-            map.on('zoomend', function(e) {
-                console.log("contetmenux");
-                //这里先删除旧的layer
-                for (var i=0;i<rects.length;i++){
-                    map=map.removeLayer(rects[i]);
-                }
-                rects=[];
-
-                var bounds=map.getBounds();
-                console.log(bounds);
-                var west=bounds.getWest();
-                var east=bounds.getEast();
-                var south=bounds.getSouth();
-                var north=bounds.getNorth();
-                var zoom=map.getZoom();
-                console.log(zoom);
-
-                var x=document.getElementById("gridValue").selectedIndex;
-                var y=document.getElementById("gridValue").options;
-                var gridValue=y[x].text;
-                if(gridValue=="房价加速度"){
-                    x=document.getElementById("startTime").selectedIndex;
-                    y=document.getElementById("startTime").options;
-                    var startTime=y[x].text;
-
-                    x=document.getElementById("endTime").selectedIndex;
-                    y=document.getElementById("endTime").options;
-                    var endTime=y[x].text;
-
-                    x=document.getElementById("source").selectedIndex;
-                    y=document.getElementById("source").options;
-                    var source=y[x].text;
-
-                    var json={
-                        "west":west,
-                        "east":east,
-                        "south":south,
-                        "north":north,
-                        "zoom":zoom,
-                        "starttime":startTime,
-                        "endtime":endTime,
-                        "source":source
-                    };
-                    $.post("/gridacceleration",""+JSON.stringify(json), function(result){
-                        var price= JSON.parse(result);
-                        draw_rectangle_Acceleration(bounds,price);
-                    });
-
-                }else if(gridValue=="房价"){
-                    x=document.getElementById("gridTime").selectedIndex;
-                    y=document.getElementById("gridTime").options;
-                    var gridTime=y[x].text;
-
-                    x=document.getElementById("source").selectedIndex;
-                    y=document.getElementById("source").options;
-                    var source=y[x].text;
-
-                    var json={
-                        "west":west,
-                        "east":east,
-                        "south":south,
-                        "north":north,
-                        "zoom":zoom,
-                        "gridTime":gridTime,
-                        "source":source
-                    };
-                    //  "/gridcolor_interpolation"
-                    //  "/gridcolor"
-                    $.post("/gridcolor",""+JSON.stringify(json), function(result){
+                    $.post("/gridcolor_interpolation",""+JSON.stringify(json), function(result){
                         var price= JSON.parse(result);
                         console.log("开始画网格");
-                        draw_rectangle_houseprice(price);
+                        draw_rectangle_interpolation(price);
                     });
                 }
-
-            });
-
-        }else if(styles="插值数据"){
-
-            //画插值后的网格图
-            map.on('zoomend', function(e) {
-                console.log("zoomend");
-                //这里先删除旧的layer
-
-                var zoom=map.getZoom();
-                console.log(zoom);
-                if(zoom==11){
-                    if(rects.length==0){
-                        var json={
-                            "gridTime":"2015年10月"
-                        };
-                        $.post("/gridcolor_interpolation",""+JSON.stringify(json), function(result){
-                            var price= JSON.parse(result);
-                            console.log("开始画网格");
-                            draw_rectangle_interpolation(price);
-                        });
-                    }
-                }
-            });
-        }
-
-    });
-
-
+            }
+        });
+    }
 
     var polygon_array=[];
     var polyline_array=[];
