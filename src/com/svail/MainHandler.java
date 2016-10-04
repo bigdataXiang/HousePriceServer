@@ -3,7 +3,7 @@ package com.svail;
 import com.reprocess.grid_100.CallGridCurve;
 import com.reprocess.grid_100.CallInterestGrid;
 import com.reprocess.grid_100.CallPriceAcceleration;
-import com.reprocess.grid_100.interpolation.ContourGeneration;
+import com.reprocess.grid_100.ContourGeneration.ContourGeneration;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.svail.bean.Response;

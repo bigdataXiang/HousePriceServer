@@ -1,6 +1,7 @@
-package com.reprocess.grid_100.interpolation;
+package com.reprocess.grid_100.ContourGeneration;
 
 import com.mongodb.*;
+import com.reprocess.grid_100.interpolation.SpatialInterpolation;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSON;
@@ -107,7 +108,8 @@ public class ContourGeneration {
 
     public static void main(String[] args){
 
-        callMongo();
+        //callMongo();
+        drawContour("D:\\中期考核\\等值线\\contour_8.txt");
     }
 
     /**调用mongodb生成网格值*/
