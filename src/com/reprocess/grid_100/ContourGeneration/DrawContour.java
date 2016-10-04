@@ -109,6 +109,8 @@ public class DrawContour {
                 }
             }
 
+            //如果种子节点的八领域有与之在同一阈值的网格，则将该网格作为新的种子节点
+
             target_row=102;
             target_col=160;
             target_code=40560;
