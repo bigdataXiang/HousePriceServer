@@ -4,9 +4,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import utils.FileTool;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created by ZhouXiang on 2016/10/4.
@@ -62,7 +60,8 @@ public class DrawContour {
         double target_threshold_min;
         Map<Integer,Double> finished_grid=new HashMap<>();//用来装已经分类的code
         Map<Double,JSONObject> price_block=new HashMap<>();//用来装不同的价格区域块的代码
-
+        List<Integer> neighborhood=new ArrayList<>();
+        List<Integer> neighborhood_copy=new ArrayList<>();
         while (gridprice.size()!=0){
 
             if(finished_grid.containsKey(target_code)){
@@ -77,12 +76,14 @@ public class DrawContour {
 
                 JSONObject seed_blocks=new JSONObject();
                 JSONArray code_block=new JSONArray();
+                neighborhood=new ArrayList<>();
                 for(int r=target_row-1;r<=target_row+1;r++){
                     for(int c=target_col-1;c<=target_col+1;c++){
                         int cd=c+(r-1)*400;
-                        if(cd!=target_code&&gridprice.containsKey(cd)){
+                       if(cd!=target_code&&gridprice.containsKey(cd)){
 
-                            double cd_price=gridprice.get(cd);
+                           neighborhood.add(cd);//该list记录了当前根节点的八邻域的网格，方便作为下一次的遍历的根
+                           double cd_price=gridprice.get(cd);
                             //System.out.println(cd_price);
                             //System.out.println(target_threshold_min);
                             //System.out.println(target_threshold_min+1.5);
@@ -109,11 +110,28 @@ public class DrawContour {
                 }
             }
 
-            //如果种子节点的八领域有与之在同一阈值的网格，则将该网格作为新的种子节点
+            if(target_code==40961){
+                neighborhood_copy.addAll(neighborhood);
+                System.out.println(neighborhood_copy);
+                //将种子节点的八邻域分别进行遍历，作为新的种子节点
+                target_code=neighborhood_copy.get(0);
+                neighborhood_copy.remove(0);
+                System.out.println(neighborhood_copy);
+            }else if(neighborhood_copy.size()!=0){
+                target_code=neighborhood_copy.get(0);
+                neighborhood_copy.remove(0);
+                System.out.println(neighborhood_copy);
+            }else{
+                neighborhood_copy.addAll(neighborhood);
+                System.out.println(neighborhood_copy);
+                //将种子节点的八邻域分别进行遍历，作为新的种子节点
+                target_code=neighborhood_copy.get(0);
+                neighborhood_copy.remove(0);
+                System.out.println(neighborhood_copy);
+            }
 
-            target_row=102;
-            target_col=160;
-            target_code=40560;
+
+
         }
 
     }
