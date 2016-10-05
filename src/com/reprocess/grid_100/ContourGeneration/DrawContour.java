@@ -56,12 +56,16 @@ public class DrawContour {
         int target_row=103;
         int target_col=161;
         int target_code=40961;
+        int front_target_code;
         double threshold_min;
         double target_threshold_min;
         Map<Integer,Double> finished_grid=new HashMap<>();//用来装已经分类的code
         Map<Double,JSONObject> price_block=new HashMap<>();//用来装不同的价格区域块的代码
-        List<Integer> neighborhood=new ArrayList<>();
+        List<Integer> neighborhood=new ArrayList<>();//用来装根节点的八个周边节点
+        JSONObject obj_neighborhood=new JSONObject();//用来记录每一个根节点的周边节点有哪些
         List<Integer> neighborhood_copy=new ArrayList<>();
+        JSONObject code_rowcol=new JSONObject();//用来标记该编码对应的行列号
+
         while (gridprice.size()!=0){
 
             if(finished_grid.containsKey(target_code)){
@@ -83,6 +87,9 @@ public class DrawContour {
                        if(cd!=target_code&&gridprice.containsKey(cd)){
 
                            neighborhood.add(cd);//该list记录了当前根节点的八邻域的网格，方便作为下一次的遍历的根
+                           int[] rowcol={r,c};
+                           code_rowcol.put(cd,rowcol);//将该网格的行列号同时也存下来
+
                            double cd_price=gridprice.get(cd);
                             //System.out.println(cd_price);
                             //System.out.println(target_threshold_min);
@@ -108,33 +115,35 @@ public class DrawContour {
                         }
                     }
                 }
+                Collections.sort(neighborhood);
+                obj_neighborhood.put(target_code,neighborhood);
             }
 
-            if(target_code==40961){
-                neighborhood_copy.addAll(neighborhood);
-                System.out.println(neighborhood_copy);
-                //将种子节点的八邻域分别进行遍历，作为新的种子节点
+            //将种子节点的八邻域分别进行遍历，作为新的种子节点
+
+
+
+            front_target_code=target_code;//因为该种子节点已经遍历完毕，故该节点变为前节点
+            neighborhood_copy=obj_neighborhood.getJSONArray(""+front_target_code);
+            System.out.println(neighborhood_copy);
+            int front_size=neighborhood_copy.size();
+            if(front_size!=0){
+
                 target_code=neighborhood_copy.get(0);
+                JSONArray rc=code_rowcol.getJSONArray(""+target_code);
+                //System.out.println(rc);
+                target_row=(int)rc.get(0);
+                target_col=(int)rc.get(1);
+
                 neighborhood_copy.remove(0);
                 System.out.println(neighborhood_copy);
-            }else if(neighborhood_copy.size()!=0){
-                target_code=neighborhood_copy.get(0);
-                neighborhood_copy.remove(0);
-                System.out.println(neighborhood_copy);
-            }else{
-                neighborhood_copy.addAll(neighborhood);
-                System.out.println(neighborhood_copy);
-                //将种子节点的八邻域分别进行遍历，作为新的种子节点
-                target_code=neighborhood_copy.get(0);
-                neighborhood_copy.remove(0);
-                System.out.println(neighborhood_copy);
+
             }
-
-
-
         }
-
     }
 
+    public static void get8Neighborhood(){
+
+    }
 
 }
