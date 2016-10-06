@@ -71,8 +71,7 @@ public class WaterShed {
 						////处理未标记的区域
 						int num=0;///记录四领域集水盆数目
 						int parentIndex=-1;
-						
-						
+
 						////左边
 						if(i>0){////不超出边界
 							int value=blockData[j][i-1];
@@ -337,10 +336,9 @@ public class WaterShed {
 		
 		return image;
 	}
-	/*
-	*//**
+	/**
 	 * 分块区域数据重构
-	 *//*
+	 */
 	public void rebuildBlockData(){
 		for(int j=0;j<height;j++){
 			for(int i=0;i<width;i++){
@@ -355,7 +353,7 @@ public class WaterShed {
 		}
 	}
 	
-	*//**
+	/**
 	 * 区域合并
 	 *//*
 	public void areaCombine(){
@@ -385,6 +383,7 @@ public class WaterShed {
 		gradImage=Image_Utility.doubleArrayToGreyImage(arr);
 //		
 		////获得sobel梯度图像
+		/**梯度图像中，将梯度值小于预先设置的阈值THRESHOLD的像素点的灰度值设置为0，而其他像素点的灰度值等于其梯度值*/
 		gradImage=Image_Utility.sobleTran(gradImage, THRESHOD);
 		
     	String path=Main.path;
@@ -393,7 +392,7 @@ public class WaterShed {
 		
 		width=gradImage.getWidth();
 		height=gradImage.getHeight();
-		blockData=new int[height][width];
+		blockData=new int[height][width];//将blockData的所有值都初始化为0
 		
 		////获取图像的最大梯度值，
 		///并产生初始化集水盆,也就是初始化bolckData这个多叉树
@@ -401,15 +400,15 @@ public class WaterShed {
 		for(int j=0;j<height;j++){
 			for(int i=0;i<width;i++){
 				////此处的灰度值即为梯度值
-				int grad=(gradImage.getRGB(i, j)>>16)&0xFF;
+				int grad=(gradImage.getRGB(i, j)>>16)&0xFF;//将gradImage.getRGB(i, j)的值右移16位再与0xFF作与运算
 			
 				if(grad>maxGrad){
-					maxGrad=grad;
+					maxGrad=grad;  //获取最大的灰度值
 				}
 				
 				
 				/////这里是使用并查集思想实现区域标记和合并,很重要
-				////如果梯度值小于等等于阈值（在求sobel图像时已经统一赋值为零），标记之
+				////如果梯度值小于或者等于阈值（在求sobel图像时已经统一赋值为零），标记之
 				if(grad==0){
 					////本应该检查八邻域的梯度值
 					////由于采用逐行从左到右扫描，所以也只需判断上面三个、左一个共四个  点事否被标记
