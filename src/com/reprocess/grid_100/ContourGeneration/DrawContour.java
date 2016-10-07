@@ -13,10 +13,10 @@ import java.util.List;
  */
 public class DrawContour {
     public static void main(String[] args){
-        //("D:\\中期考核\\等值线\\contour_");
+        //initGridMatrix("D:\\中期考核\\等值线\\contour_");
         //int[][] block=new int[4][4];
         //System.out.println(block[0][1]);
-        test_dropDiagonal("D:\\中期考核\\等值线\\二维栅格数组_阈值化_部分.txt");
+        test_dropDiagonal("D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt");
     }
 
     /**初始化图像矩阵*/
@@ -44,9 +44,9 @@ public class DrawContour {
         }
 
         //将二维数组的值填充好
-        for(int row=100;row<=130;row++){
+        for(int row=110;row<=130;row++){
             String str="";
-            for(int col=140;col<=170;col++){
+            for(int col=150;col<=170;col++){
                 code=col+(row-1)*400;
 
                 if(gridprice.containsKey(code)){
@@ -63,7 +63,7 @@ public class DrawContour {
                 int p=(int)Math.floor(price);
                 str+=p+",";
             }
-            FileTool.Dump(str,"D:\\中期考核\\等值线\\二维栅格数组_阈值化_部分.txt","utf-8");
+            FileTool.Dump(str,"D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt","utf-8");
         }
 
         //选取种子点进行扩散："code":40961,"average_price":9.943082,"row":103,"col":161
@@ -319,6 +319,7 @@ public class DrawContour {
                                 code_index.put(code,top_value);
 
                                 Iterator it=code_index.keySet().iterator();
+                                //不仅要改left值，还要改left的left值
                                 System.out.println("开始遍历该数据，但是这里的遍历有点问题：");
                                 while (it.hasNext()){
                                     int it_key=(int)it.next();
@@ -335,6 +336,20 @@ public class DrawContour {
                                 System.out.println(code+"的left比top值小:"+left_value);
                                 code_index.put(code,left_value);
                                 code_index.put(top,left_value);
+
+                                //不仅要改top值，还要改top的top值
+                                Iterator it=code_index.keySet().iterator();
+                                System.out.println("开始遍历该数据，但是这里的遍历有点问题：");
+                                while (it.hasNext()){
+                                    int it_key=(int)it.next();
+                                    int it_value=code_index.get(it_key);
+                                    System.out.println(it_key+"："+it_value);
+                                    System.out.println("有没有可能存在两个网格的value值相等却这两个网格不联通的情况？");
+                                    if(it_value==top_value){
+                                        System.out.println("将"+it_key+"的标签由"+it_value+"改成"+left_value);
+                                        code_index.put(it_key,left_value);
+                                    }
+                                }
                             }else {
                                 System.out.println(code+"的left和top值一样:"+top_value);
                                 code_index.put(code,top_value);
@@ -379,5 +394,76 @@ public class DrawContour {
                 }
             }
         }
+
+
+
+        for(int i=0;i<rows;i++) {
+            String str="";
+            for (int j = 0; j < cols; j++) {
+                int code = j + i * cols;
+                int tag=code_index.get(code);
+                str+=tag+",";
+            }
+            //FileTool.Dump(str,"D:\\中期考核\\等值线\\结果1.txt","utf-8");
+        }
+
+        Iterator iterator=code_index.keySet().iterator();
+        Map<Integer,Integer> block=new HashMap<>();
+        while (iterator.hasNext()){
+            int key=(int)iterator.next();
+            int value=code_index.get(key);
+            if(value==2){
+                block.put(key,value);
+            }
+        }
+
+        getGridBoundary(block,cols,rows);
+
+    }
+
+    public  static void getGridBoundary(Map<Integer,Integer> block,int cols,int rows){
+
+        //查找出边界网格：只要上下左右有一边为空值的网格即为边界网格
+        List boundary_grids=new ArrayList<>();
+        Iterator it=block.keySet().iterator();
+
+        while (it.hasNext()){
+            int key=(int)it.next();
+            int value=block.get(key);
+
+            int i=key/cols;//行
+            int j=key%cols;//列
+
+            int top=-1;
+            if(i>0){
+                top=j+(i-1)*cols;
+            }
+
+            int left=-1;
+            if(j>0){
+                left=(j-1)+i*cols;
+            }
+
+            int bottom=-1;
+            if(i<rows){
+                bottom=j+(i+1)*cols;
+            }
+
+            int right=-1;
+            if(j<cols){
+                right=(j+1)+i*cols;
+            }
+
+            if(block.containsKey(left)&&block.containsKey(right)&&block.containsKey(top)&&block.containsKey(bottom)){
+
+            }else {
+                boundary_grids.add(key);
+            }
+
+
+
+
+        }
+
     }
 }
