@@ -424,46 +424,71 @@ public class DrawContour {
     public  static void getGridBoundary(Map<Integer,Integer> block,int cols,int rows){
 
         //查找出边界网格：只要上下左右有一边为空值的网格即为边界网格
-        List boundary_grids=new ArrayList<>();
+        List<Integer> boundary_grids=new ArrayList<>();
         Iterator it=block.keySet().iterator();
 
         while (it.hasNext()){
             int key=(int)it.next();
             int value=block.get(key);
 
-            int i=key/cols;//行
-            int j=key%cols;//列
+            int i=codeToRowCol(key,cols).get(0);//行
+            int j=codeToRowCol(key,cols).get(1);//列
 
-            int top=-1;
-            if(i>0){
-                top=j+(i-1)*cols;
-            }
-
-            int left=-1;
-            if(j>0){
-                left=(j-1)+i*cols;
-            }
-
-            int bottom=-1;
-            if(i<rows){
-                bottom=j+(i+1)*cols;
-            }
-
-            int right=-1;
-            if(j<cols){
-                right=(j+1)+i*cols;
-            }
+            int left=left_top_right_bottom(i,j,rows,cols).get(0);
+            int top=left_top_right_bottom(i,j,rows,cols).get(1);
+            int right=left_top_right_bottom(i,j,rows,cols).get(2);
+            int bottom=left_top_right_bottom(i,j,rows,cols).get(3);
 
             if(block.containsKey(left)&&block.containsKey(right)&&block.containsKey(top)&&block.containsKey(bottom)){
 
             }else {
                 boundary_grids.add(key);
             }
-
-
-
-
         }
 
+        Collections.sort(boundary_grids);
+        int max_key=boundary_grids.get(boundary_grids.size()-1);
+        System.out.println(max_key);
+
+    }
+
+    public static Map<Integer,Integer> codeToRowCol(int code,int cols){
+        Map<Integer,Integer> rowcol=new HashMap<>();
+        int i=code/cols;//行
+        int j=code%cols;//列
+        rowcol.put(0,i);
+        rowcol.put(1,j);
+
+        return rowcol;
+    }
+
+    public static Map<Integer,Integer> left_top_right_bottom(int row,int col,int rows,int cols){
+        Map<Integer,Integer> around=new HashMap<>();
+
+        int left=-1;
+        if(col>0){
+            left=(col-1)+row*cols;
+        }
+        around.put(0,left);
+
+        int top=-1;
+        if(row>0){
+            top=col+(row-1)*cols;
+        }
+        around.put(1,top);
+
+        int right=-1;
+        if(col<cols){
+            right=(col+1)+row*cols;
+        }
+        around.put(2,right);
+
+        int bottom=-1;
+        if(row<rows){
+            bottom=col+(row+1)*cols;
+        }
+        around.put(3,bottom);
+
+        return around;
     }
 }
