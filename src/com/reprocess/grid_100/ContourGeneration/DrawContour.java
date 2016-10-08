@@ -408,7 +408,7 @@ public class DrawContour {
         }
 
         Iterator iterator=code_index.keySet().iterator();
-        Map<Integer,Integer> block=new HashMap<>();
+        Map<Integer,Integer> block=new HashMap<>();//存储了所有标签为2的网格
         while (iterator.hasNext()){
             int key=(int)iterator.next();
             int value=code_index.get(key);
@@ -417,11 +417,33 @@ public class DrawContour {
             }
         }
 
-        getGridBoundary(block,cols,rows);
+        List<Integer> boundary_grids=getGridBoundary(block,cols,rows);
+        int max_code=boundary_grids.get(boundary_grids.size()-1);
+        System.out.println(max_code);
+
+        Map<Integer,Integer> status=new HashMap<>();
+        int count=boundary_grids.size();
+
+        List<Integer> directions=new ArrayList<>();
+
+        while (count!=0){
+            if(count==boundary_grids.size()){
+                status=getNextDireciton(max_code,rows,cols,block,status);
+                count--;
+                directions.add(max_code);
+            }else {
+                int next_code=status.get(0);
+                directions.add(next_code);
+                status=getNextDireciton(next_code,rows,cols,block,status);
+                count--;
+            }
+        }
+
+        System.out.println(directions);
 
     }
 
-    public  static void getGridBoundary(Map<Integer,Integer> block,int cols,int rows){
+    public  static List<Integer> getGridBoundary(Map<Integer,Integer> block,int cols,int rows){
 
         //查找出边界网格：只要上下左右有一边为空值的网格即为边界网格
         List<Integer> boundary_grids=new ArrayList<>();
@@ -447,9 +469,7 @@ public class DrawContour {
         }
 
         Collections.sort(boundary_grids);
-        int max_key=boundary_grids.get(boundary_grids.size()-1);
-        System.out.println(max_key);
-
+        return boundary_grids;
     }
 
     public static Map<Integer,Integer> codeToRowCol(int code,int cols){
@@ -462,33 +482,107 @@ public class DrawContour {
         return rowcol;
     }
 
+    /**获取八领域方向的code值*/
     public static Map<Integer,Integer> left_top_right_bottom(int row,int col,int rows,int cols){
         Map<Integer,Integer> around=new HashMap<>();
 
-        int left=-1;
-        if(col>0){
-            left=(col-1)+row*cols;
+        int right=-1;
+        if(col<cols-1){
+            right=(col+1)+row*cols;
         }
-        around.put(0,left);
+        around.put(0,right);
+
+        int right_top=-1;
+        if(row>0&&col<cols-1){
+            right_top=(col+1)+(row-1)*cols;
+        }
+        around.put(1,right_top);
 
         int top=-1;
         if(row>0){
             top=col+(row-1)*cols;
         }
-        around.put(1,top);
+        around.put(2,top);
 
-        int right=-1;
-        if(col<cols){
-            right=(col+1)+row*cols;
+        int left_top=-1;
+        if(row>0&&col>0){
+            left_top=(col-1)+(row-1)*cols;
         }
-        around.put(2,right);
+        around.put(3,left_top);
+
+        int left=-1;
+        if(col>0){
+            left=(col-1)+row*cols;
+        }
+        around.put(4,left);
+
+        int left_bottom=-1;
+        if(col>0&&row<rows-1){
+            left_bottom=(col-1)+(row+1)*cols;
+        }
+        around.put(5,left_bottom);
 
         int bottom=-1;
-        if(row<rows){
+        if(row<rows-1){
             bottom=col+(row+1)*cols;
         }
-        around.put(3,bottom);
+        around.put(6,bottom);
+
+        int right_bottom=-1;
+        if(col<cols-1&&row<rows-1){
+            right_bottom=(col+1)+(row+1)*cols;
+        }
+        around.put(7,right_bottom);
 
         return around;
+    }
+
+    public static Map<Integer,Integer>  getNextDireciton(int code,int rows,int cols,Map block,Map<Integer,Integer> state){
+
+        //Map<Integer,Integer> state=new HashMap<>();
+        //key=0 value=下一个节点值
+        //key=1 value=上一次移动的方向（left=0，top=1，right=2，bottom=3）
+
+
+        int next_code=0;
+        //从右、上、左、下四个方向逆时针遍历
+        int i=codeToRowCol(code,cols).get(0);//行
+        int j=codeToRowCol(code,cols).get(1);//列
+
+        int right=left_top_right_bottom(i,j,rows,cols).get(0);
+        int right_top=left_top_right_bottom(i,j,rows,cols).get(1);
+        int top=left_top_right_bottom(i,j,rows,cols).get(2);
+        int left_top=left_top_right_bottom(i,j,rows,cols).get(3);
+        int left=left_top_right_bottom(i,j,rows,cols).get(4);
+        int left_bottom=left_top_right_bottom(i,j,rows,cols).get(5);
+        int bottom=left_top_right_bottom(i,j,rows,cols).get(6);
+        int right_bottom=left_top_right_bottom(i,j,rows,cols).get(7);
+
+
+        if(state.size()==0){
+            if(block.containsKey(right)){
+                next_code=right;
+                state.put(0,next_code);
+                state.put(1,2);
+            }else if(block.containsKey(top)){
+                next_code=top;
+                state.put(0,next_code);
+                state.put(1,1);
+            }else if(block.containsKey(left)){
+                next_code=left;
+                state.put(0,next_code);
+                state.put(1,0);
+            }else if(block.containsKey(bottom)){
+                next_code=bottom;
+                state.put(0,next_code);
+                state.put(1,3);
+            }
+        }else {
+            int direction=state.get(1);
+
+        }
+
+
+        return state;
     }
 }
