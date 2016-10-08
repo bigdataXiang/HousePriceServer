@@ -409,17 +409,25 @@ public class DrawContour {
 
         Iterator iterator=code_index.keySet().iterator();
         Map<Integer,Integer> block=new HashMap<>();//存储了所有标签为2的网格
+        List<Integer> index_2=new ArrayList<>();
         while (iterator.hasNext()){
             int key=(int)iterator.next();
             int value=code_index.get(key);
             if(value==2){
                 block.put(key,value);
+                index_2.add(key);
+                //System.out.println(key);
             }
         }
 
         List<Integer> boundary_grids=getGridBoundary(block,cols,rows);
+        Map<Integer,Integer> boundary_block=new HashMap<>();
+        for(int grid:boundary_grids){
+            boundary_block.put(grid,2);
+        }
         int max_code=boundary_grids.get(boundary_grids.size()-1);
-        System.out.println(max_code);
+        //System.out.println(index_2);
+        System.out.println(boundary_grids);
 
         Map<Integer,Integer> status=new HashMap<>();
         int count=boundary_grids.size();
@@ -428,13 +436,21 @@ public class DrawContour {
 
         while (count!=0){
             if(count==boundary_grids.size()){
-                status=getNextDireciton(max_code,rows,cols,block,status);
+                status=getNextDireciton(max_code,rows,cols,boundary_block,status);
                 count--;
                 directions.add(max_code);
+                traversal_monitor.put(max_code,1);//记录第一个遍历点第一被遍历的情况
             }else {
                 int next_code=status.get(0);
+                System.out.println(next_code);
+                if(traversal_monitor.containsKey(next_code)){
+                    int frequency=traversal_monitor.get(next_code);
+                    traversal_monitor.put(next_code,frequency++);
+                }else {
+                    traversal_monitor.put(next_code,1);
+                }
                 directions.add(next_code);
-                status=getNextDireciton(next_code,rows,cols,block,status);
+                status=getNextDireciton(next_code,rows,cols,boundary_block,status);
                 count--;
             }
         }
@@ -452,20 +468,29 @@ public class DrawContour {
         while (it.hasNext()){
             int key=(int)it.next();
             int value=block.get(key);
-
+            //if(key==151){
             int i=codeToRowCol(key,cols).get(0);//行
             int j=codeToRowCol(key,cols).get(1);//列
 
-            int left=left_top_right_bottom(i,j,rows,cols).get(0);
-            int top=left_top_right_bottom(i,j,rows,cols).get(1);
-            int right=left_top_right_bottom(i,j,rows,cols).get(2);
-            int bottom=left_top_right_bottom(i,j,rows,cols).get(3);
+            int left=left_top_right_bottom(i,j,rows,cols).get(4);
+            int top=left_top_right_bottom(i,j,rows,cols).get(2);
+            int right=left_top_right_bottom(i,j,rows,cols).get(0);
+            int bottom=left_top_right_bottom(i,j,rows,cols).get(6);
 
-            if(block.containsKey(left)&&block.containsKey(right)&&block.containsKey(top)&&block.containsKey(bottom)){
+            boolean left_bool=block.containsKey(left);
+            boolean right_bool=block.containsKey(right);
+            boolean top_bool=block.containsKey(top);
+            boolean bottom_bool=block.containsKey(bottom);
+            if(left_bool&&right_bool&&top_bool&&bottom_bool){
 
             }else {
                 boundary_grids.add(key);
             }
+
+
+
+            //}
+
         }
 
         Collections.sort(boundary_grids);
@@ -537,11 +562,14 @@ public class DrawContour {
         return around;
     }
 
+    /**定义一个遍历监视器，监视这个code总共有几次被遍历，一般遍历次数不超过两次*/
+    public static Map<Integer,Integer> traversal_monitor=new HashMap<>();
     public static Map<Integer,Integer>  getNextDireciton(int code,int rows,int cols,Map block,Map<Integer,Integer> state){
 
         //Map<Integer,Integer> state=new HashMap<>();
         //key=0 value=下一个节点值
         //key=1 value=上一次移动的方向（left=0，top=1，right=2，bottom=3）
+        //key=3 value=前一个节点值
 
 
         int next_code=0;
@@ -558,31 +586,231 @@ public class DrawContour {
         int bottom=left_top_right_bottom(i,j,rows,cols).get(6);
         int right_bottom=left_top_right_bottom(i,j,rows,cols).get(7);
 
-
+        int before_code=0;
         if(state.size()==0){
-            if(block.containsKey(right)){
-                next_code=right;
-                state.put(0,next_code);
-                state.put(1,2);
-            }else if(block.containsKey(top)){
-                next_code=top;
-                state.put(0,next_code);
-                state.put(1,1);
-            }else if(block.containsKey(left)){
-                next_code=left;
-                state.put(0,next_code);
-                state.put(1,0);
-            }else if(block.containsKey(bottom)){
-                next_code=bottom;
-                state.put(0,next_code);
-                state.put(1,3);
-            }
-        }else {
-            int direction=state.get(1);
 
+        }else {
+            before_code = state.get(3);
         }
 
+        //监视除了回的那条路还有没有别的路是通的
+        int monitor=0;
+
+        //判断该节点是否只有一条路可以通，
+        // 如果是，则以后不能返回到这个点了，如果返回只会造成不断地重复
+        int unique=0;
+
+        int frequency=0;
+        Map<Integer,Integer> adjacency=new HashMap<>();
+        //情况一：先检查除了原路返回和走已经走过的节点，能不能搜索到新的节点
+        //除了保证下一个节点不是前一个节点外，还要保证下一个节点之前没有被遍历过
+        if(block.containsKey(bottom)){
+            //以下这两行是用来标记该节点的八邻域有哪些是有值的
+            unique++;
+            adjacency.put(6,bottom);
+
+            next_code=bottom;
+            frequency=0;
+            if(traversal_monitor.containsKey(next_code)){
+                frequency=traversal_monitor.get(next_code);
+            }
+            if(next_code!=before_code&&frequency<1){
+                state.put(0,next_code);
+                state.put(1,6);
+                state.put(3,code);
+                state.put(4,unique);
+                monitor++;
+            }
+        }
+        if(block.containsKey(right_bottom)){
+            unique++;
+            adjacency.put(7,right_bottom);
+
+            if(monitor==0){
+                unique++;
+                next_code=right_bottom;
+                frequency=0;
+                if(traversal_monitor.containsKey(next_code)){
+                    frequency=traversal_monitor.get(next_code);
+                }
+                if(next_code!=before_code&&frequency<1){
+                    state.put(0,next_code);
+                    state.put(1,7);
+                    state.put(3,code);
+                    state.put(4,unique);
+                    monitor++;
+                }
+            }
+        }
+        if (block.containsKey(right)){
+            unique++;
+            adjacency.put(0,right);
+
+            if(monitor==0){
+                next_code=right;
+                frequency=0;
+                if(traversal_monitor.containsKey(next_code)){
+                    frequency=traversal_monitor.get(next_code);
+                }
+                if(next_code!=before_code&&frequency<1){
+                    state.put(0,next_code);
+                    state.put(1,0);
+                    state.put(3,code);
+                    state.put(4,unique);
+                    monitor++;
+                }
+            }
+        }
+        if(block.containsKey(right_top)){
+            unique++;
+            adjacency.put(1,right_top);
+
+            if(monitor==0){
+                next_code=right_top;
+                frequency=0;
+                if(traversal_monitor.containsKey(next_code)){
+                    frequency=traversal_monitor.get(next_code);
+                }
+                if(next_code!=before_code&&frequency<1){
+                    state.put(0,next_code);
+                    state.put(1,1);
+                    state.put(3,code);
+                    state.put(4,unique);
+                    monitor++;
+                }
+            }
+        }
+        if(block.containsKey(top)){
+            unique++;
+            adjacency.put(2,top);
+
+            if(monitor==0){
+                next_code=top;
+                frequency=0;
+                if(traversal_monitor.containsKey(next_code)){
+                    frequency=traversal_monitor.get(next_code);
+                }
+                if(next_code!=before_code&&frequency<1){
+                    state.put(0,next_code);
+                    state.put(1,2);
+                    state.put(3,code);
+                    state.put(4,unique);
+                    monitor++;
+                }
+            }
+        }
+        if(block.containsKey(left_top)){
+            unique++;
+            adjacency.put(3,left_top);
+
+            if(monitor==0){
+                next_code=left_top;
+                frequency=0;
+                if(traversal_monitor.containsKey(next_code)){
+                    frequency=traversal_monitor.get(next_code);
+                }
+                if(next_code!=before_code&&frequency<1){
+                    state.put(0,next_code);
+                    state.put(1,3);
+                    state.put(3,code);
+                    state.put(4,unique);
+                    monitor++;
+                }
+            }
+        }
+        if(block.containsKey(left)){
+            unique++;
+            adjacency.put(4,left);
+
+            if(monitor==0){
+                next_code=left;
+                frequency=0;
+                if(traversal_monitor.containsKey(next_code)){
+                    frequency=traversal_monitor.get(next_code);
+                }
+                if(next_code!=before_code&&frequency<1){
+                    state.put(0,next_code);
+                    state.put(1,4);
+                    state.put(3,code);
+                    state.put(4,unique);
+                    monitor++;
+                }
+            }
+        }
+        if(block.containsKey(left_bottom)){
+            unique++;
+            adjacency.put(5,left);
+
+            if(monitor==0){
+                next_code=left_bottom;
+                frequency=0;
+                if(traversal_monitor.containsKey(next_code)){
+                    frequency=traversal_monitor.get(next_code);
+                }
+                if(next_code!=before_code&&frequency<1){
+                    state.put(0,next_code);
+                    state.put(1,5);
+                    state.put(3,code);
+                    state.put(4,unique);
+                    monitor++;
+                }
+            }
+        }
+
+        //情况二：选择原路返回还是选择其他已经遍历过的节点？
+        //判断这条路是否是唯一的路
+        //如果是，返回去也没有用了，只能重复地往返
+        //如果不是，则还可以回去看看
+        if(monitor==0){
+            int before_unique=state.get(4);
+
+            //判断前一个根节点的路是否唯一，如果唯一就没有返回去的必要了，返回去只能造成不断地重复
+            if(before_unique>1){
+                next_code=before_code;
+                int direction=state.get(1);
+                int inver_direction=inverseDirection(direction);
+
+                state.put(0,next_code);
+                state.put(1,inver_direction);
+                state.put(3,code);
+            }else {
+
+                Iterator<Integer> it=adjacency.keySet().iterator();
+                int direction;
+                int adjacency_code;
+                while (it.hasNext()){
+                    direction=it.next();
+                    adjacency_code=adjacency.get(direction);
+                     if(adjacency_code!=before_code){
+                         if(adjacency.size()==2){
+
+                             next_code=adjacency_code;
+
+                             state.put(0,next_code);
+                             state.put(1,direction);
+                             state.put(3,code);
+                             state.put(4,unique);
+                         }
+                     }
+                }
+            }
+        }
 
         return state;
+    }
+
+    public static int inverseDirection(int direction){
+        int inverse=0;
+        switch (direction){
+            case 0:inverse=4;
+                break;
+            case 2:inverse=6;
+                break;
+            case 4:inverse=0;
+                break;
+            case 6:inverse=2;
+                break;
+        }
+        return inverse;
     }
 }
