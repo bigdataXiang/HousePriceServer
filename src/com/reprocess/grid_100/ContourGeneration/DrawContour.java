@@ -426,8 +426,9 @@ public class DrawContour {
             boundary_block.put(grid,2);
         }
         int max_code=boundary_grids.get(boundary_grids.size()-1);
-        //System.out.println(index_2);
+        System.out.println(index_2);
         System.out.println(boundary_grids);
+        Map<Integer,Integer> differ=getDiffrent(index_2,boundary_grids);
 
         Map<Integer,Integer> status=new HashMap<>();
         int count=boundary_grids.size();
@@ -436,7 +437,7 @@ public class DrawContour {
 
         while (count!=0){
             if(count==boundary_grids.size()){
-                status=getNextDireciton(max_code,rows,cols,boundary_block,status);
+                status=getNextDireciton(max_code,rows,cols,boundary_block,status,differ);
                 count--;
                 directions.add(max_code);
                 traversal_monitor.put(max_code,1);//记录第一个遍历点第一被遍历的情况
@@ -450,7 +451,7 @@ public class DrawContour {
                     traversal_monitor.put(next_code,1);
                 }
                 directions.add(next_code);
-                status=getNextDireciton(next_code,rows,cols,boundary_block,status);
+                status=getNextDireciton(next_code,rows,cols,boundary_block,status,differ);
                 count--;
             }
         }
@@ -564,7 +565,7 @@ public class DrawContour {
 
     /**定义一个遍历监视器，监视这个code总共有几次被遍历，一般遍历次数不超过两次*/
     public static Map<Integer,Integer> traversal_monitor=new HashMap<>();
-    public static Map<Integer,Integer>  getNextDireciton(int code,int rows,int cols,Map block,Map<Integer,Integer> state){
+    public static Map<Integer,Integer>  getNextDireciton(int code,int rows,int cols,Map block,Map<Integer,Integer> state, Map<Integer,Integer> differ){
 
         //Map<Integer,Integer> state=new HashMap<>();
         //key=0 value=下一个节点值
@@ -602,6 +603,33 @@ public class DrawContour {
 
         int frequency=0;
         Map<Integer,Integer> adjacency=new HashMap<>();
+
+        int move_direction=-1;
+        if(state.size()==0){
+
+        }else {
+            move_direction=state.get(1);
+        }
+
+        //建立优先遍历序列
+        int[] traversal_sequence={bottom,right_bottom,right,right_top,top,left_top,left,left_bottom};
+        //通过判断当前的运动方向来决定谁最优先遍历
+        if(move_direction==-1){
+
+        }else if(move_direction==1){
+            traversal_sequence[0]=1;
+            traversal_sequence[1]=1;
+            traversal_sequence[2]=1;
+            traversal_sequence[3]=1;
+            traversal_sequence[4]=1;
+            traversal_sequence[5]=1;
+            traversal_sequence[6]=1;
+            traversal_sequence[7]=1;
+        }
+
+
+
+
         //情况一：先检查除了原路返回和走已经走过的节点，能不能搜索到新的节点
         //除了保证下一个节点不是前一个节点外，还要保证下一个节点之前没有被遍历过
         if(block.containsKey(bottom)){
@@ -773,6 +801,7 @@ public class DrawContour {
                 state.put(0,next_code);
                 state.put(1,inver_direction);
                 state.put(3,code);
+                state.put(4,unique);
             }else {
 
                 Iterator<Integer> it=adjacency.keySet().iterator();
@@ -812,5 +841,44 @@ public class DrawContour {
                 break;
         }
         return inverse;
+    }
+
+    /**找出两个list中不同的元素*/
+    public static Map<Integer,Integer> getDiffrent(List<Integer> list1, List<Integer> list2)
+    {
+        Map<Integer,Integer> map = new HashMap<Integer,Integer>(list1.size()+list2.size());
+        Map<Integer,Integer> diff = new HashMap<Integer,Integer>();
+        List<Integer> maxList = list1;
+        List<Integer> minList = list2;
+        if(list2.size()>list1.size())
+        {
+            maxList = list2;
+            minList = list1;
+        }
+
+        for (int index_max : maxList)
+        {
+            map.put(index_max, 1);
+        }
+
+        for (int index_min : minList)
+        {
+            Integer cc = map.get(index_min);
+            if(cc!=null)
+            {
+                map.put(index_min, ++cc);
+                continue;
+            }
+            map.put(index_min, 1);
+        }
+
+        for(Map.Entry<Integer, Integer> entry:map.entrySet())
+        {
+            if(entry.getValue()==1)
+            {
+                diff.put(entry.getKey(),1);
+            }
+        }
+        return diff;
     }
 }
