@@ -13,6 +13,28 @@ import java.util.List;
  */
 public class DrawContour {
     public static void main(String[] args){
+
+        /*for(int i=2;i<3;i++){
+            creatCounter(i);
+        }*/
+
+        creatJsonToServer("D:\\中期考核\\等值线\\等值线结果\\坐标串_2.txt");
+
+
+        //test_dropDiagonal("D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt");
+    }
+
+    public static void creatJsonToServer(String file){
+
+        Vector<String> jsons=FileTool.Load(file,"utf-8");
+        JSONArray result_json=new JSONArray();
+        for(int i=0;i<jsons.size();i++){
+            String json=jsons.elementAt(i);
+            result_json.add(json);
+        }
+        FileTool.Dump(result_json.toString(),"D:\\中期考核\\等值线\\等值线结果\\等值线_2_json.txt","utf-8");
+    }
+    public static void creatCounter(int counter_value){
         int[][] gridmatrix=initGridMatrix("D:\\中期考核\\等值线\\contour_");
 
         /*
@@ -28,19 +50,22 @@ public class DrawContour {
         //获取价格为五万的标签块,除了五万，其他的都为0
         //code_index中：key:网格编码 value：第几个五万的区域块标签
         //如果value为0，表示该网格不是五万的值
-        Map<Integer,Integer> code_index=getBlocks(gridmatrix,5);
+        Map<Integer,Integer> code_index=getBlocks(gridmatrix,counter_value);
         System.out.println(code_index.size());
 
         Iterator<Integer> iterator=code_index.keySet().iterator();
         TreeSet ts=new TreeSet();
-        Map<Integer,Integer> tag_counter=new HashMap<>();
+        List<Integer> codeis5=new ArrayList<>();
         while (iterator.hasNext()){
             int key=iterator.next();
             int value=code_index.get(key);
             if(value!=0){
                 ts.add(value);
+                codeis5.add(value);
             }
         }
+        System.out.println("总共有"+ts.size()+"个区块");
+        System.out.println("总共有"+codeis5.size()+"个网格");
 
         Iterator it_ts=ts.iterator();
         while(it_ts.hasNext())
@@ -77,11 +102,8 @@ public class DrawContour {
                 }
             }
             System.out.println(result);
+            FileTool.Dump(result.toString(),"D:\\中期考核\\等值线\\等值线结果\\等值线_"+counter_value+".txt","utf-8");
         }
-
-
-
-        //test_dropDiagonal("D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt");
     }
 
 

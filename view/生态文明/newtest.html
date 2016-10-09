@@ -543,6 +543,14 @@
                 console.log("开始画等值线");
                 draw_multiPolyline(contour);
             });
+        }else {
+            //将之前的多线图层删除
+            if (polyline_array.length != 0) {
+                for (var i = 0; i < polyline_array.length; i++) {
+                    map = map.removeLayer(polyline_array[i]);
+                }
+                polyline_array = [];
+            }
         }
     });
     var x_source;
@@ -748,45 +756,42 @@
             fillOpacity: 1,
             opacity: 1
         });//折线
-        var coordinates=contour.coordinates[0];
-        for(var i=0;i<coordinates.length;i++){
-            var coordinate=coordinates[i];
-            var lng=coordinate[0];
-            var lat=coordinate[1];
-            var latlng=L.latLng(lat,lng);
-            poly_points.push(latlng);
-            poly_line.addLatLng(latlng);
+
+        for(var tag=0;tag<contour.length;tag++){
+            var poly_points = [];
+            var coordinates=contour[tag].coordinates[0];
+            for(var i=0;i<coordinates.length;i++){
+                var coordinate=coordinates[i];
+                var lng=coordinate[0];
+                var lat=coordinate[1];
+                var latlng=L.latLng(lat,lng);
+                poly_points.push(latlng);
+                poly_line.addLatLng(latlng);
+            }
+
+            map.addLayer(poly_line);
+            polyline_array.push(poly_line);
+
+            poly_line = new L.Polyline([], {
+                color: mycolor(148, 0, 211),
+                fillColor: mycolor(148, 0, 211),
+                stroke: true,
+                weight: 5,
+                smoothFactor: 5,
+                fillOpacity: 1,
+                opacity: 1
+            });//折线
+
         }
 
+        /*
+        这段代码先不要删掉
+        var latlngs = [];
         var latlng1 = L.latLng(39.906985851984146, 116.39055488416854);
         var latlng2 = L.latLng(39.905779, 116.319274);
         var latlng3 = L.latLng(39.88311876796353, 116.30383565962735);
         var latlng4 = L.latLng(39.872028939237744, 116.36803340806715);
         var latlng6 = L.latLng(39.906985851984146, 116.39055488416854);
-
-        /*测试一下
-
-        //将坐标点加入到poly_points数组中去
-        poly_points.push(latlng1);
-        poly_points.push(latlng2);
-        poly_points.push(latlng3);
-        poly_points.push(latlng4);
-        //poly_points.push(latlng5);
-        poly_points.push(latlng6);
-        //显示折线
-        poly_line.addLatLng(latlng1);
-        poly_line.addLatLng(latlng2);
-        poly_line.addLatLng(latlng3);
-        poly_line.addLatLng(latlng4);
-        poly_line.addLatLng(latlng6);
-
-        */
-        map.addLayer(poly_line);
-        polyline_array.push(poly_line);
-
-
-
-        var latlngs = [];
         latlngs.push(latlng1);
         latlngs.push(latlng2);
         latlngs.push(latlng3);
@@ -801,11 +806,11 @@
         var content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "北京天安门" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
         var popup = L.popup()
                 .setLatLng(latlng1)
-                .setContent(content);
-        //.openOn(map);
-        //map.addLayer(poly);
+                .setContent(content)
+                .openOn(map);
+        map.addLayer(poly);
         poly_line.bindPopup(popup);
-        polygon_array.push(poly);
+        polygon_array.push(poly);*/
 
     }
 
