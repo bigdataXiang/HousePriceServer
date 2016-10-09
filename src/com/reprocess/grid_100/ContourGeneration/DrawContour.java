@@ -18,13 +18,13 @@ public class DrawContour {
             creatCounter(i);
         }*/
 
-        creatJsonToServer("D:\\中期考核\\等值线\\等值线结果\\坐标串_2.txt");
+        creatJsonToServer("D:\\中期考核\\等值线\\等值线结果\\坐标串_11.txt",11);
 
 
         //test_dropDiagonal("D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt");
     }
 
-    public static void creatJsonToServer(String file){
+    public static void creatJsonToServer(String file,int index){
 
         Vector<String> jsons=FileTool.Load(file,"utf-8");
         JSONArray result_json=new JSONArray();
@@ -32,7 +32,7 @@ public class DrawContour {
             String json=jsons.elementAt(i);
             result_json.add(json);
         }
-        FileTool.Dump(result_json.toString(),"D:\\中期考核\\等值线\\等值线结果\\等值线_2_json.txt","utf-8");
+        FileTool.Dump(result_json.toString(),"D:\\中期考核\\等值线\\等值线结果\\等值线_"+index+"_json.txt","utf-8");
     }
     public static void creatCounter(int counter_value){
         int[][] gridmatrix=initGridMatrix("D:\\中期考核\\等值线\\contour_");
