@@ -108,8 +108,8 @@ public class ContourGeneration {
 
     public static void main(String[] args){
 
-        //callMongo();
-        drawContour("D:\\中期考核\\等值线\\contour_8.txt");
+        callMongo();
+
     }
 
     /**调用mongodb生成网格值*/

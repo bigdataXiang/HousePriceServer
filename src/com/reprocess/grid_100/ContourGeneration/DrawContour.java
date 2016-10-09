@@ -13,21 +13,241 @@ import java.util.List;
  */
 public class DrawContour {
     public static void main(String[] args){
-        //initGridMatrix("D:\\中期考核\\等值线\\contour_");
-        //int[][] block=new int[4][4];
-        //System.out.println(block[0][1]);
-        test_dropDiagonal("D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt");
+        int[][] gridmatrix=initGridMatrix("D:\\中期考核\\等值线\\contour_");
+
+        /*
+        for(int i=0;i<gridmatrix.length;i++){
+            for(int j=0;j<gridmatrix[0].length;j++){
+                if(gridmatrix[i][j]!=0){
+                    System.out.print(gridmatrix[i][j]+" ");
+                }
+            }
+            System.out.print("\n");
+        }*/
+
+        //获取价格为五万的标签块,除了五万，其他的都为0
+        //code_index中：key:网格编码 value：第几个五万的区域块标签
+        //如果value为0，表示该网格不是五万的值
+        Map<Integer,Integer> code_index=getBlocks(gridmatrix,5);
+        System.out.println(code_index.size());
+
+        Iterator<Integer> iterator=code_index.keySet().iterator();
+        TreeSet ts=new TreeSet();
+        Map<Integer,Integer> tag_counter=new HashMap<>();
+        while (iterator.hasNext()){
+            int key=iterator.next();
+            int value=code_index.get(key);
+            if(value!=0){
+                ts.add(value);
+            }
+        }
+
+        Iterator it_ts=ts.iterator();
+        while(it_ts.hasNext())
+        {
+            int tag=(int)it_ts.next();
+            System.out.println(tag);
+
+            Map<Integer,Integer> index_block=getIndexBlocks(code_index,tag);
+            //System.out.println(index_block.size());
+            int cols=gridmatrix[0].length;
+
+            Iterator<Integer> it=index_block.keySet().iterator();
+            int array_code;
+            int array_value;
+            int grid_code;
+            JSONObject obj;
+            JSONObject corners;
+
+            JSONObject result=new JSONObject();
+            while (it.hasNext()){
+                array_code=it.next();
+                array_value=index_block.get(array_code);
+                //System.out.println(array_value);
+
+                if(array_value!=0){
+
+                }
+                grid_code=array_codeTogrid_code(array_code,cols);
+
+                if(code_vertex_coordinates.containsKey(grid_code)){
+                    obj=code_vertex_coordinates.get(grid_code);
+                    corners=obj.getJSONObject("corners");
+                    result.put(grid_code,corners);
+                }
+            }
+            System.out.println(result);
+        }
+
+
+
+        //test_dropDiagonal("D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt");
     }
 
+
+    public static int array_codeTogrid_code(int array_code,int cols){
+        int gridcode=0;
+        int array_row=array_code/cols;//行
+        int array_col=array_code%cols;//列
+
+        int grid_row=400-array_row;
+        int grid_col=array_col+1;
+        gridcode=grid_col+(grid_row-1)*cols;
+
+        return gridcode;
+    }
+    public static Map<Integer,Integer> getIndexBlocks(Map<Integer,Integer> code_index,int index){
+        Iterator iterator=code_index.keySet().iterator();
+        Map<Integer,Integer> block=new HashMap<>();//存储了所有标签为index的网格
+        while (iterator.hasNext()){
+            int key=(int)iterator.next();
+            int value=code_index.get(key);
+            if(value==index){
+                block.put(key,value);
+            }
+        }
+        return block;
+    }
+    public static Map<Integer,Integer> getBlocks(int[][] blocks,int gridvalue){
+
+        int rows=blocks.length;
+        int cols=blocks[0].length;
+
+        //将区域生成一个只有gridvalue值的二维数组，其他为0；
+        for(int i=0;i<rows;i++){
+            for(int j=0;j<cols;j++){
+
+                if(blocks[i][j]==gridvalue){
+
+                }else {
+                    blocks[i][j]=0;
+                }
+            }
+        }
+
+        int index=0;
+        Map<Integer,Integer> code_index=new HashMap<>();
+        for(int i=0;i<rows;i++){
+            for(int j=0;j<cols;j++){
+                int code=j+i*cols;
+                int price=blocks[i][j];
+
+                if(price!=0){
+                    index++;
+                    //System.out.println("初始的标签值表示的是这个值出现的次数，应该总是比区块标签要大的？");
+                    code_index.put(code,index);
+
+                    int top=-1;
+                    if(i>0){
+                        top=j+(i-1)*cols;
+                    }
+
+                    int left=-1;
+                    if(j>0){
+                        left=(j-1)+i*cols;
+                    }
+
+                    int left_value;
+                    int top_value;
+                    boolean topbool=code_index.containsKey(top);
+                    boolean leftbool=code_index.containsKey(left);
+                    if(topbool&&leftbool){
+                        top_value=code_index.get(top);
+                        left_value=code_index.get(left);
+                        if(top_value!=0&&left_value!=0){
+                            if(top_value<left_value){
+                                //System.out.println(code+"的left比top值大:"+top_value);
+                                code_index.put(code,top_value);
+
+                                Iterator it=code_index.keySet().iterator();
+                                //不仅要改left值，还要改left的left值
+                                //System.out.println("开始遍历该数据，但是这里的遍历有点问题：");
+                                while (it.hasNext()){
+                                    int it_key=(int)it.next();
+                                    int it_value=code_index.get(it_key);
+                                    //System.out.println(it_key+"："+it_value);
+                                    //System.out.println("有没有可能存在两个网格的value值相等却这两个网格不联通的情况？");
+                                    if(it_value==left_value){
+                                        //System.out.println("将"+it_key+"的标签由"+it_value+"改成"+top_value);
+                                        code_index.put(it_key,top_value);
+                                    }
+
+                                }
+                            }else if(top_value>left_value){
+                                //System.out.println(code+"的left比top值小:"+left_value);
+                                code_index.put(code,left_value);
+                                code_index.put(top,left_value);
+
+                                //不仅要改top值，还要改top的top值
+                                Iterator it=code_index.keySet().iterator();
+                                //System.out.println("开始遍历该数据，但是这里的遍历有点问题：");
+                                while (it.hasNext()){
+                                    int it_key=(int)it.next();
+                                    int it_value=code_index.get(it_key);
+                                    //System.out.println(it_key+"："+it_value);
+                                    //System.out.println("有没有可能存在两个网格的value值相等却这两个网格不联通的情况？");
+                                    if(it_value==top_value){
+                                        //System.out.println("将"+it_key+"的标签由"+it_value+"改成"+left_value);
+                                        code_index.put(it_key,left_value);
+                                    }
+                                }
+                            }else {
+                                //System.out.println(code+"的left和top值一样:"+top_value);
+                                code_index.put(code,top_value);
+                            }
+                        }else if(top_value!=0&&left_value==0){
+                            top_value=code_index.get(top);
+                            code_index.put(code,top_value);
+                            //System.out.println(code+"仅有top值:"+top_value);
+
+                        }else if(top_value==0&&left_value!=0){
+                            left_value=code_index.get(left);
+                            code_index.put(code,left_value);
+                            //System.out.println(code+"仅有left值:"+left_value);
+                        }
+
+                    }else if(topbool&&!leftbool){
+                        top_value=code_index.get(top);
+                        if(top_value!=0){
+                            //System.out.println(code+"仅有top值:"+top_value);
+                            code_index.put(code,top_value);
+                        }else {
+                            //System.out.println(code+":"+index);
+                        }
+                    }else if(!topbool&&leftbool){
+                        left_value=code_index.get(left);
+                        if(left_value!=0){
+                            //System.out.println(code+"仅有left值:"+left_value);
+                            code_index.put(code,left_value);
+                            /*int temp=code_index.get(code);
+                            System.out.println("最终"+code+"的标签是"+temp);*/
+                        }else {
+                            //System.out.println(code+":"+index);
+                        }
+
+                    }
+
+                    int temp=code_index.get(code);
+                    //System.out.println("最终"+code+"的标签是"+temp);
+                }else {
+                    //System.out.println("最终"+code+"的标签是"+0);
+                    code_index.put(code,0);
+                }
+            }
+        }
+
+        return code_index;
+    }
+
+    public static Map<Integer,JSONObject> code_vertex_coordinates=new HashMap<>();
     /**初始化图像矩阵*/
-    public static void initGridMatrix(String path){
+    public static int[][] initGridMatrix(String path){
         String poi="";
         JSONObject obj;
         int code;
         double price;
         Map<Integer,Double> gridprice=new HashMap<>();
-        Map<Integer,Double> gridprice_copy=new HashMap<>();
-        double[][] gridmatrix=new double[400][400];
+        int[][] gridmatrix=new int[400][400];
 
         for(int i=2;i<=8;i++) {
             String file=path+i+".txt";
@@ -37,84 +257,47 @@ public class DrawContour {
                 poi=pois.elementAt(j);
                 obj=JSONObject.fromObject(poi);
                 code=obj.getInt("code");
+                code_vertex_coordinates.put(code,obj);
+
                 price=obj.getDouble("average_price");
                 gridprice.put(code,price);
-                gridprice_copy.put(code,price);
             }
         }
 
         //将二维数组的值填充好
-        for(int row=110;row<=130;row++){
-            String str="";
-            for(int col=150;col<=170;col++){
+        //由于本身的网格编码的行的递增顺序是从下到上的
+        //而二维数组的行是从上到下的
+        //故需要将两者协调一下，即将网格按照从上到下的顺序，而不是按照网格的大小顺序存储到二维数组中
+        int array_row=0;//其中array_row+row=400
+        for(int row=400;row>=1;row--){
+            int array_col=0;//其中array_col=col-1;
+            for(int col=1;col<=400;col++){
                 code=col+(row-1)*400;
 
                 if(gridprice.containsKey(code)){
                     price=gridprice.get(code);
-                    //System.out.println(code+":"+price);
-                    gridmatrix[row-1][col-1]=price;
+                    gridmatrix[array_row][array_col]=(int)Math.floor(price);
+                    //System.out.println(array_row+","+array_col+":"+gridmatrix[array_row][array_col]);
 
                 }else{
-                    gridmatrix[row-1][col-1]=0;
-                    price=0;
-                    gridprice.put(code,(double)0);
-                    gridprice_copy.put(code,(double)0);
+                    gridmatrix[array_row][array_col]=0;
                 }
-                int p=(int)Math.floor(price);
-                str+=p+",";
+                array_col++;
             }
-            FileTool.Dump(str,"D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt","utf-8");
+            array_row++;
         }
-
-        //选取种子点进行扩散："code":40961,"average_price":9.943082,"row":103,"col":161
-        int target_row=102;
-        int target_col=161;
-        int target_code=40561;
-        int front_target_code;
-        double threshold_min;
-        double target_threshold_min;
-        Map<Integer,Double> finished_grid=new HashMap<>();//用来装已经分类的code
-        Map<Double,JSONObject> price_block=new HashMap<>();//用来装不同的价格区域块的代码
-        List<Integer> neighborhood=new ArrayList<>();//用来装根节点的八个周边节点
-        JSONObject obj_neighborhood=new JSONObject();//用来记录每一个根节点的周边节点有哪些
-        List<Integer> neighborhood_copy=new ArrayList<>();
-        JSONObject code_rowcol=new JSONObject();//用来标记该编码对应的行列号
-        int count=0;
-        while (gridprice.size()!=0){
-
-            /*if(finished_grid.containsKey(target_code)){
-
-            }else {
-            }*/
-
-            if(count==0){
-                count++;
-                get8Neighborhood(gridprice,gridprice_copy,finished_grid,target_code,target_row,target_col,code_rowcol,obj_neighborhood);
-            }else {
-                /**将种子节点的八邻域分别进行遍历，作为新的种子节点*/
-
-                front_target_code=target_code;//因为该种子节点已经遍历完毕，故该节点变为前节点
-                neighborhood_copy=obj_neighborhood.getJSONArray(""+front_target_code);
-                System.out.println(neighborhood_copy);
-                int front_size=neighborhood_copy.size();
-
-                //分别以周围的八邻域为根节点进行遍历
-                while(front_size!=0){
-
-                    target_code=neighborhood_copy.get(0);
-                    JSONArray rc=code_rowcol.getJSONArray(""+target_code);
-                    //System.out.println(rc);
-                    target_row=(int)rc.get(0);
-                    target_col=(int)rc.get(1);
-                    get8Neighborhood(gridprice,gridprice_copy,finished_grid,target_code,target_row,target_col,code_rowcol,obj_neighborhood);
-
-                    neighborhood_copy.remove(0);
-                    System.out.println(neighborhood_copy);
-                }
-            }
-        }
+        return gridmatrix;
     }
 
+    public static Map<Integer,Integer> codeToRowCol(int code,int cols){
+        Map<Integer,Integer> rowcol=new HashMap<>();
+        int i=code/cols;//行
+        int j=code%cols;//列
+        rowcol.put(0,i);
+        rowcol.put(1,j);
+
+        return rowcol;
+    }
     public static void get8Neighborhood(Map gridprice,Map gridprice_copy,Map finished_grid,int target_code,int target_row,int target_col,JSONObject code_rowcol,JSONObject obj_neighborhood){
         double target_price=(double)gridprice_copy.get(target_code);
         double target_threshold_min=Math.floor(target_price);
@@ -498,15 +681,7 @@ public class DrawContour {
         return boundary_grids;
     }
 
-    public static Map<Integer,Integer> codeToRowCol(int code,int cols){
-        Map<Integer,Integer> rowcol=new HashMap<>();
-        int i=code/cols;//行
-        int j=code%cols;//列
-        rowcol.put(0,i);
-        rowcol.put(1,j);
 
-        return rowcol;
-    }
 
     /**获取八领域方向的code值*/
     public static Map<Integer,Integer> left_top_right_bottom(int row,int col,int rows,int cols){
@@ -628,16 +803,14 @@ public class DrawContour {
         }
 
 
-
-
         //情况一：先检查除了原路返回和走已经走过的节点，能不能搜索到新的节点
         //除了保证下一个节点不是前一个节点外，还要保证下一个节点之前没有被遍历过
-        if(block.containsKey(bottom)){
+        if(block.containsKey(traversal_sequence[0])){
             //以下这两行是用来标记该节点的八邻域有哪些是有值的
             unique++;
-            adjacency.put(6,bottom);
+            adjacency.put(6,traversal_sequence[0]);
 
-            next_code=bottom;
+            next_code=traversal_sequence[0];
             frequency=0;
             if(traversal_monitor.containsKey(next_code)){
                 frequency=traversal_monitor.get(next_code);
@@ -650,13 +823,13 @@ public class DrawContour {
                 monitor++;
             }
         }
-        if(block.containsKey(right_bottom)){
+        if(block.containsKey(traversal_sequence[1])){
             unique++;
-            adjacency.put(7,right_bottom);
+            adjacency.put(7,traversal_sequence[1]);
 
             if(monitor==0){
                 unique++;
-                next_code=right_bottom;
+                next_code=traversal_sequence[1];
                 frequency=0;
                 if(traversal_monitor.containsKey(next_code)){
                     frequency=traversal_monitor.get(next_code);
@@ -670,12 +843,12 @@ public class DrawContour {
                 }
             }
         }
-        if (block.containsKey(right)){
+        if (block.containsKey(traversal_sequence[2])){
             unique++;
-            adjacency.put(0,right);
+            adjacency.put(0,traversal_sequence[2]);
 
             if(monitor==0){
-                next_code=right;
+                next_code=traversal_sequence[2];
                 frequency=0;
                 if(traversal_monitor.containsKey(next_code)){
                     frequency=traversal_monitor.get(next_code);
@@ -689,12 +862,12 @@ public class DrawContour {
                 }
             }
         }
-        if(block.containsKey(right_top)){
+        if(block.containsKey(traversal_sequence[3])){
             unique++;
-            adjacency.put(1,right_top);
+            adjacency.put(1,traversal_sequence[3]);
 
             if(monitor==0){
-                next_code=right_top;
+                next_code=traversal_sequence[3];
                 frequency=0;
                 if(traversal_monitor.containsKey(next_code)){
                     frequency=traversal_monitor.get(next_code);
@@ -708,12 +881,12 @@ public class DrawContour {
                 }
             }
         }
-        if(block.containsKey(top)){
+        if(block.containsKey(traversal_sequence[4])){
             unique++;
-            adjacency.put(2,top);
+            adjacency.put(2,traversal_sequence[4]);
 
             if(monitor==0){
-                next_code=top;
+                next_code=traversal_sequence[4];
                 frequency=0;
                 if(traversal_monitor.containsKey(next_code)){
                     frequency=traversal_monitor.get(next_code);
@@ -727,12 +900,12 @@ public class DrawContour {
                 }
             }
         }
-        if(block.containsKey(left_top)){
+        if(block.containsKey(traversal_sequence[5])){
             unique++;
-            adjacency.put(3,left_top);
+            adjacency.put(3,traversal_sequence[5]);
 
             if(monitor==0){
-                next_code=left_top;
+                next_code=traversal_sequence[5];
                 frequency=0;
                 if(traversal_monitor.containsKey(next_code)){
                     frequency=traversal_monitor.get(next_code);
@@ -746,12 +919,12 @@ public class DrawContour {
                 }
             }
         }
-        if(block.containsKey(left)){
+        if(block.containsKey(traversal_sequence[6])){
             unique++;
-            adjacency.put(4,left);
+            adjacency.put(4,traversal_sequence[6]);
 
             if(monitor==0){
-                next_code=left;
+                next_code=traversal_sequence[6];
                 frequency=0;
                 if(traversal_monitor.containsKey(next_code)){
                     frequency=traversal_monitor.get(next_code);
@@ -765,12 +938,12 @@ public class DrawContour {
                 }
             }
         }
-        if(block.containsKey(left_bottom)){
+        if(block.containsKey(traversal_sequence[7])){
             unique++;
-            adjacency.put(5,left);
+            adjacency.put(5,traversal_sequence[7]);
 
             if(monitor==0){
-                next_code=left_bottom;
+                next_code=traversal_sequence[7];
                 frequency=0;
                 if(traversal_monitor.containsKey(next_code)){
                     frequency=traversal_monitor.get(next_code);
@@ -881,4 +1054,6 @@ public class DrawContour {
         }
         return diff;
     }
+
+
 }
