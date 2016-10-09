@@ -243,7 +243,6 @@
                             <select id="contourvalue" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>2万以下</option>
-                                <option>1万——2万</option>
                                 <option>2万——3万</option>
                                 <option>3万——4万</option>
                                 <option>4万——5万</option>
@@ -254,7 +253,6 @@
                                 <option>9万——10万</option>
                                 <option>10万——11万</option>
                                 <option>11万——12万</option>
-                                <option>12万</option>
                                 <option>全部</option>
                             </select>
                         </div>
@@ -562,123 +560,130 @@
         var y = document.getElementById("contourline").options;
         var contourline = y[x].text;
         if(contourline=="是"){
-            x = document.getElementById("contourvalue").selectedIndex;
-            y = document.getElementById("contourvalue").options;
-            contourvalue=y[x].text;
-            if(contourvalue=="1万——2万"){
 
-            }else if(contourvalue=="2万——3万"){
-                $.post("/static/contourline/polygon_2", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,2);
-                });
-            }else if(contourvalue=="3万——4万"){
-                $.post("/static/contourline/polygon_3", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,3);
-                });
-            }else if(contourvalue=="4万——5万"){
-                $.post("/static/contourline/polygon_4", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,4);
-                });
-            }else if(contourvalue=="5万——6万"){
-                $.post("/static/contourline/polygon_5", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,5);
-                });
-            }else if(contourvalue=="6万——7万"){
-                $.post("/static/contourline/polygon_6", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,6);
-                });
-            }else if(contourvalue=="7万——8万"){
-                $.post("/static/contourline/polygon_7", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,7);
-                });
-            }else if(contourvalue=="8万——9万"){
-                $.post("/static/contourline/polygon_8", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,8);
-                });
-            }else if(contourvalue=="9万——10万"){
-                $.post("/static/contourline/polygon_9", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,9);
-                });
-            }else if(contourvalue=="10万——11万"){
-                $.post("/static/contourline/polygon_10", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,10);
-                });
-            }else if(contourvalue=="11万——12万"){
-                $.post("/static/contourline/polygon_11", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,11);
-                });
-            }else if(contourvalue=="全部"){
-                $.post("/static/contourline/polygon_2", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,2);
-                });
-                $.post("/static/contourline/polygon_3", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,3);
-                });
-                $.post("/static/contourline/polygon_4", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,4);
-                });
-                $.post("/static/contourline/polygon_5", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,5);
-                });
-                $.post("/static/contourline/polygon_6", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,6);
-                });
-                $.post("/static/contourline/polygon_7", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,7);
-                });
-                $.post("/static/contourline/polygon_8", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,8);
-                });
-                $.post("/static/contourline/polygon_9", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,9);
-                });
-                $.post("/static/contourline/polygon_10", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,10);
-                });
-                $.post("/static/contourline/polygon_11", function (result) {
-                    var contour = JSON.parse(result);
-                    console.log("开始画等值线");
-                    draw_multiPolyline(contour,11);
-                });
-            }
+            /*$.post("/static/contourline/polygon_2", function (result) {
+                var contour = JSON.parse(result);
+                console.log("开始画等值线");
+                draw_multiPolyline(contour,2);
+            });*/
+            $("#contourvalue").change(function () {
+
+                var x = document.getElementById("contourvalue").selectedIndex;
+                var y = document.getElementById("contourvalue").options;
+                var contourvalue=y[x].text;
+                if(contourvalue=="2万——3万"){
+                    $.post("/static/contourline/polygon_2", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,2);
+                    });
+                }else if(contourvalue=="3万——4万"){
+                    $.post("/static/contourline/polygon_3", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,3);
+                    });
+                }else if(contourvalue=="4万——5万"){
+                    $.post("/static/contourline/polygon_4", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,4);
+                    });
+                }else if(contourvalue=="5万——6万"){
+                    $.post("/static/contourline/polygon_5", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,5);
+                    });
+                }else if(contourvalue=="6万——7万"){
+                    $.post("/static/contourline/polygon_6", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,6);
+                    });
+                }else if(contourvalue=="7万——8万"){
+                    $.post("/static/contourline/polygon_7", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,7);
+                    });
+                }else if(contourvalue=="8万——9万"){
+                    $.post("/static/contourline/polygon_8", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,8);
+                    });
+                }else if(contourvalue=="9万——10万"){
+                    $.post("/static/contourline/polygon_9", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,9);
+                    });
+                }else if(contourvalue=="10万——11万"){
+                    $.post("/static/contourline/polygon_10", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,10);
+                    });
+                }else if(contourvalue=="11万——12万"){
+                    $.post("/static/contourline/polygon_11", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,11);
+                    });
+                }else if(contourvalue=="全部"){
+                    $.post("/static/contourline/polygon_2", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,2);
+                    });
+                    $.post("/static/contourline/polygon_3", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,3);
+                    });
+                    $.post("/static/contourline/polygon_4", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,4);
+                    });
+                    $.post("/static/contourline/polygon_5", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,5);
+                    });
+                    $.post("/static/contourline/polygon_6", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,6);
+                    });
+                    $.post("/static/contourline/polygon_7", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,7);
+                    });
+                    $.post("/static/contourline/polygon_8", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,8);
+                    });
+                    $.post("/static/contourline/polygon_9", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,9);
+                    });
+                    $.post("/static/contourline/polygon_10", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,10);
+                    });
+                    $.post("/static/contourline/polygon_11", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值线");
+                        draw_multiPolyline(contour,11);
+                    });
+                }
+            });
 
         }else {
             //将之前的多线图层删除
