@@ -14,14 +14,113 @@ import java.util.List;
 public class DrawContour {
     public static void main(String[] args){
 
-        /*for(int i=2;i<3;i++){
+        /*for(int i=6;i<7;i++){
             creatCounter(i);
         }*/
 
-        creatJsonToServer("D:\\中期考核\\等值线\\等值线结果\\坐标串_11.txt",11);
+        //creatJsonToServer("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\坐标串_6.txt",6);
 
 
         //test_dropDiagonal("D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt");
+
+
+        for(int i=2;i<12;i++){
+            //creatJsonToServer("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\坐标串_"+i+".txt",i);
+
+            processHanQing("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\resu_1010.txt",i);
+        }
+
+
+
+    }
+    /**处理汉青的算法结果*/
+    public static void processHanQing(String file,int gridvalue){
+        //将每个网格点的坐标存在全局mapcode_vertex_coordinates中
+        initGridMatrix("D:\\中期考核\\等值线\\contour_");
+
+        //code_index
+        //key:网格编码
+        //value:编码为gridvalue的网格的区块标签
+        Map<Integer,Integer> code_index=new HashMap<>();
+        Vector<String> pois=FileTool.Load(file,"utf-8");
+        int[][] blocks=new int[400][400];
+        int length=pois.size();
+        for(int i=0;i<length;i++){
+            String[] array=pois.elementAt(i).split(",");
+            int width=array.length;
+            for(int j=0;j<width;j++){
+                if(!array[j].equals("-1")){
+                    //System.out.println(array[j]);
+                    blocks[i][j]=Integer.parseInt(array[j]);
+                    if(blocks[i][j]!=-1){
+                        int value=blocks[i][j]/100000;
+                        int index=blocks[i][j]%100000;
+                        //int array_code=j+i*length;
+                        //int code=array_codeTogrid_code(array_code,length);
+                        if(value==gridvalue){
+                            int row=400-i;
+                            int col=j+1;
+                            int code=(row-1)*400+col;
+                           // System.out.println(code);
+                            code_index.put(code,index);
+                        }
+                    }
+                }
+            }
+        }
+
+        Iterator<Integer> iterator=code_index.keySet().iterator();
+        TreeSet ts=new TreeSet();
+        List<Integer> codeis=new ArrayList<>();
+        while (iterator.hasNext()){
+            int key=iterator.next();
+            int value=code_index.get(key);
+            if(value!=0){
+                ts.add(value);
+                codeis.add(value);
+            }
+        }
+        System.out.println("等值线"+gridvalue+"总共有"+ts.size()+"个区块");
+        System.out.println("等值线"+gridvalue+"总共有"+codeis.size()+"个网格");
+
+        Iterator<Integer> it_ts=ts.iterator();
+        int tag;
+        int a=0;
+        int count;
+        int total=0;
+        //System.out.println(ts.size());
+        while(it_ts.hasNext())
+        {
+            tag=it_ts.next();
+            //index_block包含的都是区块标签为tag的网格
+            //key:网格编码
+            //value:网格对应的区块标签,特殊情况，key=0时表示的是具有该区块标签的网格的个数
+            Map<Integer,Integer> index_block=getIndexBlocks(code_index,tag);
+            a=index_block.size();
+            JSONObject obj;
+            JSONObject corners;
+            int grid_code;
+            JSONObject result=new JSONObject();
+            Iterator<Integer> it=index_block.keySet().iterator();
+
+            count=0;
+            while (it.hasNext()){
+
+                grid_code=it.next();
+                //System.out.println(grid_code);
+                if(code_vertex_coordinates.containsKey(grid_code)){
+                    count++;
+                    obj=code_vertex_coordinates.get(grid_code);
+                    corners=obj.getJSONObject("corners");
+                    result.put(grid_code,corners);
+                }
+            }
+            total+=a*count;
+            //System.out.println(result);
+            //FileTool.Dump(result.toString(),"D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\等值线_"+gridvalue+".txt","utf-8");
+        }
+        System.out.println(total);
+
     }
 
     public static void creatJsonToServer(String file,int index){
@@ -32,12 +131,13 @@ public class DrawContour {
             String json=jsons.elementAt(i);
             result_json.add(json);
         }
-        FileTool.Dump(result_json.toString(),"D:\\中期考核\\等值线\\等值线结果\\等值线_"+index+"_json.txt","utf-8");
+        FileTool.Dump(result_json.toString(),"D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\等值线_"+index+"_json.txt","utf-8");
     }
-    public static void creatCounter(int counter_value){
+    /**这是我写的算法，可能有点问题*/
+    /*public static void creatCounter(int counter_value){
         int[][] gridmatrix=initGridMatrix("D:\\中期考核\\等值线\\contour_");
 
-        /*
+
         for(int i=0;i<gridmatrix.length;i++){
             for(int j=0;j<gridmatrix[0].length;j++){
                 if(gridmatrix[i][j]!=0){
@@ -45,7 +145,7 @@ public class DrawContour {
                 }
             }
             System.out.print("\n");
-        }*/
+        }
 
         //获取价格为五万的标签块,除了五万，其他的都为0
         //code_index中：key:网格编码 value：第几个五万的区域块标签
@@ -90,9 +190,6 @@ public class DrawContour {
                 array_value=index_block.get(array_code);
                 //System.out.println(array_value);
 
-                if(array_value!=0){
-
-                }
                 grid_code=array_codeTogrid_code(array_code,cols);
 
                 if(code_vertex_coordinates.containsKey(grid_code)){
@@ -104,8 +201,7 @@ public class DrawContour {
             System.out.println(result);
             FileTool.Dump(result.toString(),"D:\\中期考核\\等值线\\等值线结果\\等值线_"+counter_value+".txt","utf-8");
         }
-    }
-
+    }*/
 
     public static int array_codeTogrid_code(int array_code,int cols){
         int gridcode=0;
@@ -118,16 +214,20 @@ public class DrawContour {
 
         return gridcode;
     }
+
     public static Map<Integer,Integer> getIndexBlocks(Map<Integer,Integer> code_index,int index){
         Iterator iterator=code_index.keySet().iterator();
         Map<Integer,Integer> block=new HashMap<>();//存储了所有标签为index的网格
+        int count=0;
         while (iterator.hasNext()){
             int key=(int)iterator.next();
             int value=code_index.get(key);
             if(value==index){
                 block.put(key,value);
+                count++;
             }
         }
+        block.put(0,count);
         return block;
     }
     public static Map<Integer,Integer> getBlocks(int[][] blocks,int gridvalue){
@@ -263,13 +363,13 @@ public class DrawContour {
 
     public static Map<Integer,JSONObject> code_vertex_coordinates=new HashMap<>();
     /**初始化图像矩阵*/
-    public static int[][] initGridMatrix(String path){
+    public static double[][] initGridMatrix(String path){
         String poi="";
         JSONObject obj;
         int code;
         double price;
         Map<Integer,Double> gridprice=new HashMap<>();
-        int[][] gridmatrix=new int[400][400];
+        double[][] gridmatrix=new double[400][400];
 
         for(int i=2;i<=8;i++) {
             String file=path+i+".txt";
@@ -292,20 +392,23 @@ public class DrawContour {
         //故需要将两者协调一下，即将网格按照从上到下的顺序，而不是按照网格的大小顺序存储到二维数组中
         int array_row=0;//其中array_row+row=400
         for(int row=400;row>=1;row--){
+            String str="";
             int array_col=0;//其中array_col=col-1;
             for(int col=1;col<=400;col++){
                 code=col+(row-1)*400;
 
                 if(gridprice.containsKey(code)){
                     price=gridprice.get(code);
-                    gridmatrix[array_row][array_col]=(int)Math.floor(price);
+                    gridmatrix[array_row][array_col]=price;
                     //System.out.println(array_row+","+array_col+":"+gridmatrix[array_row][array_col]);
 
                 }else{
-                    gridmatrix[array_row][array_col]=0;
+                    gridmatrix[array_row][array_col]=0.0;
                 }
+                str+=gridmatrix[array_row][array_col]+",";
                 array_col++;
             }
+            //FileTool.Dump(str,"D:\\中期考核\\等值线\\图像分割算法\\hanqing\\dt_1010.txt","utf-8");
             array_row++;
         }
         return gridmatrix;
