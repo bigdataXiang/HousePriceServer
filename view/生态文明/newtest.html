@@ -1075,7 +1075,13 @@
 
         for(var tag=0;tag<contour.length;tag++){
             var poly_points = [];
-            var coordinates=contour[tag].coordinates[0];
+            var coordinates;
+            if(contour[tag].type=="Polygon"){
+                coordinates=contour[tag].coordinates[0];
+            }else if(contour[tag].type=="MultiPolygon"){
+                coordinates=contour[tag].coordinates[0][0];
+            }
+
             var latlng;
             for(var i=0;i<coordinates.length;i++){
                 var coordinate=coordinates[i];
@@ -1108,6 +1114,7 @@
             });//折线
 
         }
+        alert("总共画了"+contour.length+"个多边形");
 
         /*
         这段代码先不要删掉

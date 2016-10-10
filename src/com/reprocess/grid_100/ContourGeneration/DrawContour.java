@@ -25,11 +25,10 @@ public class DrawContour {
 
 
         for(int i=2;i<12;i++){
-            //creatJsonToServer("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\坐标串_"+i+".txt",i);
+            creatJsonToServer("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\坐标串_"+i+".txt",i);
 
-            processHanQing("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\resu_1010.txt",i);
+            //processHanQing("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\resu_1010.txt",i);
         }
-
 
 
     }
@@ -96,7 +95,7 @@ public class DrawContour {
             //key:网格编码
             //value:网格对应的区块标签,特殊情况，key=0时表示的是具有该区块标签的网格的个数
             Map<Integer,Integer> index_block=getIndexBlocks(code_index,tag);
-            a=index_block.size();
+            a=index_block.get(0);
             JSONObject obj;
             JSONObject corners;
             int grid_code;
@@ -115,7 +114,9 @@ public class DrawContour {
                     result.put(grid_code,corners);
                 }
             }
-            total+=a*count;
+            //System.out.println(tag+":"+count);
+            //System.out.println(tag+":"+a);
+            total+=a;
             //System.out.println(result);
             //FileTool.Dump(result.toString(),"D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\等值线_"+gridvalue+".txt","utf-8");
         }
