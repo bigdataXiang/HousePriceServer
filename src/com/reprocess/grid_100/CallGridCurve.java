@@ -22,7 +22,7 @@ public class CallGridCurve {
         condition.put("col",176);
         condition.put("gridcode",42158);
         condition.put("N",5);
-        condition.put("source","woaiwojia");
+        condition.put("source","anjuke");
         condition.put("export_collName","GridData_Resold_100");
 
         System.out.println(callGridData_Resold_100(condition));
@@ -31,7 +31,7 @@ public class CallGridCurve {
     public Response get(String body){
 
         JSONObject condition= JSONObject.fromObject(body);
-        condition.put("source","woaiwojia");
+        condition.put("source","anjuke");
         condition.put("export_collName","GridData_Resold_100");
 
         Response r= new Response();
