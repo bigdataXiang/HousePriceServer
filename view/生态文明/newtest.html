@@ -1061,7 +1061,6 @@
             color=mycolor(255,255,255);
         }
 
-        var poly_points = [];//区域
         //color=randomColor(1);
         var poly_line = new L.Polyline([], {
             color: color,
@@ -1076,48 +1075,79 @@
         for(var tag=0;tag<contour.length;tag++){
             var poly_points = [];
             var coordinates;
-            if(contour[tag].type=="Polygon"){
-                coordinates=contour[tag].coordinates[0];
-            }else if(contour[tag].type=="MultiPolygon"){
-                coordinates=contour[tag].coordinates[0][0];
-            }
-
             var latlng;
-            for(var i=0;i<coordinates.length;i++){
-                var coordinate=coordinates[i];
-                var lng=coordinate[0];
-                var lat=coordinate[1];
-                latlng=L.latLng(lat,lng);
-                poly_points.push(latlng);
-                poly_line.addLatLng(latlng);
+            if(contour[tag].type=="Polygon"){
+                //计算一共有多少个封闭的多边形
+                var len=contour[tag].coordinates.length;
+                console.log(len);
+
+
+                for(var mm=0;mm<len;mm++){
+                    var coors=contour[tag].coordinates[mm];
+                    //分别画每一个多边形，获取每一个多边形里面的坐标点，存放在poly_points中
+                    for(var i=0;i<coors.length;i++){
+                        var coordinate=coors[i];
+                        var lng=coordinate[0];
+                        var lat=coordinate[1];
+                        latlng=L.latLng(lat,lng);
+                        poly_points.push(latlng);
+                        poly_line.addLatLng(latlng);
+                    }
+                    map.addLayer(poly_line);
+                    polyline_array.push(poly_line);
+
+                    color=randomColor(1);
+                    poly_points = [];
+                    poly_line = new L.Polyline([], {
+                        color: color,
+                        fillColor: color,
+                        stroke: true,
+                        weight: 3,
+                        smoothFactor: 5,
+                        fillOpacity: 1,
+                        opacity: 1
+                    });//折线
+                }
+
+            }else if(contour[tag].type=="MultiPolygon"){
+                var lenen=contour[tag].coordinates.length;
+                console.log(lenen);
+                for(var m=0;m<lenen;m++){
+                    var len1=contour[tag].coordinates[m].length;
+                    console.log(len1);
+                    for(var j=0;j<len1;j++){
+                        coordinates=contour[tag].coordinates[m][j];
+                        var len2=coordinates.length;
+                        console.log(len2);
+                        for(var i=0;i<len2;i++){
+                            var coordinate=coordinates[i];
+                            var lng=coordinate[0];
+                            var lat=coordinate[1];
+                            latlng=L.latLng(lat,lng);
+                            poly_points.push(latlng);
+                            poly_line.addLatLng(latlng);
+                        }
+                        map.addLayer(poly_line);
+                        polyline_array.push(poly_line);
+
+                        //color=randomColor(1);
+                        poly_points = [];
+                        poly_line = new L.Polyline([], {
+                            color: color,
+                            fillColor: color,
+                            stroke: true,
+                            weight: 3,
+                            smoothFactor: 5,
+                            fillOpacity: 1,
+                            opacity: 1
+                        });//折线
+                    }
+                }
             }
-
-
-            var content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" +poly_line+ "</span></DIV>";
-            var popup = L.popup()
-                    .setLatLng(latlng)
-                    .setContent(content);
-                    //.openOn(map);
-            map.addLayer(poly_line);
-            //poly_line.bindPopup(popup);
-            polyline_array.push(poly_line);
-
-            //color=randomColor(1);
-            poly_line = new L.Polyline([], {
-                color: color,
-                fillColor: color,
-                stroke: true,
-                weight: 3,
-                smoothFactor: 5,
-                fillOpacity: 1,
-                opacity: 1
-            });//折线
-
         }
         alert("总共画了"+contour.length+"个多边形");
 
-        /*
-        这段代码先不要删掉
+        //这段代码先不要删掉
         var latlngs = [];
         var latlng1 = L.latLng(39.906985851984146, 116.39055488416854);
         var latlng2 = L.latLng(39.905779, 116.319274);
@@ -1142,7 +1172,7 @@
                 .openOn(map);
         map.addLayer(poly);
         poly_line.bindPopup(popup);
-        polygon_array.push(poly);*/
+        polygon_array.push(poly);
 
     }
 

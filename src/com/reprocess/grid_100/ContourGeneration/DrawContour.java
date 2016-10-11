@@ -25,13 +25,61 @@ public class DrawContour {
 
 
         for(int i=2;i<12;i++){
-            creatJsonToServer("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\坐标串_"+i+".txt",i);
+            //creatJsonToServer("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\坐标串_"+i+".txt",i);
 
-            //processHanQing("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\resu_1010.txt",i);
+            processHanQing("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\resu_1010.txt",i);
         }
+
+        parseCoordinateSeries("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\坐标串_3.txt");
 
 
     }
+    /**认真解读每一个坐标串的数据结构，磨刀不误砍柴工啊，之前没仔细看这个数据结构，现在出错了吧，调试了一天*/
+    public static void parseCoordinateSeries(String file){
+        Vector<String> coordinates=FileTool.Load(file,"utf-8");
+        JSONObject test=new JSONObject();
+        for(int i=127;i<128;i++){//coordinates.size()
+            String str=coordinates.elementAt(i);
+            JSONObject obj=JSONObject.fromObject(str);
+            String type=obj.getString("type");
+            JSONArray array=obj.getJSONArray("coordinates");
+
+            test.put("type","Polygon");
+
+
+            if(type.equals("Polygon")){
+                //System.out.println(array);
+                //System.out.println(array.get(0));
+            }else if(type.equals("MultiPolygon")){
+                System.out.println(array.size());
+                //System.out.println(array);
+
+                JSONArray coordinates1=new JSONArray();
+
+                for(int j=0;j<array.size();j++){
+                    JSONArray a1=(JSONArray)array.get(j);
+                    System.out.println("第"+j+"个：");
+                    for(int m=0;m<a1.size();m++){
+
+                        System.out.println(a1.get(m));
+                        //coordinates1.add(a1.get(m));
+                    }
+                }
+                //测试用
+                JSONArray a1=(JSONArray)array.get(0);
+                coordinates1.add(a1.get(0));
+
+                System.out.println(coordinates1.size());
+                test.put("coordinates",coordinates1);
+            }
+
+            System.out.println(test);
+        }
+
+    }
+
+
+
     /**处理汉青的算法结果*/
     public static void processHanQing(String file,int gridvalue){
         //将每个网格点的坐标存在全局mapcode_vertex_coordinates中
