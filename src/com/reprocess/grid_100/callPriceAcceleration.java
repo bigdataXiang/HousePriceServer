@@ -2,6 +2,7 @@ package com.reprocess.grid_100;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.reprocess.grid_100.util.Resolution;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
@@ -37,7 +38,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
         int endyear=Integer.parseInt(endtime.substring(0,endtime.indexOf("年")));
         int endmonth=Integer.parseInt(endtime.substring(endtime.indexOf("年")+"年".length(),endtime.indexOf("月")));
 
-        int N=getResolution(zoom);
+        int N= Resolution.getResolution(zoom);
         String source=obj.getString("source");
         if(source.equals("我爱我家")){
             source="woaiwojia";

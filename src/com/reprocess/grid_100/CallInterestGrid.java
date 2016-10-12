@@ -4,6 +4,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.reprocess.grid_100.util.Color;
+import com.reprocess.grid_100.util.Resolution;
+import com.reprocess.grid_100.util.Source;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
@@ -56,27 +58,23 @@ public class CallInterestGrid {
     }
     public Response get(String body){
         JSONObject obj=JSONObject.fromObject(body);
+        System.out.println(obj);
 
         double west=obj.getDouble("west");
         double east=obj.getDouble("east");
         double south=obj.getDouble("south");
         double north=obj.getDouble("north");
+
         int zoom=obj.getInt("zoom");
-        String time=obj.getString("gridTime");
+        int N= Resolution.getResolution(zoom);
+
         //2016年01月
+        String time=obj.getString("gridTime");
         int year=Integer.parseInt(time.substring(0,time.indexOf("年")));
         int month=Integer.parseInt(time.substring(time.indexOf("年")+"年".length(),time.indexOf("月")));
-        int N=getResolution(zoom);
+
         String source=obj.getString("source");
-        if(source.equals("我爱我家")){
-            source="woaiwojia";
-        }else if(source.equals("房天下")){
-            source="fang";
-        }else if(source.equals("安居客")){
-            source="anjuke";
-        }else if(source.equals("链家")){
-            source="lianjia";
-        }
+        source= Source.getSource(source);
 
         double width=0.0011785999999997187;//每100m的经度差
         double length=9.003999999997348E-4;//每100m的纬度差
@@ -103,30 +101,6 @@ public class CallInterestGrid {
         r.setContent(resultdata);
         return r;
 
-    }
-    public static int getResolution(int zoom){
-        int N;
-        switch(zoom){
-            case 18:N=1;
-                break;
-            case 17:N=2;
-                break;
-            case 16:N=3;
-                break;
-            case 15:N=5;
-                break;
-            case 14:N=10;
-                break;
-            case 13:N=20;
-                break;
-            case 12:N=30;
-                break;
-            case 11:N=40;
-                break;
-            default:N=50;
-                break;
-        }
-        return N;
     }
     public static String CallMongo(JSONObject condition,int N){
 
