@@ -48,6 +48,34 @@ public class Color {
         String color="";
 
         if(price>900){
+            color="#C70305";
+        }else if(price>800&&price<=900){
+            color="#EA4706";
+        }else if(price>700&&price<=800){
+            color="#E97A04";
+        }else if(price>600&&price<=700){
+            color="#E9A708";
+        }else if(price>500&&price<=600){
+            color="#E6CC05";
+        }else if(price>400&&price<=500){
+            color="#E9E507";
+        }else if(price>300&&price<=400){
+            color="#D8EB00";
+        }else if(price>250&&price<=300){
+            color="#B8E705";
+        }else if(price>200&&price<=250){
+            color="#04E738";
+        }else if(price>100&&price<=200){
+            color="#06E884";
+        }else{
+            color="#08E9C7";
+        }
+        return color;
+    }
+
+    /*
+    * 这是网格加速度之前的一套配色方案
+    *  if(price>900){
             color="#BA0000";
         }else if(price>800&&price<=900){
             color="#C70000";
@@ -70,6 +98,6 @@ public class Color {
         }else{
             color="#CFFC5D";
         }
-        return color;
-    }
+    *
+    * */
 }
