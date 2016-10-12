@@ -203,6 +203,14 @@
                                         <option>2016年06月</option>
                                     </select>
                                 </div>
+                                <div class="form-group">
+                                    <label for="computation" class="col-sm-2 control-label">加速度计算方式</label>
+                                    <select id="computation" style='width:200px;'>
+                                        <option>请选择</option>
+                                        <option>最值计算法</option>
+                                        <option>起止时间计算法</option>
+                                    </select>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -1050,6 +1058,10 @@
                 y = document.getElementById("source").options;
                 var source = y[x].text;
 
+                x = document.getElementById("computation").selectedIndex;
+                y = document.getElementById("computation").options;
+                var computation = y[x].text;
+
                 var json = {
                     "west": west,
                     "east": east,
@@ -1058,7 +1070,8 @@
                     "zoom": zoom,
                     "starttime": startTime,
                     "endtime": endTime,
-                    "source": source
+                    "source": source,
+                    "computation":computation
                 };
                 $.post("/gridacceleration", "" + JSON.stringify(json), function (result) {
                     var price = JSON.parse(result);

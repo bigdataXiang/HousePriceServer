@@ -71,8 +71,13 @@ public class SetCondition {
         int rowmin=RowColCalculation.getRowMin(south);
         int rowmax=RowColCalculation.getRowMax(north);
 
+        //<option>最值计算法</option>
+        //<option>起止时间计算法</option>
+        String computation=obj.getString("computation");
+
         JSONObject condition=new JSONObject();
         condition.put("N",N);
+        condition.put("computation",computation);
         condition.put("rowmax",rowmax);
         condition.put("rowmin",rowmin);
         condition.put("colmax",colmax);

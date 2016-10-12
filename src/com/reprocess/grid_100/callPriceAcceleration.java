@@ -220,14 +220,9 @@ public class CallPriceAcceleration extends CallInterestGrid{
         if(it.hasNext()){
             while (it.hasNext()){
 
-
                 code=(int)it.next();
                 //System.out.println(code);
                 codelist=gridmap.get(code);
-
-                //if(code==2336){
-                   // printArray_BasicDB(codelist);
-
 
 
                 //将一个网格里面的数据处理成一个时间点一个价格的形式
@@ -292,10 +287,9 @@ public class CallPriceAcceleration extends CallInterestGrid{
         //逐个网格计算网格的价格加速度。加速度的计算方式有两种：
         //第一是计算该时间段内最高的值与最低的值之间产生的加速度；
         //第二种是从从起始时间计算价格加速度
+        String computation=condition.getString("computation");
 
         Iterator totalgrid_it=totalgrid.keys();
-        String key;
-        double value;
         String codeindex;
         JSONObject code_acceleration=new JSONObject();
 
@@ -307,122 +301,73 @@ public class CallPriceAcceleration extends CallInterestGrid{
 
                 codeindex=(String)totalgrid_it.next();
                 date_price=totalgrid.getJSONObject(codeindex);
-                Iterator date_price_it=date_price.keys();
-
-                /*System.out.println(codeindex+":"+date_price);*/
-
-                String[] datearray=new String[date_price.size()];
-                double[] pricearray=new double[date_price.size()];
-                int count=0;
-                if(date_price_it.hasNext()) {
-                    while (date_price_it.hasNext()) {
-                        key=(String)date_price_it.next();
-                        value=date_price.getDouble(key);
-                        datearray[count]=key;
-                        pricearray[count]=value;
-                        count++;
-                    }
-                }
 
                 double acceleration=0;
-                //第一种：铜鼓计算最大最小值得出加速度值
-                acceleration=maxMinValue_Acceleration(pricearray,datearray);
-                code_acceleration.put(codeindex,acceleration);
+                if(computation.equals("最值计算法")){
+                    //第一种：通过计算最大最小值得出加速度值
+                    JSONObject result=maxMinValue_Acceleration(date_price);
+                    acceleration=result.getDouble("acceleration");
+                    String maxprice_date=result.getString("maxprice_date");
+                    String minprice_date=result.getString("minprice_date");
+                    double maxprice=result.getDouble("maxprice");
+                    double minprice=result.getDouble("minprice");
 
+                    code_acceleration.put(codeindex,acceleration);
+                    System.out.println("第一种计算方法");
+                    System.out.println(codeindex+":"+acceleration);
 
-                //第二种：计算开始和结束的时间对应的加速度
-                Calendar calendar ;
-                Iterator keys=date_price.keys();
-                String codekey="";
-                List<Calendar> datelist=new ArrayList<>();
-                if(keys.hasNext()){
-                    while(keys.hasNext()){
-                        codekey=(String) keys.next();
-                        int year=Integer.parseInt(codekey.substring(0,codekey.indexOf("-")));
-                        int month=Integer.parseInt(codekey.substring(codekey.indexOf("-")+"-".length()));
-                        calendar=new GregorianCalendar(year,month,1);
-                        datelist.add(calendar);
-                    }
+                    data_obj=new JSONObject();
+                    String rowcol=code_index_rowcol.getString(codeindex);
+                    int rows=Integer.parseInt(rowcol.substring(0,rowcol.indexOf("_")));
+                    int cols=Integer.parseInt(rowcol.substring(rowcol.indexOf("_")+"_".length()));
+                    String color=setColorRegion_Acceleration(acceleration);
+                    data_obj.put("code",Integer.parseInt(codeindex));
+                    data_obj.put("acceleration",acceleration);
+                    data_obj.put("row",rows);
+                    data_obj.put("col",cols);
+                    data_obj.put("color",color);
+                    data_obj.put("minprice_date",minprice_date);
+                    data_obj.put("maxprice_date",maxprice_date);
+                    data_obj.put("maxprice",maxprice);
+                    data_obj.put("minprice",minprice);
+
+                    jsonArray.add(data_obj);
+                }else if(computation.equals("起止时间计算法")){
+
+                    //第二种：计算开始和结束的时间对应的加速度
+                    JSONObject result=startEndTime_Acceleration(date_price,startyear,endyear,startmonth,endmonth);
+                    String starttime=result.getString("starttime");
+                    String endtime=result.getString("endtime");
+                    double startprice=result.getDouble("startprice");
+                    double endprice=result.getDouble("endprice");
+                    acceleration=result.getDouble("acceleration");
+
+                    code_acceleration.put(codeindex,acceleration);
+                    System.out.println("第二种计算方法");
+                    System.out.println(codeindex+":"+acceleration);
+
+                    data_obj=new JSONObject();
+                    String rowcol=code_index_rowcol.getString(codeindex);
+                    int rows=Integer.parseInt(rowcol.substring(0,rowcol.indexOf("_")));
+                    int cols=Integer.parseInt(rowcol.substring(rowcol.indexOf("_")+"_".length()));
+                    String color=setColorRegion_Acceleration(acceleration);
+                    data_obj.put("code",Integer.parseInt(codeindex));
+                    data_obj.put("acceleration",acceleration);
+                    data_obj.put("row",rows);
+                    data_obj.put("col",cols);
+                    data_obj.put("color",color);
+                    data_obj.put("starttime",starttime);
+                    data_obj.put("endtime",endtime);
+                    data_obj.put("startprice",startprice);
+                    data_obj.put("endprice",endprice);
+
+                    jsonArray.add(data_obj);
                 }
-                /*System.out.println(datelist);*/
-                Calendar early;
-                Calendar late;
-
-                //获取最早的月份
-                early=datelist.get(0);
-                for(int i=1;i<datelist.size();i++){
-                    int result=early.compareTo(datelist.get(i));
-                    if(result>0){
-                        early=datelist.get(i);
-                    }
-                }
-                /*System.out.println(early.get(Calendar.YEAR));
-                System.out.println(early.get(Calendar.MONTH));*/
-
-                //获取最晚的月份
-                late=datelist.get(0);
-                for(int i=1;i<datelist.size();i++){
-                    int result=late.compareTo(datelist.get(i));
-                    if(result<0){
-                        late=datelist.get(i);
-                    }
-                }
-
-
-               /* calendar=new GregorianCalendar(2017,11,1);
-                System.out.println(calendar.get(Calendar.YEAR));
-                System.out.println(calendar.get(Calendar.MONTH));*/
-
-                String starttime="";
-                String endtime="";
-                if(early.get(Calendar.MONTH)==0){
-                    starttime=(early.get(Calendar.YEAR)-1)+"-"+(early.get(Calendar.MONTH)+12);
-                }else{
-                    starttime=early.get(Calendar.YEAR)+"-"+(early.get(Calendar.MONTH));
-                }
-
-                if(late.get(Calendar.MONTH)==0){
-                    endtime=(late.get(Calendar.YEAR)-1)+"-"+(late.get(Calendar.MONTH)+12);
-                }else{
-                    endtime=late.get(Calendar.YEAR)+"-"+late.get(Calendar.MONTH);
-                }
-
-
-                double startprice=date_price.getDouble(starttime);
-                double endprice=date_price.getDouble(endtime);
-                if(startyear==endyear){
-                    acceleration=(endprice-startprice)/(endmonth-startmonth)*10000;
-                }else {
-                    /*System.out.println(endprice-startprice);
-                    System.out.println((endmonth+12)-startmonth);*/
-                    acceleration=(endprice-startprice)/((endmonth+12)-startmonth)*10000;
-                }
-
-                code_acceleration.put(codeindex,acceleration);
-                /*System.out.println("第二种计算方法");
-                System.out.println("acceleration:"+acceleration);*/
-
-                data_obj=new JSONObject();
-
-                String rowcol=code_index_rowcol.getString(codeindex);
-                int rows=Integer.parseInt(rowcol.substring(0,rowcol.indexOf("_")));
-                int cols=Integer.parseInt(rowcol.substring(rowcol.indexOf("_")+"_".length()));
-                String color=setColorRegion_Acceleration(acceleration);
-                data_obj.put("code",Integer.parseInt(codeindex));
-                data_obj.put("acceleration",acceleration);
-                data_obj.put("row",rows);
-                data_obj.put("col",cols);
-                data_obj.put("color",color);
-                data_obj.put("starttime",starttime);
-                data_obj.put("endtime",endtime);
-                data_obj.put("startprice",startprice);
-                data_obj.put("endprice",endprice);
-
-                jsonArray.add(data_obj);
             }
         }
 
         JSONObject nullobj;
+
         for(int i=r_min;i<=r_max;i++) {
             for (int j =c_min; j<=c_max; j++) {
                 String index=""+(j + (2000/N) * (i - 1));
@@ -434,15 +379,21 @@ public class CallPriceAcceleration extends CallInterestGrid{
                     nullobj.put("row",i);
                     nullobj.put("col",j);
                     nullobj.put("color","");
-                    nullobj.put("starttime","");
-                    nullobj.put("endtime","");
-                    nullobj.put("startprice",0);
-                    nullobj.put("endprice",0);
 
+                    if(computation.equals("最值计算法")){
+                        nullobj.put("maxprice_date","");
+                        nullobj.put("minprice_date","");
+                        nullobj.put("maxprice",0);
+                        nullobj.put("minprice",0);
+                    }else if(computation.equals("起止时间计算法")){
+                        nullobj.put("starttime","");
+                        nullobj.put("endtime","");
+                        nullobj.put("startprice",0);
+                        nullobj.put("endprice",0);
+                    }
                     //System.out.println("nullobj:"+nullobj);
                     jsonArray.add(nullobj);
                 }
-
             }
         }
 
@@ -464,16 +415,103 @@ public class CallPriceAcceleration extends CallInterestGrid{
     }
 
     /**用起始时间计算最大最小值*/
-    public static void startEndTime_Acceleration(){
+    public static JSONObject startEndTime_Acceleration(JSONObject date_price,int startyear,int endyear,int startmonth,int endmonth){
+        double acceleration=0;
+        Calendar calendar ;
+        Iterator keys=date_price.keys();
+        String codekey="";
+        List<Calendar> datelist=new ArrayList<>();
+        if(keys.hasNext()){
+            while(keys.hasNext()){
+                codekey=(String) keys.next();
+                int year=Integer.parseInt(codekey.substring(0,codekey.indexOf("-")));
+                int month=Integer.parseInt(codekey.substring(codekey.indexOf("-")+"-".length()));
+                calendar=new GregorianCalendar(year,month,1);
+                datelist.add(calendar);
+            }
+        }
+        /*System.out.println(datelist);*/
+        Calendar early;
+        Calendar late;
 
+        //获取最早的月份
+        early=datelist.get(0);
+        for(int i=1;i<datelist.size();i++){
+            int result=early.compareTo(datelist.get(i));
+            if(result>0){
+                early=datelist.get(i);
+            }
+        }
+
+
+        //获取最晚的月份
+        late=datelist.get(0);
+        for(int i=1;i<datelist.size();i++){
+            int result=late.compareTo(datelist.get(i));
+            if(result<0){
+                late=datelist.get(i);
+            }
+        }
+
+
+        String starttime="";
+        String endtime="";
+        if(early.get(Calendar.MONTH)==0){
+            starttime=(early.get(Calendar.YEAR)-1)+"-"+(early.get(Calendar.MONTH)+12);
+        }else{
+            starttime=early.get(Calendar.YEAR)+"-"+(early.get(Calendar.MONTH));
+        }
+
+        if(late.get(Calendar.MONTH)==0){
+            endtime=(late.get(Calendar.YEAR)-1)+"-"+(late.get(Calendar.MONTH)+12);
+        }else{
+            endtime=late.get(Calendar.YEAR)+"-"+late.get(Calendar.MONTH);
+        }
+
+
+        double startprice=date_price.getDouble(starttime);
+        double endprice=date_price.getDouble(endtime);
+        if(startyear==endyear){
+            acceleration=(endprice-startprice)/(endmonth-startmonth)*10000;
+        }else {
+            acceleration=(endprice-startprice)/((endmonth+12)-startmonth)*10000;
+        }
+
+        JSONObject obj=new JSONObject();
+        obj.put("acceleration",acceleration);
+        obj.put("starttime",starttime);
+        obj.put("endtime",endtime);
+        obj.put("startprice",startprice);
+        obj.put("endprice",endprice);
+
+        return obj;
     }
     /**用最大最小值计算加速度*/
-    public static double maxMinValue_Acceleration(double[] pricearray,String[] datearray){
+    public static JSONObject maxMinValue_Acceleration(JSONObject date_price){
         double maxprice;
         double minprice;
         String maxprice_date;
         String minprice_date;
         double acceleration=0;
+        String key;
+        double value;
+
+        Iterator date_price_it=date_price.keys();
+
+                /*System.out.println(codeindex+":"+date_price);*/
+
+        String[] datearray=new String[date_price.size()];
+        double[] pricearray=new double[date_price.size()];
+        int count=0;
+        if(date_price_it.hasNext()) {
+            while (date_price_it.hasNext()) {
+                key=(String)date_price_it.next();
+                value=date_price.getDouble(key);
+                datearray[count]=key;
+                pricearray[count]=value;
+                count++;
+            }
+        }
 
         //计算最大最小值
         maxprice= Tool.getMaxNum(pricearray);
@@ -484,8 +522,8 @@ public class CallPriceAcceleration extends CallInterestGrid{
         int minindex=Tool.getMinNum_Index(pricearray);
         minprice_date=datearray[minindex];
 
-        System.out.println("max:"+maxprice_date+","+maxprice);
-        System.out.println("min:"+minprice_date+","+minprice);
+        //System.out.println("max:"+maxprice_date+","+maxprice);
+        //System.out.println("min:"+minprice_date+","+minprice);
 
         int maxyear=Integer.parseInt(maxprice_date.substring(0,maxprice_date.indexOf("-")));
         int minyear=Integer.parseInt(minprice_date.substring(0,minprice_date.indexOf("-")));
@@ -503,10 +541,16 @@ public class CallPriceAcceleration extends CallInterestGrid{
             acceleration=(maxprice-minprice)/(maxmonth-(minmonth+12))*10000;
         }
 
-        System.out.println("第一种计算方法");
-        System.out.println("acceleration:"+acceleration);
+        //System.out.println("第一种计算方法");
+        //System.out.println("acceleration:"+acceleration);
+        JSONObject obj=new JSONObject();
+        obj.put("acceleration",acceleration);
+        obj.put("maxprice_date",maxprice_date);
+        obj.put("minprice_date",minprice_date);
+        obj.put("maxprice",maxprice);
+        obj.put("minprice",minprice);
 
-        return acceleration;
+        return obj;
 
     }
 
