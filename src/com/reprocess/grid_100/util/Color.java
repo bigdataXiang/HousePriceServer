@@ -3,7 +3,7 @@ package com.reprocess.grid_100.util;
 /**
  * Created by ZhouXiang on 2016/10/12.
  */
-public class color {
+public class Color {
     /**建立更密集的配色方案*/
     public static String setColorRegion(double price){
         String color="";

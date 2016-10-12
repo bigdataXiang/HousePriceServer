@@ -266,6 +266,7 @@ public class ResoldGridClassify extends GridMerge{
                 }
                 code_averagePrice.put("code", Integer.parseInt(code));
                 code_averagePrice.put("average_price", average_price);
+                //String color=setColorRegion(average_price); 这是之前的红橙黄的配色方案
                 String color=setColorRegion(average_price);
                 code_averagePrice.put("color",color);
 
@@ -347,13 +348,6 @@ public class ResoldGridClassify extends GridMerge{
         }
         return color;
     }
-
-
-
-
-
-
-
 
 
     /**

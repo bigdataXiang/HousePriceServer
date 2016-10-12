@@ -3,6 +3,7 @@ package com.reprocess.grid_100;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.reprocess.grid_100.util.Color;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
@@ -254,7 +255,7 @@ public class CallInterestGrid {
                 }
                 row=cpr.getRow();
                 col=cpr.getCol();
-                color=setColorRegion(average_price);
+                color = Color.setColorRegion(average_price);//使用中秋节设计的配色方案
 
                 jsonObject=new JSONObject();
                 jsonObject.put("code",code);
