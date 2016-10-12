@@ -32,30 +32,6 @@ public class SpatialInterpolation extends NiMatrix{
         //System.out.println(getA());
         System.out.println(getInterpolationResult());
     }
-    public static int getResolution(int zoom){
-        int N;
-        switch(zoom){
-            case 18:N=1;
-                break;
-            case 17:N=2;
-                break;
-            case 16:N=3;
-                break;
-            case 15:N=5;
-                break;
-            case 14:N=10;
-                break;
-            case 13:N=20;
-                break;
-            case 12:N=30;
-                break;
-            case 11:N=40;
-                break;
-            default:N=50;
-                break;
-        }
-        return N;
-    }
 
     /**计算出时空插值中空间插值的权重 A */
     public static JSONObject getA(){

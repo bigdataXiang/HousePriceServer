@@ -24,8 +24,6 @@ public class Resolution {
                 break;
             case 11:N=30;
                 break;
-            case 10:N=40;
-                break;
         }
         return N;
     }
