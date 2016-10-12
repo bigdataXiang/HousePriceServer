@@ -37,7 +37,9 @@ public class CallGridCurve {
         Response r= new Response();
         r.setCode(200);
         r.setContent(callGridData_Resold_100(condition));
+        //System.out.println(callGridData_Resold_100(condition));
         return r;
+
 
     }
     public static String callGridData_Resold_100(JSONObject condition){
@@ -272,6 +274,7 @@ public class CallGridCurve {
         int suggestedMax=max.get(0);
         totalresult.put("suggestedMin",suggestedMin);
         totalresult.put("suggestedMax",suggestedMax);
+        System.out.println(totalresult.toString());
 
         return totalresult.toString();
     }

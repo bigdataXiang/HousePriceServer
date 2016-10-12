@@ -1838,7 +1838,9 @@
         };
         //对config里的数据进行修改
         function dataStruct(parameter, code, max, min){
-
+            config.data.datasets[0].data=[];
+            config.data.datasets[1].data=[];
+            config.data.datasets[2].data=[];git
             var text= ""+ code;
             /*
             在全局的数据结构下已经设置好日期了
@@ -1849,15 +1851,21 @@
 
             //设置房天下数据的dataset
             for(var i= 0; i< parameter.fang.data.length; i++){
-                config.data.datasets[0].data.push(parameter.fang.data[i].average_price);
+                var price=parameter.fang.data[i].average_price;
+                console.log(price);
+                config.data.datasets[0].data.push(price);
             }
             //设置我爱我家数据的dataset
             for(var i=0; i < parameter.woaiwojia.data.length; i++){
-                config.data.datasets[1].data.push(parameter.woaiwojia.data[i].average_price+0.5);
+                var price=parameter.woaiwojia.data[i].average_price;
+                console.log(price);
+                config.data.datasets[1].data.push(price);
             }
             //设置融合数据的dataset
             for(var i=0; i < parameter.blend.data.length; i++){
-                config.data.datasets[2].data.push(parameter.blend.data[i].average_price+1);
+                var price=parameter.blend.data[i].average_price;
+                console.log(price);
+                config.data.datasets[2].data.push(price);
             }
 
             //设置曲线的最大和最小值
