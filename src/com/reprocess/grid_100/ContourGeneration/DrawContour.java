@@ -24,11 +24,11 @@ public class DrawContour {
         //test_dropDiagonal("D:\\中期考核\\等值线\\二维栅格数组_阈值化.txt");
 
 
-        for(int i=2;i<12;i++){
+        /*for(int i=2;i<12;i++){
             //creatJsonToServer("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\坐标串_"+i+".txt",i);
 
-            processHanQing("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\resu_1010.txt",i);
-        }
+            //processHanQing("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\resu_1010.txt",i);
+        }*/
 
         parseCoordinateSeries("D:\\中期考核\\等值线\\图像分割算法\\hanqing\\hq\\坐标串_3.txt");
 

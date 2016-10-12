@@ -281,6 +281,40 @@
 
                     </form>
 
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="polygon" class="col-sm-2 control-label">是否显示等值面</label>
+                            <select id="polygon" class ="form-control" style='width:200px;'>
+                                <option>请选择</option>
+                                <option>否</option>
+                                <option>是</option>
+                            </select>
+                        </div>
+
+                    </form>
+
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="polyvalue" class="col-sm-2 control-label">选择等值面范围(hq)</label>
+                            <select id="polyvalue" class ="form-control" style='width:200px;'>
+                                <option>请选择</option>
+                                <option>2万以下</option>
+                                <option>2万——3万</option>
+                                <option>3万——4万</option>
+                                <option>4万——5万</option>
+                                <option>5万——6万</option>
+                                <option>6万——7万</option>
+                                <option>7万——8万</option>
+                                <option>8万——9万</option>
+                                <option>9万——10万</option>
+                                <option>10万——11万</option>
+                                <option>11万——12万</option>
+                                <option>全部</option>
+                            </select>
+                        </div>
+
+                    </form>
+
                 </div>
 
                 <div class="sidebar-pane" id="messages">
@@ -318,6 +352,24 @@
             <canvas id="myChart" style="width: 90%;height: 90%;width: 90%;height: 90%"></canvas>
 
         </div>
+<br/>
+        <form>
+            source
+            <select id="select_source" class ="form-control" style="width:200px; display: inline">
+                <option>请选择</option>
+                <option>我爱我家</option>
+                <option>房天下</option>
+                <option>安居客</option>
+                <option>链家</option>
+                <option>全部</option>
+            </select>
+            <button id="addDataset">Add Dataset</button>
+            <button id="removeDataset">Remove Dataset</button>
+            <button id="addData">Add Data</button>
+            <button id="removeData">Remove Data</button>
+            <button id="changeDataObject">Change Data Object</button>
+        </form>
+
     </div>
 </div>
 
@@ -325,38 +377,38 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-
-    var map;
-    var resize = function () {
+        var map;
+        var resize = function () {
         var $map = $('#map');
         $map.height($(window).height() - $('div.navbar').outerHeight());
         if (map) {
             map.invalidateSize();
         }
     };
-    $(window).on('resize', function () {
+        $(window).on('resize', function () {
         resize();
     });
-    resize();
-    var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {maxZoom: 18, minZoom: 10});
-    var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {maxZoom: 18, minZoom: 10});
-    var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {maxZoom: 18, minZoom: 10});
-    var normal = L.layerGroup([normalm]),
+        resize();
+        var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {maxZoom: 18, minZoom: 10});
+        var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {maxZoom: 18, minZoom: 10});
+        var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {maxZoom: 18, minZoom: 10});
+        var normal = L.layerGroup([normalm]),
             image = L.layerGroup([imgm, imga]);
-    var baseLayers = {
+        var baseLayers = {
         "地图": normal,
         "影像": image,
     }
-    var overlayLayers = {};
-    map = L.map("map", {
+        var overlayLayers = {};
+        map = L.map("map", {
         layers: [normal],
         zoomControl: true
     }).setView([39.906985851984146, 116.39055488416854], 3);
-    map.setView([39.906985851984146, 116.39055488416854], 3);
+        map.setView([39.906985851984146, 116.39055488416854], 3);
 
-    var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
+        var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
-    $("#schoolType").change(function () {
+
+        $("#schoolType").change(function () {
         var x = document.getElementById("schoolType").selectedIndex;
         var y = document.getElementById("schoolType").options;
         var schoolType = y[x].text;
@@ -409,7 +461,8 @@
             });
         }
     });
-    $("#chazhi").change(function () {
+
+        $("#chazhi").change(function () {
         var x = document.getElementById("chazhi").selectedIndex;
         var y = document.getElementById("chazhi").options;
         var chazhi = y[x].text;
@@ -577,7 +630,8 @@
         }
         
     });
-    $("#contourline").change(function () {
+
+        $("#contourline").change(function () {
         var x = document.getElementById("contourline").selectedIndex;
         var y = document.getElementById("contourline").options;
         var contourline = y[x].text;
@@ -841,37 +895,260 @@
             }
         }
     });
-    var x_source;
-    var y_source;
-    var source;
-    $("#source").change(function () {
+
+        $("#polygon").change(function(){
+        var x = document.getElementById("polygon").selectedIndex;
+        var y = document.getElementById("polygon").options;
+        var polygon = y[x].text;
+        if(polygon=="是"){
+            $("#polyvalue").change(function(){
+                var x = document.getElementById("polyvalue").selectedIndex;
+                var y = document.getElementById("polyvalue").options;
+                var polyvalue = y[x].text;
+                if(polyvalue=="2万——3万"){
+                    $.post("/static/polygon/polygon_2", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,2,1);
+                    });
+                }else if(polyvalue=="3万——4万"){
+                    $.post("/static/polygon/polygon_3", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,3,1);
+                    });
+                }else if(polyvalue=="4万——5万"){
+                    $.post("/static/polygon/polygon_4", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,4,1);
+                    });
+                }else if(polyvalue=="5万——6万"){
+                    $.post("/static/polygon/polygon_5", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,5,1);
+                    });
+                }else if(polyvalue=="6万——7万"){
+                    $.post("/static/polygon/polygon_6", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,6,1);
+                    });
+                }else if(polyvalue=="7万——8万"){
+                    $.post("/static/polygon/polygon_7", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,7,1);
+                    });
+                }else if(polyvalue=="8万——9万"){
+                    $.post("/static/polygon/polygon_8", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,8,1);
+                    });
+                }else if(polyvalue=="9万——10万"){
+                    $.post("/static/polygon/polygon_9", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,9,1);
+                    });
+                }else if(polyvalue=="10万——11万"){
+                    $.post("/static/polygon/polygon_10", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,10,1);
+                    });
+                }else if(polyvalue=="11万——12万"){
+                    $.post("/static/polygon/polygon_11", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,11,1);
+                    });
+                }else if(polyvalue=="全部"){
+                    $.post("/static/polygon/polygon_2", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,2,0);
+                    });
+                    $.post("/static/polygon/polygon_3", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,3,0);
+                    });
+                    $.post("/static/polygon/polygon_4", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,4,0);
+                    });
+                    $.post("/static/polygon/polygon_5", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,5,0);
+                    });
+                    $.post("/static/polygon/polygon_6", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,6,0);
+                    });
+                    $.post("/static/polygon/polygon_7", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,7,0);
+                    });
+                    $.post("/static/polygon/polygon_8", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,8,0);
+                    });
+                    $.post("/static/polygon/polygon_9", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,9,0);
+                    });
+                    $.post("/static/polygon/polygon_10", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,10,0);
+                    });
+                    $.post("/static/polygon/polygon_11", function (result) {
+                        var contour = JSON.parse(result);
+                        console.log("开始画等值面");
+                        draw_Polygon(contour,11,0);
+                    });
+                }
+            });
+        }else if(polygon=="否"){
+            //将polygon全部删除
+            if (polygon_array.length != 0) {
+                for (var i = 0; i < polygon_array.length; i++) {
+                    map = map.removeLayer(polygon_array[i]);
+                }
+                polygon_array = [];
+            }
+        }
+    });
+
+        $("#select_source").change(function(){
+        var x = document.getElementById("select_source").selectedIndex;
+        var y = document.getElementById("select_source").options;
+        var select_source = y[x].text;
+        if(select_source=="我爱我家"){
+
+        }else if(select_source=="房天下"){
+
+        }else if(select_source=="安居客"){
+
+        }else if(select_source=="链家"){
+
+        }else if(select_source=="全部"){
+
+        }
+
+        $('#changeDataObject').click(function() {
+            config.data = {
+                labels: ["July", "August", "September", "October", "November", "December"],
+                datasets: [{
+                    label: "My First dataset",
+                    data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()],
+                    fill: false,
+                }, {
+                    label: "My Second dataset",
+                    fill: false,
+                    data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()],
+                }]
+            };
+
+            $.each(config.data.datasets, function(i, dataset) {
+                dataset.borderColor = randomColor(0.4);
+                dataset.backgroundColor = randomColor(0.5);
+                dataset.pointBorderColor = randomColor(0.7);
+                dataset.pointBackgroundColor = randomColor(0.5);
+                dataset.pointBorderWidth = 1;
+            });
+
+            // Update the chart
+            window.myLine.update();
+        });
+
+        $('#addDataset').click(function() {
+            var newDataset = {
+                label: 'Dataset ' + config.data.datasets.length,
+                borderColor: randomColor(0.4),
+                backgroundColor: randomColor(0.5),
+                pointBorderColor: randomColor(0.7),
+                pointBackgroundColor: randomColor(0.5),
+                pointBorderWidth: 1,
+                data: [],
+            };
+
+            for (var index = 0; index < config.data.labels.length; ++index) {
+                newDataset.data.push(randomScalingFactor());
+            }
+
+            config.data.datasets.push(newDataset);
+            window.myLine.update();
+        });
+
+        $('#addData').click(function() {
+            if (config.data.datasets.length > 0) {
+                var month = MONTHS[config.data.labels.length % MONTHS.length];
+                config.data.labels.push(month);
+
+                $.each(config.data.datasets, function(i, dataset) {
+                    dataset.data.push(randomScalingFactor());
+                });
+
+                window.myLine.update();
+            }
+        });
+
+        $('#removeDataset').click(function() {
+            config.data.datasets.splice(0, 1);
+            window.myLine.update();
+        });
+
+        $('#removeData').click(function() {
+            config.data.labels.splice(-1, 1); // remove the label first
+
+            config.data.datasets.forEach(function(dataset, datasetIndex) {
+                dataset.data.pop();
+            });
+
+            window.myLine.update();
+        });
+    });
+
+        var x_source;
+        var y_source;
+        var source;
+        $("#source").change(function () {
           x_source = document.getElementById("source").selectedIndex;
           y_source = document.getElementById("source").options;
           source = y_source[x_source].text;
     });
-    var x_type;
-    var y_type;
-    var type;
-    $("#type").change(function () {
+        var x_type;
+        var y_type;
+        var type;
+        $("#type").change(function () {
         x_type = document.getElementById("type").selectedIndex;
         y_type = document.getElementById("type").options;
         type = y_type[x_type].text;
     });
-    var gridValue;
-    var x_gridValue;
-    var y_gridValue;
-    $("#gridValue").change(function () {
+        var gridValue;
+        var x_gridValue;
+        var y_gridValue;
+        $("#gridValue").change(function () {
         x_gridValue = document.getElementById("gridValue").selectedIndex;
         y_gridValue = document.getElementById("gridValue").options;
         gridValue = y_gridValue[x_gridValue].text;
     });
-    var polygon_array = [];
-    var polyline_array = [];
-    var cityfocus = [];
-    var regionfocus = [];
-    var ordinary = [];
-
-    function draw_circle_cityfocus(school) {
+        var polygon_array = [];
+        var polyline_array = [];
+        var cityfocus = [];
+        var regionfocus = [];
+        var ordinary = [];
+        function draw_circle_cityfocus(school) {
         var myIcon = L.icon({
             iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
             iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
@@ -922,8 +1199,7 @@
         }
 
     }
-
-    function draw_circle_regionfocus(school) {
+        function draw_circle_regionfocus(school) {
         var myIcon = L.icon({
             iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
             iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
@@ -972,8 +1248,7 @@
             regionfocus.push(marker);
         }
     }
-
-    function draw_circle_ordinary(school) {
+        function draw_circle_ordinary(school) {
         var myIcon = L.icon({
             iconUrl: 'http://c.hiphotos.baidu.com/image/w%3D310/sign=913f487c4336acaf59e090fd4cd88d03/5fdf8db1cb13495453f3e3215e4e9258d0094a81.jpg',
             iconRetinaUrl: 'http://h.hiphotos.baidu.com/image/w%3D310/sign=705c47440255b3199cf9847473a88286/03087bf40ad162d92d4c695919dfa9ec8b13cdd1.jpg',
@@ -1022,23 +1297,44 @@
             ordinary.push(marker);
         }
     }
-
-    function draw_multiPolyline(contour,value,retain) {
+        function draw_Polygon(contour,value,retain){
 
         if(retain==1){
-            //将之前的多线图层删除
-            if (polyline_array.length != 0) {
-                for (var i = 0; i < polyline_array.length; i++) {
-                    map = map.removeLayer(polyline_array[i]);
+            //将polygon全部删除
+            if (polygon_array.length != 0) {
+                for (var i = 0; i < polygon_array.length; i++) {
+                    map = map.removeLayer(polygon_array[i]);
                 }
-                polyline_array = [];
+                polygon_array = [];
             }
         }else if(retain==0){
             //不删除之前的多线图层
         }
+        var color;
+        color=colorSet(value);
+        console.log(color);
+        //color=randomColor(1);
 
+        for(var tag=0;tag<contour.length;tag++){
+            var coordinates;
+            if(contour[tag].type=="Polygon"){
 
-        var color;//randomColor(0.4)
+                var independent_polygon=contour[tag].coordinates;
+                draw_independent_polygon(independent_polygon,color,tag);
+
+            }else if(contour[tag].type=="MultiPolygon"){
+                var independent_polygons=contour[tag].coordinates;
+                var length=independent_polygons.length;
+                console.log(length);
+                for(var len=0;len<length;len++){
+                    var coors=independent_polygons[len];
+                    draw_independent_polygon(coors,color,tag);
+                }
+            }
+        }
+    }
+        function colorSet(value){
+        var color;
         if(value==2){
             color=mycolor(100,149,237);
         }else if(value==3){
@@ -1060,8 +1356,66 @@
         }else if(value==11){
             color=mycolor(255,255,255);
         }
+        return color;
+    }
+        //画一个单独的多边形，该多边形里面可能含有内洞
 
-        //color=randomColor(1);
+        function draw_independent_polygon(independent_polygon,color,k){
+        var latlngss=[];
+        var latlngs=[];
+        var latlng;
+        //计算一共有多少个封闭的多边形
+        var len=independent_polygon.length;
+        console.log(len);
+        for(var mm=0;mm<len;mm++){
+            var coors=independent_polygon[mm];
+            //分别画每一个多边形，获取每一个多边形里面的坐标点，存放在latlngs中
+            for(var i=0;i<coors.length;i++){
+                var coordinate=coors[i];
+                var lng=coordinate[0];
+                var lat=coordinate[1];
+                latlng=L.latLng(lat,lng);
+                latlngs.push(latlng);
+            }
+            latlngss.push(latlngs);
+            latlngs= [];
+        }
+
+        var poly = new L.Polygon(latlngss, {
+            color: color,
+            fillColor: color,
+            stroke: true,
+            opacity:0.8,//不透明度
+            fillOpacity:0.8,
+            weight: 5
+        });
+        map.addLayer(poly);
+        polygon_array.push(poly);
+        var content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "第" +k+"个polygon"+ "</span></DIV>";
+        var popup = L.popup()
+                .setLatLng(latlngs[0])
+                .setContent(content);
+        //.openOn(map);
+        poly.bindPopup(popup);
+    }
+        function draw_multiPolyline(contour,value,retain) {
+
+        if(retain==1){
+            //将之前的多线图层删除
+            if (polyline_array.length != 0) {
+                for (var i = 0; i < polyline_array.length; i++) {
+                    map = map.removeLayer(polyline_array[i]);
+                }
+                polyline_array = [];
+            }
+        }else if(retain==0){
+            //不删除之前的多线图层
+        }
+
+
+        var color;//randomColor(0.4)
+        color=colorSet(value);//根据value值设置色彩阶梯
+        color=randomColor(1);//设置随机色
         var poly_line = new L.Polyline([], {
             color: color,
             fillColor: color,
@@ -1146,37 +1500,8 @@
             }
         }
         alert("总共画了"+contour.length+"个多边形");
-
-        //这段代码先不要删掉
-        var latlngs = [];
-        var latlng1 = L.latLng(39.906985851984146, 116.39055488416854);
-        var latlng2 = L.latLng(39.905779, 116.319274);
-        var latlng3 = L.latLng(39.88311876796353, 116.30383565962735);
-        var latlng4 = L.latLng(39.872028939237744, 116.36803340806715);
-        var latlng6 = L.latLng(39.906985851984146, 116.39055488416854);
-        latlngs.push(latlng1);
-        latlngs.push(latlng2);
-        latlngs.push(latlng3);
-        latlngs.push(latlng4);
-        latlngs.push(latlng6);
-        var poly = new L.Polygon(latlngs, {
-            color: mycolor(0, 0, 205),
-            fillColor: mycolor(0, 0, 205),
-            stroke: true,
-            weight: 1
-        });
-        var content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "北京天安门" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
-        var popup = L.popup()
-                .setLatLng(latlng1)
-                .setContent(content)
-                .openOn(map);
-        map.addLayer(poly);
-        poly_line.bindPopup(popup);
-        polygon_array.push(poly);
-
     }
-
-    function draw_rectangle_houseprice(price) {
+        function draw_rectangle_houseprice(price) {
         var N = price.N;
         var width = 0.0011785999999997187 * N;//每N00m的经度差
         var length = 9.003999999997348E-4 * N;//每N00m的纬度差
@@ -1262,8 +1587,7 @@
         }
 
     }
-
-    function draw_rectangle_interpolation(price) {
+        function draw_rectangle_interpolation(price) {
         var N = price.N;
         var width = 0.0011785999999997187 * N;//每N00m的经度差
         var length = 9.003999999997348E-4 * N;//每N00m的纬度差
@@ -1349,8 +1673,7 @@
         }
 
     }
-
-    function draw_rectangle_Acceleration(bounds, price) {
+        function draw_rectangle_Acceleration(bounds, price) {
         var west = bounds.getWest();
         var east = bounds.getEast();
         var south = bounds.getSouth();
@@ -1438,40 +1761,43 @@
         }
 
     }
+        /*var layerControl = new L.Control.Layers();
+        layerControl.addTo(map);*/
+        resize();
 
-    /*var layerControl = new L.Control.Layers();
-    layerControl.addTo(map);*/
-    resize();
-
-
-    //生成随机颜色和尺度
-    var randomScalingFactor = function() {
+        //生成随机颜色和尺度
+        var randomScalingFactor = function() {
         return Math.round(Math.random() * 100);
         //return 0;
     };
-    var randomColorFactor = function() {
+        var randomColorFactor = function() {
         return Math.round(Math.random() * 255);
     };
-    var randomColor = function(opacity) {
+        var randomColor = function(opacity) {
         return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
     };
+        var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-    //表格所需要的数据结构
-    function dataStruct(parameter, code, max, min){
-        var text= ""+ code;
+        //config：表格所需要的数据结构，设置为全局变量
         var config = {
             type: 'line',
             data: {
-                labels: [],
+                labels: [["7","2015"], "8", "9", "10", "11", "12",  ["1","2016"],"2", "3", "4", "5"],
                 datasets: [{
-                    label: "form one",
+                    label: "房天下",
                     data: [],
-                    fill: false,
-                    borderDash: [5, 5],
-                }, {
-                    //hidden: true,
-                    label: 'form two',
+                    fill: false
+                    //borderDash: [5, 5]  设置曲线的虚线间隔，若没有该属性则为实线
+                },{
+                    //hidden: true, hidden表示该曲线在可视化时被隐藏
+                    label: '我爱我家',
                     data: [],
+                    fill: false
+                },{
+                    label: '融合数据',
+                    data: [],
+                    fill: false
+                    //borderDash: [5, 5]  设置曲线的虚线间隔，若没有该属性则为实线
                 }]
             },
             options:{
@@ -1483,27 +1809,6 @@
                 tooltips: {
                     mode: 'label',
                     callbacks: {
-                        beforeTitle: function() {
-                            return '...beforeTitle';
-                        },
-                        afterTitle: function() {
-                            return '...afterTitle';
-                        },
-                        beforeBody: function() {
-                            return '...beforeBody';
-                        },
-                        afterBody: function() {
-                            return '...afterBody';
-                        },
-                        beforeFooter: function() {
-                            return '...beforeFooter';
-                        },
-                        footer: function() {
-                            return 'Footer';
-                        },
-                        afterFooter: function() {
-                            return '...afterFooter';
-                        },
                     }
                 },
                 hover: {
@@ -1531,42 +1836,80 @@
                 }
             }
         };
-        for(var i=0; i < parameter.data.length; i++){
-            config.data.labels.push(parameter.data[i].date);
-        }
-        for(var i= 0; i< parameter.data.length; i++){
-            config.data.datasets[0].data.push(parameter.data[i].average_price);
-        }
-        for(var i=0; i < parameter.data.length; i++){
-            config.data.datasets[1].data.push(parameter.data[i].average_price);
-        }
-        //设置曲线的最大和最小值
-        config.options.scales.yAxes[0].ticks.suggestedMin=min;
-        config.options.scales.yAxes[0].ticks.suggestedMax=max;
-        //展示曲线对应的具体网格值
-        config.options.title.text="房价曲线图（:"+ code+"）"; //给曲线随机赋颜色值
-        for(var i=0; i<config.data.datasets.length; i++){
-            config.data.datasets[i].borderColor = randomColor(0.4);
-            config.data.datasets[i].backgroundColor = randomColor(0.5);
-            config.data.datasets[i].pointBorderColor = randomColor(0.7);
-            config.data.datasets[i].pointBackgroundColor = randomColor(0.5);
-            config.data.datasets[i].pointBorderWidth = 1;
+        //对config里的数据进行修改
+        function dataStruct(parameter, code, max, min){
 
-        }
+            var text= ""+ code;
+            /*
+            在全局的数据结构下已经设置好日期了
+            //设置横轴的时间序列
+            for(var i=0; i < parameter.data.length; i++){
+                config.data.labels.push(parameter.data[i].date);
+            }*/
 
-        return config;
+            //设置房天下数据的dataset
+            for(var i= 0; i< parameter.fang.data.length; i++){
+                config.data.datasets[0].data.push(parameter.fang.data[i].average_price);
+            }
+            //设置我爱我家数据的dataset
+            for(var i=0; i < parameter.woaiwojia.data.length; i++){
+                config.data.datasets[1].data.push(parameter.woaiwojia.data[i].average_price+0.5);
+            }
+            //设置融合数据的dataset
+            for(var i=0; i < parameter.blend.data.length; i++){
+                config.data.datasets[2].data.push(parameter.blend.data[i].average_price+1);
+            }
+
+            //设置曲线的最大和最小值
+            config.options.scales.yAxes[0].ticks.suggestedMin=min;
+            config.options.scales.yAxes[0].ticks.suggestedMax=max;
+            //展示曲线对应的具体网格值
+            config.options.title.text="房价曲线图（:"+ code+"）"; //给曲线随机赋颜色值
+            for(var i=0; i<config.data.datasets.length; i++){
+                config.data.datasets[i].borderColor = randomColor(1);
+                config.data.datasets[i].backgroundColor = randomColor(0.3);
+                config.data.datasets[i].pointBorderColor = randomColor(0.7);
+                config.data.datasets[i].pointBackgroundColor = randomColor(0.5);
+                config.data.datasets[i].pointBorderWidth = 1;
+            }
+            return config;
     }
-    var rects=[];
-    var pricedata;
+        var rects=[];
+        var pricedata;
 
-    function mycolor(r,g,b) {
+        function mycolor(r,g,b) {
         var color= "rgb("+r+","+g+","+b+")";
         return color;
     }
-
-    var legend = L.control({position: 'bottomright'});
-
-    legend.onAdd = function (map) {
+        function poly_test() {
+            latlngs = [];
+            var latlng1 = L.latLng(39.906985851984146, 116.39055488416854);
+            var latlng2 = L.latLng(39.905779, 116.319274);
+            var latlng3 = L.latLng(39.88311876796353, 116.30383565962735);
+            var latlng4 = L.latLng(39.872028939237744, 116.36803340806715);
+            var latlng6 = L.latLng(39.906985851984146, 116.39055488416854);
+            latlngs.push(latlng1);
+            latlngs.push(latlng2);
+            latlngs.push(latlng3);
+            latlngs.push(latlng4);
+            latlngs.push(latlng6);
+            var poly = new L.Polygon(latlngs, {
+                color: mycolor(0, 0, 205),
+                fillColor: mycolor(0, 0, 205),
+                stroke: true,
+                weight: 1
+            });
+            map.addLayer(poly);
+            polygon_array.push(poly);
+            var content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "北京天安门" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
+            var popup = L.popup()
+                    .setLatLng(latlng1)
+                    .setContent(content)
+                    .openOn(map);
+            poly.bindPopup(popup);
+        }
+        var legend = L.control({position: 'bottomright'});
+        legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
                 color = ['#C70305', '#EA4706','#E97A04', '#E9A708', '#E6CC05', '#E9E507', '#D8EB00', '#B8E705', '#04E738','#06E884','#08E9C7','#03EAE4','#09BAEC','#077BEA', '#1411D2'], labels =[], grades=["[8,+∞]","[8,9]", "[7.5,8]","[7,7.5]","[6.5,7]","[6,6.5]", "[5.5,6]", "[5,5.5]","[4.5,5]","[4,4.5]", "[3.5,4]", "[3,3.5]", "[2.5,3]", "[2,2.5]","[0,2]"],
@@ -1580,9 +1923,8 @@
         div.innerHTML = labels.join('<br>');
         return div;
     };
-    legend.addTo(map);
-
-    var gradeOptions = {
+        legend.addTo(map);
+        var gradeOptions = {
 
         weight: 1,
         fillOpacity: 0.7,

@@ -28,7 +28,7 @@
     <button id="removeData">Remove Data</button>
     <script>
         var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
+        
         var randomScalingFactor = function() {
             return Math.round(Math.random() * 100);
             //return 0;
@@ -67,6 +67,27 @@
                 tooltips: {
                     mode: 'label',
                     callbacks: {
+                        // beforeTitle: function() {
+                        //     return '...beforeTitle';
+                        // },
+                        // afterTitle: function() {
+                        //     return '...afterTitle';
+                        // },
+                        // beforeBody: function() {
+                        //     return '...beforeBody';
+                        // },
+                        // afterBody: function() {
+                        //     return '...afterBody';
+                        // },
+                        // beforeFooter: function() {
+                        //     return '...beforeFooter';
+                        // },
+                        // footer: function() {
+                        //     return 'Footer';
+                        // },
+                        // afterFooter: function() {
+                        //     return '...afterFooter';
+                        // },
                     }
                 },
                 hover: {
