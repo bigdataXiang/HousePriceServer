@@ -3,9 +3,7 @@ package com.reprocess.grid_100;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
-import com.reprocess.grid_100.util.Color;
-import com.reprocess.grid_100.util.Resolution;
-import com.reprocess.grid_100.util.Source;
+import com.reprocess.grid_100.util.*;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
@@ -43,6 +41,7 @@ public class CallInterestGrid {
         int rowmax=(int)Math.ceil((39.965477436645436-39.438283)/length);
 
         JSONObject condition=new JSONObject();
+        condition.put("N",10);
         condition.put("rowmax",rowmax);
         condition.put("rowmin",rowmin);
         condition.put("colmax",colmax);
@@ -52,49 +51,14 @@ public class CallInterestGrid {
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_100");
 
-        System.out.println(CallMongo(condition,10));
+        System.out.println(CallMongo(condition));
         //getLngLat(53,75,10);
 
     }
     public Response get(String body){
-        JSONObject obj=JSONObject.fromObject(body);
-        System.out.println(obj);
 
-        double west=obj.getDouble("west");
-        double east=obj.getDouble("east");
-        double south=obj.getDouble("south");
-        double north=obj.getDouble("north");
-
-        int zoom=obj.getInt("zoom");
-        int N= Resolution.getResolution(zoom);
-
-        //2016年01月
-        String time=obj.getString("gridTime");
-        int year=Integer.parseInt(time.substring(0,time.indexOf("年")));
-        int month=Integer.parseInt(time.substring(time.indexOf("年")+"年".length(),time.indexOf("月")));
-
-        String source=obj.getString("source");
-        source= Source.getSource(source);
-
-        double width=0.0011785999999997187;//每100m的经度差
-        double length=9.003999999997348E-4;//每100m的纬度差
-
-        int colmin=(int) Math.ceil((west-115.417284)/width);
-        int colmax=(int)Math.ceil((east-115.417284)/width);
-        int rowmin=(int)Math.ceil((south-39.438283)/length);
-        int rowmax=(int)Math.ceil((north-39.438283)/length);
-
-        JSONObject condition=new JSONObject();
-        condition.put("rowmax",rowmax);
-        condition.put("rowmin",rowmin);
-        condition.put("colmax",colmax);
-        condition.put("colmin",colmin);
-        condition.put("year",year);
-        condition.put("month",month);
-        condition.put("source",source);
-        condition.put("export_collName","GridData_Resold_100");
-
-        String resultdata=CallMongo(condition,N);
+        JSONObject condition= SetCondition.setCallInterestGrid(body);
+        String resultdata=CallMongo(condition);
 
         Response r= new Response();
         r.setCode(200);
@@ -102,7 +66,8 @@ public class CallInterestGrid {
         return r;
 
     }
-    public static String CallMongo(JSONObject condition,int N){
+    public static String CallMongo(JSONObject condition){
+        int N=condition.getInt("N");
 
         String collName=condition.getString("export_collName");
         DBCollection coll = db.getDB().getCollection(collName);

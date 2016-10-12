@@ -4,7 +4,7 @@ package com.reprocess.grid_100.util;
  * Created by ZhouXiang on 2016/10/12.
  */
 public class Color {
-    /**建立更密集的配色方案*/
+    /**建立更密集的配色方案_房价*/
     public static String setColorRegion(double price){
         String color="";
 
@@ -40,6 +40,36 @@ public class Color {
             color="#1411D2";
         }
 
+        return color;
+    }
+
+    /**房价加速度的配色方案*/
+    public static String setColorRegion_Acceleration(double price){
+        String color="";
+
+        if(price>900){
+            color="#BA0000";
+        }else if(price>800&&price<=900){
+            color="#C70000";
+        }else if(price>700&&price<=800){
+            color="#ED0000";
+        }else if(price>600&&price<=700){
+            color="#FF0000";
+        }else if(price>500&&price<=600){
+            color="#FF4000";
+        }else if(price>400&&price<=500){
+            color="#FC5800";
+        }else if(price>300&&price<=400){
+            color="#FF5900";
+        }else if(price>250&&price<=300){
+            color="#FF9D14";
+        }else if(price>200&&price<=250){
+            color="#FFD900";
+        }else if(price>100&&price<=200){
+            color="#CCFF00";
+        }else{
+            color="#CFFC5D";
+        }
         return color;
     }
 }

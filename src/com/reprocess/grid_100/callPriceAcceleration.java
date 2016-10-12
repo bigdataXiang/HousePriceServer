@@ -3,6 +3,8 @@ package com.reprocess.grid_100;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.reprocess.grid_100.util.Resolution;
+import com.reprocess.grid_100.util.RowColCalculation;
+import com.reprocess.grid_100.util.Source;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
@@ -14,64 +16,20 @@ import utils.UtilFile;
 import java.util.*;
 
 import static com.reprocess.grid_100.GridMerge.codeMapping100toN00;
+import static com.reprocess.grid_100.util.Color.setColorRegion_Acceleration;
+import static com.reprocess.grid_100.util.SetCondition.setCallPriceAcceleration;
 import static utils.UtilFile.printArray_BasicDB;
 
 /**
  * Created by ZhouXiang on 2016/8/24.
  */
 public class CallPriceAcceleration extends CallInterestGrid{
+
+
     public Response get(String body){
-        //System.out.println(body);
-        JSONObject obj=JSONObject.fromObject(body);
 
-        double west=obj.getDouble("west");
-        double east=obj.getDouble("east");
-        double south=obj.getDouble("south");
-        double north=obj.getDouble("north");
-        int zoom=obj.getInt("zoom");
-        String starttime=obj.getString("starttime");
-        String endtime=obj.getString("endtime");
-
-        int startyear=Integer.parseInt(starttime.substring(0,starttime.indexOf("年")));
-        int startmonth=Integer.parseInt(starttime.substring(starttime.indexOf("年")+"年".length(),starttime.indexOf("月")));
-
-        int endyear=Integer.parseInt(endtime.substring(0,endtime.indexOf("年")));
-        int endmonth=Integer.parseInt(endtime.substring(endtime.indexOf("年")+"年".length(),endtime.indexOf("月")));
-
-        int N= Resolution.getResolution(zoom);
-        String source=obj.getString("source");
-        if(source.equals("我爱我家")){
-            source="woaiwojia";
-        }else if(source.equals("房天下")){
-            source="fang";
-        }else if(source.equals("安居客")){
-            source="anjuke";
-        }else if(source.equals("链家")){
-            source="lianjia";
-        }
-
-        double width=0.0011785999999997187;//每100m的经度差
-        double length=9.003999999997348E-4;//每100m的纬度差
-
-        int colmin=(int) Math.ceil((west-115.417284)/width);
-        int colmax=(int)Math.ceil((east-115.417284)/width);
-        int rowmin=(int)Math.ceil((south-39.438283)/length);
-        int rowmax=(int)Math.ceil((north-39.438283)/length);
-
-        JSONObject condition=new JSONObject();
-        condition.put("N",N);
-        condition.put("rowmax",rowmax);
-        condition.put("rowmin",rowmin);
-        condition.put("colmax",colmax);
-        condition.put("colmin",colmin);
-        condition.put("startyear",startyear);
-        condition.put("startmonth",startmonth);
-        condition.put("endyear",endyear);
-        condition.put("endmonth",endmonth);
-        condition.put("source",source);
-        condition.put("export_collName","GridData_Resold_100");
-
-        String resultdata=test(condition);
+        JSONObject condition=setCallPriceAcceleration(body);
+        String resultdata=callMongo(condition);
         System.out.println(resultdata);
 
         Response r= new Response();
@@ -81,42 +39,8 @@ public class CallPriceAcceleration extends CallInterestGrid{
         return r;
 
     }
-    public static void main(String[] args){
-        double width=0.0011785999999997187;//每100m的经度差
-        double length=9.003999999997348E-4;//每100m的纬度差
 
-
-        /*//第一种"west":116.24496459960938,"east":116.57455444335936,"south":39.85546510325357,"north":39.97330520737606
-        int colmin=(int)Math.ceil((116.24496459960938-115.417284)/width);
-        int colmax=(int)Math.ceil((116.57455444335936-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.85546510325357-39.438283)/length);
-        int rowmax=(int)Math.ceil((39.97330520737606-39.438283)/length);*/
-
-
-        //第二种"west":116.24050140380858,"east":116.57009124755858,"south":39.85572865909662,"north":39.97356831014807
-        int colmin=(int)Math.ceil((116.24050140380858-115.417284)/width);
-        int colmax=(int)Math.ceil((116.57009124755858-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.85572865909662-39.438283)/length);
-        int rowmax=(int)Math.ceil((39.97356831014807-39.438283)/length);
-        System.out.println(colmin+","+colmax+","+rowmin+","+rowmax);
-
-        JSONObject condition=new JSONObject();
-        condition.put("N",20);
-        condition.put("rowmax",rowmax);
-        condition.put("rowmin",rowmin);
-        condition.put("colmax",colmax);
-        condition.put("colmin",colmin);
-        condition.put("startyear",2015);
-        condition.put("startmonth",10);
-        condition.put("endyear",2015);
-        condition.put("endmonth",12);
-        condition.put("source","woaiwojia");
-        condition.put("export_collName","GridData_Resold_100");
-
-        System.out.println(test(condition));
-    }
-
-    public static String test(JSONObject condition){
+    public static String callMongo(JSONObject condition){
         int rowmin=condition.getInt("rowmin");
         int rowmax=condition.getInt("rowmax");
         int colmin=condition.getInt("colmin");
@@ -372,10 +296,6 @@ public class CallPriceAcceleration extends CallInterestGrid{
         Iterator totalgrid_it=totalgrid.keys();
         String key;
         double value;
-        double maxprice;
-        double minprice;
-        String maxprice_date;
-        String minprice_date;
         String codeindex;
         JSONObject code_acceleration=new JSONObject();
 
@@ -405,42 +325,12 @@ public class CallPriceAcceleration extends CallInterestGrid{
                 }
 
                 double acceleration=0;
-                /*这一段暂时不要，但是之后是需要的
-                //第一种：计算最大最小值
-                maxprice= Tool.getMaxNum(pricearray);
-                int maxindex=Tool.getMaxNum_Index(pricearray);
-                maxprice_date=datearray[maxindex];
-
-                minprice= Tool.getMinNum(pricearray);
-                int minindex=Tool.getMinNum_Index(pricearray);
-                minprice_date=datearray[minindex];
-
-                *//*System.out.println("max:"+maxprice_date+","+maxprice);
-                System.out.println("min:"+minprice_date+","+minprice);*//*
-
-                int maxyear=Integer.parseInt(maxprice_date.substring(0,maxprice_date.indexOf("-")));
-                int minyear=Integer.parseInt(minprice_date.substring(0,minprice_date.indexOf("-")));
-
-                int maxmonth=Integer.parseInt(maxprice_date.substring(maxprice_date.indexOf("-")+"-".length()));
-                int minmonth=Integer.parseInt(minprice_date.substring(minprice_date.indexOf("-")+"-".length()));
-
-
-
-                if(maxyear==minyear){
-                    acceleration=(maxprice-minprice)/(maxmonth-minmonth)*10000;
-                }else if(maxyear>minyear){
-                    acceleration=(maxprice-minprice)/((maxmonth+12)-minmonth)*10000;
-                }else if(maxyear<minyear){
-                    acceleration=(maxprice-minprice)/(maxmonth-(minmonth+12))*10000;
-                }
-
+                //第一种：铜鼓计算最大最小值得出加速度值
+                acceleration=maxMinValue_Acceleration(pricearray,datearray);
                 code_acceleration.put(codeindex,acceleration);
-                System.out.println("第一种计算方法");
-                System.out.println("acceleration:"+acceleration);*/
 
 
                 //第二种：计算开始和结束的时间对应的加速度
-                //GregorianCalendar calendar;
                 Calendar calendar ;
                 Iterator keys=date_price.keys();
                 String codekey="";
@@ -517,7 +407,7 @@ public class CallPriceAcceleration extends CallInterestGrid{
                 String rowcol=code_index_rowcol.getString(codeindex);
                 int rows=Integer.parseInt(rowcol.substring(0,rowcol.indexOf("_")));
                 int cols=Integer.parseInt(rowcol.substring(rowcol.indexOf("_")+"_".length()));
-                String color=setColorRegion(acceleration);
+                String color=setColorRegion_Acceleration(acceleration);
                 data_obj.put("code",Integer.parseInt(codeindex));
                 data_obj.put("acceleration",acceleration);
                 data_obj.put("row",rows);
@@ -573,34 +463,85 @@ public class CallPriceAcceleration extends CallInterestGrid{
         return result.toString();
     }
 
-    public static String setColorRegion(double price){
-        String color="";
+    /**用起始时间计算最大最小值*/
+    public static void startEndTime_Acceleration(){
 
-        if(price>900){
-            color="#BA0000";
-        }else if(price>800&&price<=900){
-            color="#C70000";
-        }else if(price>700&&price<=800){
-            color="#ED0000";
-        }else if(price>600&&price<=700){
-            color="#FF0000";
-        }else if(price>500&&price<=600){
-            color="#FF4000";
-        }else if(price>400&&price<=500){
-            color="#FC5800";
-        }else if(price>300&&price<=400){
-            color="#FF5900";
-        }else if(price>250&&price<=300){
-            color="#FF9D14";
-        }else if(price>200&&price<=250){
-            color="#FFD900";
-        }else if(price>100&&price<=200){
-            color="#CCFF00";
-        }else{
-            color="#CFFC5D";
+    }
+    /**用最大最小值计算加速度*/
+    public static double maxMinValue_Acceleration(double[] pricearray,String[] datearray){
+        double maxprice;
+        double minprice;
+        String maxprice_date;
+        String minprice_date;
+        double acceleration=0;
+
+        //计算最大最小值
+        maxprice= Tool.getMaxNum(pricearray);
+        int maxindex=Tool.getMaxNum_Index(pricearray);
+        maxprice_date=datearray[maxindex];
+
+        minprice= Tool.getMinNum(pricearray);
+        int minindex=Tool.getMinNum_Index(pricearray);
+        minprice_date=datearray[minindex];
+
+        System.out.println("max:"+maxprice_date+","+maxprice);
+        System.out.println("min:"+minprice_date+","+minprice);
+
+        int maxyear=Integer.parseInt(maxprice_date.substring(0,maxprice_date.indexOf("-")));
+        int minyear=Integer.parseInt(minprice_date.substring(0,minprice_date.indexOf("-")));
+
+        int maxmonth=Integer.parseInt(maxprice_date.substring(maxprice_date.indexOf("-")+"-".length()));
+        int minmonth=Integer.parseInt(minprice_date.substring(minprice_date.indexOf("-")+"-".length()));
+
+
+
+        if(maxyear==minyear){
+            acceleration=(maxprice-minprice)/(maxmonth-minmonth)*10000;
+        }else if(maxyear>minyear){
+            acceleration=(maxprice-minprice)/((maxmonth+12)-minmonth)*10000;
+        }else if(maxyear<minyear){
+            acceleration=(maxprice-minprice)/(maxmonth-(minmonth+12))*10000;
         }
-        return color;
+
+        System.out.println("第一种计算方法");
+        System.out.println("acceleration:"+acceleration);
+
+        return acceleration;
+
     }
 
+    public static void main(String[] args){
+        double width=0.0011785999999997187;//每100m的经度差
+        double length=9.003999999997348E-4;//每100m的纬度差
 
+
+        /*//第一种"west":116.24496459960938,"east":116.57455444335936,"south":39.85546510325357,"north":39.97330520737606
+        int colmin=(int)Math.ceil((116.24496459960938-115.417284)/width);
+        int colmax=(int)Math.ceil((116.57455444335936-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.85546510325357-39.438283)/length);
+        int rowmax=(int)Math.ceil((39.97330520737606-39.438283)/length);*/
+
+
+        //第二种"west":116.24050140380858,"east":116.57009124755858,"south":39.85572865909662,"north":39.97356831014807
+        int colmin=(int)Math.ceil((116.24050140380858-115.417284)/width);
+        int colmax=(int)Math.ceil((116.57009124755858-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.85572865909662-39.438283)/length);
+        int rowmax=(int)Math.ceil((39.97356831014807-39.438283)/length);
+        System.out.println(colmin+","+colmax+","+rowmin+","+rowmax);
+
+        JSONObject condition=new JSONObject();
+        condition.put("N",20);
+        condition.put("rowmax",rowmax);
+        condition.put("rowmin",rowmin);
+        condition.put("colmax",colmax);
+        condition.put("colmin",colmin);
+        condition.put("startyear",2015);
+        condition.put("startmonth",10);
+        condition.put("endyear",2015);
+        condition.put("endmonth",12);
+        condition.put("source","woaiwojia");
+        condition.put("export_collName","GridData_Resold_100");
+
+        System.out.println(callMongo(condition));
+    }
 }
