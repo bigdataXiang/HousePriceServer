@@ -676,27 +676,4 @@ public class ContourGeneration {
         }
     }
 
-    /**13、画等高线*/
-    public static void drawContour(String file){
-
-        Vector<String> pois=FileTool.Load(file,"utf-8");
-
-        String poi="";
-        JSONObject obj;
-        int row;
-        int col;
-
-        for(int i=0;i<pois.size();i++){
-
-            poi=pois.elementAt(i);
-            obj=JSONObject.fromObject(poi);
-            row=obj.getInt("row");
-            col=obj.getInt("col");
-
-        }
-    }
-
-
-
-
 }

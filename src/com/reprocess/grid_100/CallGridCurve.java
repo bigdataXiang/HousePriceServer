@@ -221,6 +221,7 @@ public class CallGridCurve {
                 blend_time_price_list.add(time_price);
             }
         }
+        System.out.println(dates);
 
         //将fang_time_price_list数组按照价格排序
         Collections.sort(fang_time_price_list, new UtilFile.Average_PriceComparator());
