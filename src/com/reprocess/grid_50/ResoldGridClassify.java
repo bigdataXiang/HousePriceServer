@@ -324,44 +324,6 @@ public class ResoldGridClassify extends GridMerge {
         }
     }
 
-
-    public static String setColorRegion(double price){
-        String color="";
-
-        if(price>9){
-            color="#BA0000";
-        }else if(price>8&&price<=9){
-            color="#C70000";
-        }else if(price>7&&price<=8){
-            color="#ED0000";
-        }else if(price>6&&price<=7){
-            color="#FF0000";
-        }else if(price>5&&price<=6){
-            color="#FF4000";
-        }else if(price>4&&price<=5){
-            color="#FC5800";
-        }else if(price>3&&price<=4){
-            color="#FF5900";
-        }else if(price>2.5&&price<=3){
-            color="#FF9D14";
-        }else if(price>2&&price<=2.5){
-            color="#FFD900";
-        }else if(price>1&&price<=2){
-            color="#CCFF00";
-        }else{
-            color="#CFFC5D";
-        }
-        return color;
-    }
-
-
-
-
-
-
-
-
-
     /**
      * 4.给有房价值的每个网格的均价赋予一个颜色值
      * @param array
