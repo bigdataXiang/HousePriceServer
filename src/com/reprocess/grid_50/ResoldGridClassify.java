@@ -7,6 +7,7 @@ import com.mongodb.MongoException;
 import com.reprocess.grid_100.Code_Price_RowCol;
 import com.reprocess.grid_100.GridMerge;
 import com.reprocess.grid_100.PoiCode;
+import com.reprocess.grid_100.util.Color;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -19,6 +20,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * ResoldGridClassify函数是将“BasicData_Resold_100”表中的poi的编码编程分
+ * 辨率为50m*50m的网格下的编码，然后再由这些重新被编码的poi生成50*50的栅格的过程
+ */
 public class ResoldGridClassify extends GridMerge {
     public static void main(String[] args){
 
@@ -272,7 +277,7 @@ public class ResoldGridClassify extends GridMerge {
                 }
                 code_averagePrice.put("code", Integer.parseInt(code));
                 code_averagePrice.put("average_price", average_price);
-                String color=setColorRegion(average_price);
+                String color=Color.setColorRegion(average_price);
                 code_averagePrice.put("color",color);
 
                 row=cpr.getRow();
@@ -338,7 +343,7 @@ public class ResoldGridClassify extends GridMerge {
             JSONObject obj= (JSONObject) array.get(i);
             double price=obj.getDouble("average_price");
 
-            color=setColorRegion(price);
+            color= Color.setColorRegion(price);
             obj.put("color",color);
 
             finalresult.add(obj);
