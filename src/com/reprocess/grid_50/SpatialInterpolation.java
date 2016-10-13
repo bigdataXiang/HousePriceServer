@@ -22,21 +22,29 @@ import static com.reprocess.grid_100.util.RowColCalculation.codeMapping50toN50;
 public class SpatialInterpolation extends NiMatrix{
     /**参数说明：
      *jsonArray_map：用于存放北京区域内N50*N50分辨率时的每个网格的时序数据
-     *
-     * */
+     *dataset:存放的是jsonArray_map中所有code的数据。其中key是网格的code，value是网格对应的时间价格序列值,这样方便检索
+     *pearson_is_0：用来存储与其他网格相关系数为0的网格的code，这一步是在step_3的findRelatedCode中实现的这些相关系数为0的网格的存储
+     *sparse_data：用来存储时序数据太少的稀疏数据，在step_3中实现
+     *full_value_grids：step_2中用来存储时序数据满格的数据
+     *interpolation_value_grids： step_8()里addInterpolation方法中用来存储插值成功后的网格数据，其中value值是插值与真实值混合的结果
+     *interpolation_grids：step_4中codesCovariance方法中用来存储插值成功后的网格数据，其中value值是插值的结果
+     *interpolation_result：interpolation_grids的另外一种存储形式，在step_4中通过codesCovariance方法返回的spatial进行赋值
+     *failed_interpolation_codes：step_6中用来存储那些虽然参与插值，但是插值结果后的mse过大导致失败的code
+     *qualified_interpolation_codes：用来存储那些参与插值，且插值后的mse合格的code
+     **/
     public static Map<Integer, JSONObject> jsonArray_map=new HashMap<>();
-    public static Map<String, Map<String, Double>> dataset = new HashMap<>();//dataset存放的是jsonArray_map中所有code的数据。其中key是网格的code，value是网格对应的时间价格序列值
+    public static Map<String, Map<String, Double>> dataset = new HashMap<>();
     public Map<String, Map<String, Double>> getDataSet() {
         return dataset;
     }
-    public static Map<String, String> pearson_is_0=new HashMap<>();//用来存储与其他网格相关系数为0的网格的code
-    public static Map<Integer, JSONObject> sparse_data=new HashMap<>();//用来存储时序数据太少的稀疏数据
-    public static Map<Integer, JSONObject> full_value_grids=new HashMap<>();//用来存储时序数据满格的数据
-    public static Map<Integer, JSONObject> interpolation_value_grids=new HashMap<>();//用来存储插值成功后的网格数据，其中value值是插值与真实值混合的结果
-    public static Map<Integer, JSONObject> interpolation_grids=new HashMap<>();//用来存储插值成功后的网格数据，其中value值是插值的结果
-    public static Map<String, Map<String, Double>> interpolation_result= new HashMap<>();//dataset的key是网格的code，value是网格对应的时间价格序列值,存储的也是插值后的值
-    public static JSONArray failed_interpolation_codes=new JSONArray();//用来存储那些虽然参与插值，但是插值结果后的mse过大导致失败的code
-    public static JSONArray qualified_interpolation_codes=new JSONArray();//用来存储那些参与插值，且插值结果后的mse合格的code
+    public static Map<String, String> pearson_is_0=new HashMap<>();
+    public static Map<Integer, JSONObject> sparse_data=new HashMap<>();
+    public static Map<Integer, JSONObject> full_value_grids=new HashMap<>();
+    public static Map<Integer, JSONObject> interpolation_value_grids=new HashMap<>();
+    public static Map<Integer, JSONObject> interpolation_grids=new HashMap<>();
+    public static Map<String, Map<String, Double>> interpolation_result= new HashMap<>();
+    public static JSONArray failed_interpolation_codes=new JSONArray();
+    public static JSONArray qualified_interpolation_codes=new JSONArray();
 
     public static String path="D:\\github.com\\bigdataXiang\\HousePriceServer\\src\\com\\reprocess\\grid_50\\";
 
@@ -54,7 +62,7 @@ public class SpatialInterpolation extends NiMatrix{
 
         JSONArray lack_value_grids=step_2();
 
-        JSONObject code_relatedCode=step_3(lack_value_grids);
+        JSONObject code_relatedCode=step_3(lack_value_grids,1);
 
         JSONObject spatial=step_4(code_relatedCode);
 
@@ -103,7 +111,7 @@ public class SpatialInterpolation extends NiMatrix{
         return lack_value_grids;
     }
     /**step_3:计算有缺失数据的网格与全部网格的相关系数 r ,并且返回相关性最强的20个*/
-    public static JSONObject step_3(JSONArray lack_value_grids){
+    public static JSONObject step_3(JSONArray lack_value_grids,int datesnum){
 
         JSONArray to_be_interpolated=new JSONArray();
         int code;
@@ -114,7 +122,7 @@ public class SpatialInterpolation extends NiMatrix{
             size=jsonArray_map.get(code).size();
 
             //如果待插值的网格本身数据稀疏，则不参与插值，而是存在全局变量sparse_data中，因为这样的插值效果不太好
-            if(size>1){
+            if(size>datesnum){
                 to_be_interpolated.add(code);
             }else {
                 sparse_data.put(code,jsonArray_map.get(code));
@@ -137,7 +145,7 @@ public class SpatialInterpolation extends NiMatrix{
             while (iterator.hasNext()){
                 code=iterator.next().toString();
                 timeseries=spatial.getJSONObject(code);
-                SpatialInterpolation.initDataSet(""+code,timeseries,interpolation_result);
+                initDataSet(""+code,timeseries,interpolation_result);
             }
         }
         return spatial;
