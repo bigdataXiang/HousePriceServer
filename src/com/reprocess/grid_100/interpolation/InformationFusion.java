@@ -1,7 +1,5 @@
-
-        package com.reprocess.grid_100.interpolation;
-
-        import com.mongodb.BasicDBObject;
+package com.reprocess.grid_100.interpolation;
+import com.mongodb.BasicDBObject;
         import com.mongodb.Cursor;
         import com.mongodb.DBCollection;
         import com.mongodb.DBCursor;
@@ -11,13 +9,12 @@
 
         import java.util.ArrayList;
         import java.util.List;
-
-        /**
+/**
  * Created by ZhouXiang on 2016/9/23.
  */
-        public class InformationFusion {
+public class InformationFusion {
 
-            public static void main(String[] args){
+    public static void main(String[] args){
 
                 int year=2015;
                 int month=10;

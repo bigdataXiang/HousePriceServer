@@ -552,23 +552,6 @@ public class ContourGeneration {
             }
         }
 
-        /*JSONObject nullobj;
-        int codeindex;
-        for(int i=1;i<=r_max;i++) {
-            for (int j =1; j<=c_max; j++) {
-                codeindex=(j + (2000/N) * (i - 1));
-                if(!codekey.containsKey(codeindex)){
-                    nullobj=new JSONObject();
-                    nullobj.put("code",codeindex);
-                    nullobj.put("average_price",0);
-                    nullobj.put("row",i);
-                    nullobj.put("col",j);
-                    nullobj.put("color","");
-                    data.add(nullobj);
-                }
-            }
-        }*/
-
         Collections.sort(data, new UtilFile.CodeComparator());
 
         JSONObject result=new JSONObject();
@@ -578,7 +561,6 @@ public class ContourGeneration {
         result.put("c_max",c_max);
         result.put("N",N);
         result.put("data",data);
-
         return result;
     }
 

@@ -1,7 +1,6 @@
 package com.reprocess.grid_50;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
+import com.mongodb.*;
 import com.reprocess.grid_100.interpolation.NiMatrix;
 import com.reprocess.grid_100.util.RowColCalculation;
 import com.svail.db.db;
@@ -21,13 +20,24 @@ import static com.reprocess.grid_100.util.RowColCalculation.codeMapping50toN50;
  * 原始数据：GridData_Resold_50
  */
 public class SpatialInterpolation extends NiMatrix{
-    public static Map<Integer, JSONObject> jsonArray_map=new HashMap<>();//用于存放北京区域内N00*N00分辨率时的每个网格的时序数据
-    public static Map<String, Map<String, Double>> dataset = new HashMap<>();//dataset的key是网格的code，value是网格对应的时间价格序列值
+    /**参数说明：
+     *jsonArray_map：用于存放北京区域内N50*N50分辨率时的每个网格的时序数据
+     *
+     * */
+    public static Map<Integer, JSONObject> jsonArray_map=new HashMap<>();
+    public static Map<String, Map<String, Double>> dataset = new HashMap<>();//dataset存放的是jsonArray_map中所有code的数据。其中key是网格的code，value是网格对应的时间价格序列值
     public Map<String, Map<String, Double>> getDataSet() {
         return dataset;
     }
-    public static Map<String, String> pearson_is_0=new HashMap<>();
-    public static Map<Integer, JSONObject> sparse_data=new HashMap<>();
+    public static Map<String, String> pearson_is_0=new HashMap<>();//用来存储与其他网格相关系数为0的网格的code
+    public static Map<Integer, JSONObject> sparse_data=new HashMap<>();//用来存储时序数据太少的稀疏数据
+    public static Map<Integer, JSONObject> full_value_grids=new HashMap<>();//用来存储时序数据满格的数据
+    public static Map<Integer, JSONObject> interpolation_value_grids=new HashMap<>();//用来存储插值成功后的网格数据，其中value值是插值与真实值混合的结果
+    public static Map<Integer, JSONObject> interpolation_grids=new HashMap<>();//用来存储插值成功后的网格数据，其中value值是插值的结果
+    public static Map<String, Map<String, Double>> interpolation_result= new HashMap<>();//dataset的key是网格的code，value是网格对应的时间价格序列值,存储的也是插值后的值
+    public static JSONArray failed_interpolation_codes=new JSONArray();//用来存储那些虽然参与插值，但是插值结果后的mse过大导致失败的code
+    public static JSONArray qualified_interpolation_codes=new JSONArray();//用来存储那些参与插值，且插值结果后的mse合格的code
+
     public static String path="D:\\github.com\\bigdataXiang\\HousePriceServer\\src\\com\\reprocess\\grid_50\\";
 
     public static void main(String[] args){
@@ -48,6 +58,13 @@ public class SpatialInterpolation extends NiMatrix{
 
         JSONObject spatial=step_4(code_relatedCode);
 
+        step_5(spatial);
+
+        step_6();
+
+        step_7();
+
+        step_8();
     }
 
     /**step_1:先生成整个北京区域内的每个网格的时序数据，存放刚到jsonArray_map中,使得全局变量jsonArray_map有值*/
@@ -76,6 +93,8 @@ public class SpatialInterpolation extends NiMatrix{
             //(1)返回有缺失的网格编码：如果不足八个月的数据，就要在后面进行插值
             if(keys_size!=8){
                 lack_value_grids.add(code);
+            }else {
+                full_value_grids.put(code,date_price);
             }
 
             //(2)初始化数据集dataset
@@ -95,7 +114,7 @@ public class SpatialInterpolation extends NiMatrix{
             size=jsonArray_map.get(code).size();
 
             //如果待插值的网格本身数据稀疏，则不参与插值，而是存在全局变量sparse_data中，因为这样的插值效果不太好
-            if(size>4){
+            if(size>1){
                 to_be_interpolated.add(code);
             }else {
                 sparse_data.put(code,jsonArray_map.get(code));
@@ -107,10 +126,81 @@ public class SpatialInterpolation extends NiMatrix{
 
         //findRelatedCode方法中还实现将与所有网格的相关系数为0的网格code存放在pearson_is_0中
     }
-    /**step_4:计算单个缺失数据的网格与其他网格的相关性系数*/
+    /**step_4:计算所有有缺失数据的网格的插值结果，并且将最终的结果存一份存到interpolation_result中*/
     public static JSONObject step_4( JSONObject code_relatedCode){
         JSONObject spatial=codesCovariance(code_relatedCode);
+
+        Iterator iterator=spatial.keys();
+        String code;
+        JSONObject timeseries;
+        if(iterator.hasNext()){
+            while (iterator.hasNext()){
+                code=iterator.next().toString();
+                timeseries=spatial.getJSONObject(code);
+                SpatialInterpolation.initDataSet(""+code,timeseries,interpolation_result);
+            }
+        }
         return spatial;
+    }
+    /**step_5:统计插值情况，检查是否有遗漏的点*/
+    public static void step_5(JSONObject spatial){
+        int jsonArray_map_size=jsonArray_map.size();
+        int spatial_size=spatial.size();
+        int sparse_data_size=sparse_data.size();
+        int pearson_is_0_size=pearson_is_0.size();
+
+        int total=spatial_size+sparse_data_size+pearson_is_0_size;
+        System.out.println("总共有数据的网格有：");
+        System.out.println("jsonArray_map_size:"+jsonArray_map_size);
+
+        System.out.println("\n其中：");
+        System.out.println("  数据有缺失的网格有：");
+        System.out.println("  lack_value_grids:"+step_2().size());
+        System.out.println("  插值成功的网格有：");
+        System.out.println("  spatial_size:"+spatial_size);
+        System.out.println("  相关系数为0的网格有：");
+        System.out.println("  pearson_is_0_size:"+pearson_is_0_size);
+        System.out.println("  数据稀疏无法插值的网格有：");
+        System.out.println("  sparse_data_size:"+sparse_data_size);
+        System.out.println("total:"+total);
+
+        System.out.println("\n此外：");
+        System.out.println("  数据满格的网格有："+full_value_grids.size());
+
+    }
+    /**step_6:计算interpolation_result中每个网格插值前后的mse的值，并且将mse的值较大的挑选出来,存在failed_interpolation_codes中*/
+    public static void step_6(){
+
+        String code;
+        double mse;
+
+        for (Map.Entry<String, Map<String, Double>> entry : interpolation_result.entrySet()) {
+            code=entry.getKey();
+            mse=compareInterpolationResult(code);
+            if(mse>0.1){
+                failed_interpolation_codes.add(code);
+            }else {
+                qualified_interpolation_codes.add(code);
+            }
+        }
+    }
+    /**step_7:比较mse的值较大的code的真实值和插值，并且将其打印出来*/
+    public static void step_7(){
+        int size=failed_interpolation_codes.size();
+        String code;
+        for(int i=0;i<size;i++){
+            code=failed_interpolation_codes.getString(i);
+            compareFailedCode(code);
+        }
+    }
+    /**step_8:将插值结果符合(即mse小于0.1)的网格进行插值操作*/
+    public static void step_8(){
+        int size=qualified_interpolation_codes.size();
+        String code;
+        for(int i=0;i<size;i++){
+            code=qualified_interpolation_codes.getString(i);
+            addInterpolation(code);
+        }
     }
 
 
@@ -825,6 +915,7 @@ public class SpatialInterpolation extends NiMatrix{
                     obj.put(dates[i],y0);
                 }
                 interpolation.put(lackdata_code,obj);
+                interpolation_grids.put(Integer.parseInt(lackdata_code),obj);
           }
         }
 
@@ -1011,5 +1102,143 @@ public class SpatialInterpolation extends NiMatrix{
         }
 
         return A;
+    }
+    /**17、计算该网格的真实值与插值的均方误差：mse*/
+    public static double compareInterpolationResult(String code){
+
+        Map<String, Double> real_value_map=new HashMap<>();
+        Map<String, Double> interpolation_value_map=new HashMap<>();
+        if(dataset.containsKey(code)){
+            real_value_map= dataset.get(code);
+        }
+        if(interpolation_result.containsKey(code)){
+            interpolation_value_map=interpolation_result.get(code);
+        }
+
+        String date="";
+        double real_price;
+        double interpolation_price;
+        double difference;
+        double difference_2;
+        double sum=0;
+        int count=0;
+        if(interpolation_value_map.size()!=0){
+            for (Map.Entry<String, Double> p : real_value_map.entrySet()) {
+                date=p.getKey();
+                if (interpolation_value_map.containsKey(date)) {
+                    real_price=real_value_map.get(date);
+                    interpolation_price=interpolation_value_map.get(date);
+                    difference=Math.abs(real_price-interpolation_price);
+                    difference_2=Math.pow(difference,2);
+                    sum+=difference_2;
+                    count++;
+                }
+            }
+        }
+
+        double mse;
+        if(count!=0){
+            mse=sum/count;
+        }else{
+            mse=0;
+        }
+
+        return mse;
+    }
+    /**18、比较mse的值较大的code的真实值和插值，并且将其打印出来*/
+    public static void compareFailedCode(String code){
+        Map<String, Double> real_value_map=new HashMap<>();
+        Map<String, Double> interpolation_value_map=new HashMap<>();
+        if(dataset.containsKey(code)&&interpolation_result.containsKey(code)){
+            real_value_map=dataset.get(code);
+            interpolation_value_map=interpolation_result.get(code);
+
+            String date="";
+            double real_price;
+            double interpolation_price;
+
+            System.out.println(code+":");
+            if(interpolation_value_map.size()!=0){
+                for (Map.Entry<String, Double> p : real_value_map.entrySet()) {
+                    date=p.getKey();
+                    if (interpolation_value_map.containsKey(date)) {
+                        real_price=real_value_map.get(date);
+                        interpolation_price=interpolation_value_map.get(date);
+                        System.out.println(date+":"+real_price+" , "+interpolation_price);
+                    }
+                }
+            }
+            System.out.print("\n");
+            printSeparator(40);//打印分隔符
+        }
+    }
+    /**19、将插值结果符合(即mse小于0.1)的网格进行插值操作:插值规则是如果该时间点的真实值缺乏，则用插值代替，否则采用真实值*/
+    public static void addInterpolation(String code){
+
+        Map<String, Double> real_value_map=new HashMap<>();
+        Map<String, Double> interpolation_value_map=new HashMap<>();
+        if(dataset.containsKey(code)&&interpolation_result.containsKey(code)){
+            real_value_map=dataset.get(code);
+            interpolation_value_map=interpolation_result.get(code);
+
+            String date="";
+            double real_price;
+            double interpolation_price;
+
+            JSONObject timeseries=new JSONObject();
+            if(interpolation_value_map.size()!=0){
+                for (Map.Entry<String, Double> p : interpolation_value_map.entrySet()) {
+
+                    date=p.getKey();
+                    if (real_value_map.containsKey(date)) {
+                        real_price=real_value_map.get(date);
+                        timeseries.put(date,real_price);
+
+                        interpolation_price=interpolation_value_map.get(date);
+                        //System.out.println(date+":"+real_price+" , "+interpolation_price);
+                    }else{
+                        interpolation_price=interpolation_value_map.get(date);
+                        real_price=interpolation_price;//将真实值中没有的日期用插值中对应的日期的值来替代
+                        timeseries.put(date,real_price);
+
+                        //System.out.println(date+":"+real_price+" , "+interpolation_price);
+                    }
+                }
+            }
+            interpolation_value_grids.put(Integer.parseInt(code),timeseries);
+        }
+    }
+    /**20、将数据导入mongodb中*/
+    public static void toMongoDB(String collName){
+
+        Mongo m;
+        try {
+            System.out.println("运行开始:");
+            m = new MongoClient("127.0.0.1", 27017);   //127.0.0.1
+            DB db = m.getDB("houseprice");
+
+            DBCollection coll = db.getCollection(collName);//coll.drop();
+            BasicDBObject document;
+
+            full_value_grids=new HashMap<>();//用来存储时序数据满格的数据
+            interpolation_value_grids=new HashMap<>();//用来存储插值成功后的网格数据，其中value值是插值与真实值混合的结果
+
+            Vector<String> objs=FileTool.Load(file,"utf-8");
+            String poi="";
+            JSONObject obj;
+            for(int i=0;i<objs.size();i++){
+                poi=objs.elementAt(i);
+                document=BasicDBObject.parse(poi);
+                System.out.println(document);
+                coll.insert(document);
+            }
+        } catch (MongoException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            // TODO Auto-generated catch block
+            System.out.println("发生异常的原因为 :"+e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
