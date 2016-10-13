@@ -73,6 +73,8 @@ public class SpatialInterpolation extends NiMatrix{
         step_7();
 
         step_8();
+
+        step_9();
     }
 
     /**step_1:先生成整个北京区域内的每个网格的时序数据，存放刚到jsonArray_map中,使得全局变量jsonArray_map有值*/
@@ -209,6 +211,10 @@ public class SpatialInterpolation extends NiMatrix{
             code=qualified_interpolation_codes.getString(i);
             addInterpolation(code);
         }
+    }
+    /**step_9:将插值后的结果转换成网格的形式存储于MongoDB(GridData_Resold_50_Interpolation表)中*/
+    public static void step_9(){
+        toMongoDB("GridData_Resold_50_Interpolation");
     }
 
 
@@ -1226,20 +1232,28 @@ public class SpatialInterpolation extends NiMatrix{
             DB db = m.getDB("houseprice");
 
             DBCollection coll = db.getCollection(collName);//coll.drop();
-            BasicDBObject document;
+            BasicDBObject document=new BasicDBObject();
 
-            full_value_grids=new HashMap<>();//用来存储时序数据满格的数据
-            interpolation_value_grids=new HashMap<>();//用来存储插值成功后的网格数据，其中value值是插值与真实值混合的结果
+            full_value_grids=new HashMap<>();
+            interpolation_value_grids=new HashMap<>();
+            int code;
+            int year;
+            int month;
+            double price;
+            String source;
+            int row;
+            int col;
 
-            Vector<String> objs=FileTool.Load(file,"utf-8");
-            String poi="";
-            JSONObject obj;
-            for(int i=0;i<objs.size();i++){
-                poi=objs.elementAt(i);
-                document=BasicDBObject.parse(poi);
-                System.out.println(document);
+
+            for (Map.Entry<Integer, JSONObject> entry : full_value_grids.entrySet()) {
+                document=new BasicDBObject();
                 coll.insert(document);
             }
+            for (Map.Entry<Integer, JSONObject> entry : full_value_grids.entrySet()) {
+                document=new BasicDBObject();
+                coll.insert(document);
+            }
+
         } catch (MongoException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

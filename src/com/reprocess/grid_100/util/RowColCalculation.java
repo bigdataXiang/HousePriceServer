@@ -50,6 +50,18 @@ public class RowColCalculation {
         return result;
     }
 
+    /**通过网格值code计算行列号值*/
+    public static int[] Code_RowCol(int code){
+        int[] rowcol=new int[2];
+        return rowcol;
+    }
+
+    /**通过行列号值计算网格值*/
+    public static int RowCol_Code(int row,int col){
+        int code=0;
+        return code;
+    }
+
 
 
 }
