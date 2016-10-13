@@ -251,10 +251,6 @@ public class ContourGeneration {
         interpolationResult();
         JSONArray failed=interpolation_MSE();
         String code;
-        /*for(int i=0;i<failed.size();i++){
-            code=failed.get(i).toString();
-            compareFailedCode(code);
-        }*/
 
         for(int i=0;i<failed.size();i++){
             code=failed.get(i).toString();
