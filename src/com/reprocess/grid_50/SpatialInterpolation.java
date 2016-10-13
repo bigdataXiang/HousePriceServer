@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static com.reprocess.grid_100.GridMerge.codeMapping100toN00;
+import static com.reprocess.grid_100.util.RowColCalculation.Code_RowCol;
 import static com.reprocess.grid_100.util.RowColCalculation.codeMapping50toN50;
 
 /**
@@ -99,6 +100,7 @@ public class SpatialInterpolation extends NiMatrix{
             code=entry.getKey();
             date_price=entry.getValue();
             keys_size=date_price.size();
+            //System.out.println(date_price);
 
             //(1)返回有缺失的网格编码：如果不足八个月的数据，就要在后面进行插值
             if(keys_size!=8){
@@ -214,7 +216,7 @@ public class SpatialInterpolation extends NiMatrix{
     }
     /**step_9:将插值后的结果转换成网格的形式存储于MongoDB(GridData_Resold_50_Interpolation表)中*/
     public static void step_9(){
-        toMongoDB("GridData_Resold_50_Interpolation");
+        toMongoDB("GridData_Resold_50_Interpolation",1);
     }
 
 
@@ -675,7 +677,7 @@ public class SpatialInterpolation extends NiMatrix{
         int nullcount=0;
         for(int i=r_min;i<=r_max;i++) {
             for (int j =c_min; j<=c_max; j++) {
-                String codeindex=""+(j + (2000/N) * (i - 1));
+                String codeindex=""+(j + (4000/N) * (i - 1));
                 if(!codekey.containsKey(codeindex)){
                     nullgrid.add(codeindex);
                     //System.out.println(nullobj);
@@ -1223,7 +1225,7 @@ public class SpatialInterpolation extends NiMatrix{
         }
     }
     /**20、将数据导入mongodb中*/
-    public static void toMongoDB(String collName){
+    public static void toMongoDB(String collName,int N){
 
         Mongo m;
         try {
@@ -1235,8 +1237,11 @@ public class SpatialInterpolation extends NiMatrix{
             BasicDBObject document=new BasicDBObject();
 
             full_value_grids=new HashMap<>();
+            //value:{"2015-11":7.1398403833333335,"2015-10":7.233168557575757,"2016-3":8.239608616161616,"2016-2":8.687234428787878,"2016-5":9.069210763719957,"2015-12":8.809814186433298,"2016-4":9.070695713371398,"2016-1":9.058058545628544}
             interpolation_value_grids=new HashMap<>();
             int code;
+            JSONObject obj;
+            String date;
             int year;
             int month;
             double price;
@@ -1246,6 +1251,16 @@ public class SpatialInterpolation extends NiMatrix{
 
 
             for (Map.Entry<Integer, JSONObject> entry : full_value_grids.entrySet()) {
+                code=entry.getKey();
+                int[] rowcol=RowColCalculation.Code_RowCol(code,N);
+                obj=entry.getValue();
+                Iterator<String> it=obj.keySet().iterator();
+                while (it.hasNext()){
+                    date=it.next();
+                    year=Integer.parseInt(date.substring(0,date.indexOf("-")));
+                    month=Integer.parseInt(date.substring(date.indexOf("-")+"-".length()));
+
+                }
                 document=new BasicDBObject();
                 coll.insert(document);
             }

@@ -51,14 +51,23 @@ public class RowColCalculation {
     }
 
     /**通过网格值code计算行列号值*/
-    public static int[] Code_RowCol(int code){
+    public static int[] Code_RowCol(int code,int N){
         int[] rowcol=new int[2];
+        int cols=4000/N;
+        int row=code/cols+1;
+        int col=code%cols;
+
+        rowcol[0]=row;
+        rowcol[1]=col;
+
         return rowcol;
     }
 
     /**通过行列号值计算网格值*/
-    public static int RowCol_Code(int row,int col){
+    public static int RowCol_Code(int row,int col,int N){
         int code=0;
+        int cols=4000/N;
+        code=col+cols*(row-1);
         return code;
     }
 
