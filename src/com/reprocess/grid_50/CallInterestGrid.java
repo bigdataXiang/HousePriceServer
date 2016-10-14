@@ -20,17 +20,16 @@ import static com.reprocess.grid_100.GridMerge.codeMapping100toN00;
  */
 public class CallInterestGrid {
     public static void main(String[] args){
-        //{"west":115.73135375976562,"east":117.04971313476562,"south":39.665442308708904,"north":40.14791364536759,"zoom":11,"gridTime":"2015年10月","source":"我爱我家"}
         double width=5.892999999998593E-4;//每50m的经度差
         double length=4.501999999998674E-4;//每50m的纬度差
 
-        int colmin=(int)Math.ceil((116.29062652587892-115.417284)/width);
-        int colmax=(int)Math.ceil((116.4554214477539-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.90657598772841-39.438283)/length);
-        int rowmax=(int)Math.ceil((39.965477436645436-39.438283)/length);
+        int colmin=(int)Math.ceil((115.73135375976562-115.417284)/width);
+        int colmax=(int)Math.ceil((117.04971313476562-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.665442308708904-39.438283)/length);
+        int rowmax=(int)Math.ceil((40.14791364536759-39.438283)/length);
 
         JSONObject condition=new JSONObject();
-        condition.put("N",1);
+        condition.put("N",40);
         condition.put("rowmax",rowmax);
         condition.put("rowmin",rowmin);
         condition.put("colmax",colmax);
