@@ -20,16 +20,9 @@ import static com.reprocess.grid_100.GridMerge.codeMapping100toN00;
  */
 public class CallInterestGrid {
     public static void main(String[] args){
-        double width=0.0011785999999997187;//每100m的经度差
-        double length=9.003999999997348E-4;//每100m的纬度差
-
-
-        System.out.println(0.0011785999999997187*5);
-        System.out.println(9.003999999997348E-4*5);
-        System.out.println(115.417284+0.0011785999999997187*5);
-        System.out.println(39.438283+9.003999999997348E-4*5);
-
-
+        //{"west":115.73135375976562,"east":117.04971313476562,"south":39.665442308708904,"north":40.14791364536759,"zoom":11,"gridTime":"2015年10月","source":"我爱我家"}
+        double width=5.892999999998593E-4;//每50m的经度差
+        double length=4.501999999998674E-4;//每50m的纬度差
 
         int colmin=(int)Math.ceil((116.29062652587892-115.417284)/width);
         int colmax=(int)Math.ceil((116.4554214477539-115.417284)/width);
@@ -37,7 +30,7 @@ public class CallInterestGrid {
         int rowmax=(int)Math.ceil((39.965477436645436-39.438283)/length);
 
         JSONObject condition=new JSONObject();
-        condition.put("N",10);
+        condition.put("N",1);
         condition.put("rowmax",rowmax);
         condition.put("rowmin",rowmin);
         condition.put("colmax",colmax);
@@ -45,9 +38,9 @@ public class CallInterestGrid {
         condition.put("year",2015);
         condition.put("month",10);
         condition.put("source","woaiwojia");
-        condition.put("export_collName","GridData_Resold_100");
+        condition.put("export_collName","GridData_Resold_50_Interpolation");
 
-        System.out.println(CallMongo(condition));
+        CallMongo(condition);
         //getLngLat(53,75,10);
 
     }
@@ -236,7 +229,6 @@ public class CallInterestGrid {
         object.put("c_max",c_max);
         object.put("N",N);
         object.put("data",jsonArray);
-
 
         System.out.println(object.toString());
 

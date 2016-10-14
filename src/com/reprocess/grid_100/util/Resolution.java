@@ -23,7 +23,7 @@ public class Resolution {
                 break;
             case 12:N=20;
                 break;
-            case 11:N=30;
+            case 11:N=40;
                 break;
         }
         return N;

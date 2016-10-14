@@ -40,33 +40,18 @@
 </head>
 <body>
 
-<!--div class="navbar navbar-default">
-  <div class="navbar-inner">
+<div class="navbar navbar-default">
+    <div class="navbar-inner">
+        <h1 style="text-align:center;">居中对齐的标题</h1>
         <div class="container">
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </a>
-
-                &lt;!&ndash;<script type="text/javascript">
-
-                    $("#style").on("onchange",function (e) {
-                          console.log(e);
-                        console.log($("#style").text());
-                    });
-                </script>&ndash;&gt;
-            &lt;!&ndash;用来显示索引<button type="button" onclick="displayResult()">显示索引</button>&ndash;&gt;
-
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     <li class="active">中国科学院地理科学与资源研究所</li>
                 </ul>
-            </div>&lt;!&ndash;/.nav-collapse &ndash;&gt;
+            </div><!--/.nav-collapse -->
         </div>
     </div>
-</div>-->
-<!--默认导航栏在这里，被注释了-->
+</div>
 
 
 <div class="container-fluid">
@@ -225,9 +210,20 @@
                     </div>
 
                     <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="finish" class="col-sm-2 control-label">是否完成选择</label>
+                        <select id="finish" class ="form-control" style='width:200px;'>
+                            <option>请选择</option>
+                            <option>是</option>
+                            <option>否</option>
+                        </select>
+                    </div>
+                </form>
+
+                    <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="finish" class="col-sm-2 control-label">是否完成选择</label>
-                            <select id="finish" class ="form-control" style='width:200px;'>
+                            <label for="delect" class="col-sm-2 control-label">是否取消当前选择</label>
+                            <select id="delect" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>是</option>
                                 <option>否</option>
@@ -1183,6 +1179,11 @@
             }
         });
 
+        //清除当前所有的网格
+        $("#delect").change(function(){
+            delect_all_rectangle();
+        });
+
 
         //creatGrid：通过获取当前屏幕的经纬度坐标实现该范围内的网格可视化
         function creatGrid() {
@@ -1332,10 +1333,12 @@
         //dragend：拖动地图时能实现不同网格的生成，主要用于同一zoom下的不同范围内的网格生成
         map.on('dragend', function (e) {
             creatGrid();
+            creatGrid_50();
         });
         //zoomend：缩放地图时能实现不同分辨率下网格的生成，主要用于不同zoom下当前屏幕范围内的网格生成
         map.on('zoomend', function (e) {
             creatGrid();
+            creatGrid_50();
         });
         function draw_circle_cityfocus(school) {
         var myIcon = L.icon({
@@ -1689,6 +1692,16 @@
         }
         alert("总共画了"+contour.length+"个多边形");
     }
+        //将所有的网格全部删除
+        function delect_all_rectangle(){
+            //将之前的图层删除
+            if (rects.length != 0) {
+                for (var i = 0; i < rects.length; i++) {
+                    map = map.removeLayer(rects[i]);
+                }
+                rects = [];
+            }
+        }
 
         //原始数据网格绘制
         function draw_rectangle_houseprice(price) {
