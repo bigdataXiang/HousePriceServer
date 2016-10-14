@@ -52,17 +52,6 @@ public class SpatialInterpolation extends NiMatrix{
 
         getInterpolationResult();
 
-        /*测试
-        String collName="GridData_Resold_50";
-        DBCollection coll = db.getDB().getCollection(collName);
-        BasicDBObject document = new BasicDBObject();
-        document.put("code",2945529);
-        List code_array=coll.find(document).toArray();
-        document= (BasicDBObject) code_array.get(0);
-        coll = db.getDB().getCollection("ceshi");
-        coll.insert(document);
-        System.out.println("ok");*/
-
     }
 
 
@@ -206,11 +195,11 @@ public class SpatialInterpolation extends NiMatrix{
             rmse=errorCalculation(code)[1];
             mae=errorCalculation(code)[2];
 
-            if(mse>0.25){
+            if(mae>1){
                 failed_interpolation_codes.add(code);
             }else {
                 qualified_interpolation_codes.add(code);
-                FileTool.Dump(code,"D:\\中期考核\\grid50\\插值误差大于0.25.txt","utf-8");
+                FileTool.Dump(code,"D:\\中期考核\\grid50\\mae大于1.txt","utf-8");
             }
 
             String str=code+","+mse+","+rmse+","+mae;
@@ -229,7 +218,7 @@ public class SpatialInterpolation extends NiMatrix{
             compareFailedCode(code);
         }
     }
-    /**step_8:将插值结果符合(即mse小于0.1)的网格进行插值操作*/
+    /**step_8:将插值结果符合(即mse小于0.25、或者mae小于1)的网格进行插值操作*/
     public static void step_8(){
         int size=qualified_interpolation_codes.size();
         String code;
@@ -239,6 +228,11 @@ public class SpatialInterpolation extends NiMatrix{
         }
     }
     /**step_9:将插值后的结果转换成网格的形式存储于MongoDB(GridData_Resold_50_Interpolation表)中*/
+    /**数据库中的数据有三种：
+     * 一种是插值前就是满格的数据
+     * 二种是插值后不超过限插的满格插值数据
+     * 三种是排除以上两种情况的数据，存储其本身的真实值
+     * */
     public static void step_9(){
         toMongoDB("GridData_Resold_50_Interpolation",1,"woaiwojia");
     }
@@ -1211,7 +1205,7 @@ public class SpatialInterpolation extends NiMatrix{
             double real_price;
             double interpolation_price;
 
-            System.out.println(code+":");
+            //System.out.println(code+":");
             if(interpolation_value_map.size()!=0){
                 for (Map.Entry<String, Double> p : real_value_map.entrySet()) {
                     date=p.getKey();
@@ -1219,13 +1213,13 @@ public class SpatialInterpolation extends NiMatrix{
                         real_price=real_value_map.get(date);
                         interpolation_price=interpolation_value_map.get(date);
                         String str=code+","+date+":"+real_price+" , "+interpolation_price;
-                        System.out.println(str);
+                        //System.out.println(str);
                         FileTool.Dump(str,"D:\\中期考核\\grid50\\插值与真实值的对比.txt","utf-8");
                     }
                 }
             }
-            System.out.print("\n");
-            printSeparator(40);//打印分隔符
+            //System.out.print("\n");
+            //printSeparator(40);//打印分隔符
         }
     }
     /**19、将插值结果符合(即mse小于0.1)的网格进行插值操作:插值规则是如果该时间点的真实值缺乏，则用插值代替，否则采用真实值*/
@@ -1281,7 +1275,8 @@ public class SpatialInterpolation extends NiMatrix{
             int row;
             int col;
 
-
+            //导入原本就满格的数据
+            int count=0;
             for (Map.Entry<Integer, JSONObject> entry : full_value_grids.entrySet()) {
                 code=entry.getKey();
                 int[] rowcol=RowColCalculation.Code_RowCol(code,N);
@@ -1304,11 +1299,14 @@ public class SpatialInterpolation extends NiMatrix{
                     document.put("price",price);
                     document.put("source",source);
                     coll.insert(document);
-                    System.out.println("插入一条数据~");
-
+                    count++;
                 }
             }
-            for (Map.Entry<Integer, JSONObject> entry : full_value_grids.entrySet()) {
+            System.out.println("导入原本就满格的数据"+count+"条");
+
+            //导入插值后满格的数据
+            count=0;
+            for (Map.Entry<Integer, JSONObject> entry : interpolation_value_grids.entrySet()) {
                 code=entry.getKey();
                 int[] rowcol=RowColCalculation.Code_RowCol(code,N);
                 row=rowcol[0];
@@ -1330,11 +1328,43 @@ public class SpatialInterpolation extends NiMatrix{
                     document.put("price",price);
                     document.put("source",source);
                     coll.insert(document);
-                    System.out.println("插入一条数据~");
-
+                    count++;
                 }
             }
+            System.out.println("导入插值后满格的数据"+count+"条");
 
+            //导入插值失败的网格的真实数据
+            count=0;
+            for (Map.Entry<Integer, JSONObject> entry : jsonArray_map.entrySet()) {
+                 code= entry.getKey();
+                if(!(full_value_grids.containsKey(code))&&!(interpolation_value_grids.containsKey(code))){
+                    int[] rowcol=RowColCalculation.Code_RowCol(code,N);
+                    row=rowcol[0];
+                    col=rowcol[1];
+                    if(jsonArray_map.containsKey(code)){
+                        obj=jsonArray_map.get(code);
+                        Iterator<String> it=obj.keySet().iterator();
+                        while (it.hasNext()){
+                            date=it.next();
+                            year=Integer.parseInt(date.substring(0,date.indexOf("-")));
+                            month=Integer.parseInt(date.substring(date.indexOf("-")+"-".length()));
+                            price=obj.getDouble(date);
+
+                            document=new BasicDBObject();
+                            document.put("code",code);
+                            document.put("row",row);
+                            document.put("col",col);
+                            document.put("month",month);
+                            document.put("year",year);
+                            document.put("price",price);
+                            document.put("source",source);
+                            coll.insert(document);
+                            count++;
+                        }
+                    }
+                }
+            }
+            System.out.println("导入插值失败的网格的真实数据"+count+"条");
         } catch (MongoException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

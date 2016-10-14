@@ -53,7 +53,7 @@ public class CallInterestGrid {
     }
     public Response get(String body){
 
-        JSONObject condition= SetCondition.setCallInterestGrid(body);
+        JSONObject condition= SetCondition.setCallInterestGrid_50(body);
         String resultdata=CallMongo(condition);
 
         Response r= new Response();
@@ -128,7 +128,7 @@ public class CallInterestGrid {
             row_doc=doc.getInt("row");
             col_doc=doc.getInt("col");
 
-            result_doc=codeMapping100toN00(row_doc,col_doc,N);
+            result_doc=RowColCalculation.codeMapping50toN50(row_doc,col_doc,N);
             row=result_doc[0];
             doc.put("row",row);
             col=result_doc[1];
@@ -137,7 +137,7 @@ public class CallInterestGrid {
             doc.put("code",code);
             code_array_after.add(doc);
 
-            average_price=doc.getDouble("average_price");
+            average_price=doc.getDouble("price");
             if (map.containsKey(code)) {
 
                 cpr = map.get(code);

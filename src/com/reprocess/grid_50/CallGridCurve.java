@@ -20,28 +20,28 @@ public class CallGridCurve {
         condition.put("row",107);
         condition.put("col",176);
         condition.put("gridcode",42158);
-        condition.put("N",5);
+        condition.put("N",10);
         condition.put("source","anjuke");
         condition.put("export_collName","GridData_Resold_100");
 
-        System.out.println(callGridData_Resold_100(condition));
+        System.out.println(callGridData_Resold_50_Interpolation(condition));
     }
 
     public Response get(String body){
 
         JSONObject condition= JSONObject.fromObject(body);
         condition.put("source","anjuke");
-        condition.put("export_collName","GridData_Resold_100");
+        condition.put("export_collName","GridData_Resold_50_Interpolation");
 
         Response r= new Response();
         r.setCode(200);
-        r.setContent(callGridData_Resold_100(condition));
+        r.setContent(callGridData_Resold_50_Interpolation(condition));
         //System.out.println(callGridData_Resold_100(condition));
         return r;
 
 
     }
-    public static String callGridData_Resold_100(JSONObject condition){
+    public static String callGridData_Resold_50_Interpolation(JSONObject condition){
 
         String collName=condition.getString("export_collName");
         DBCollection coll = db.getDB().getCollection(collName);
@@ -50,9 +50,9 @@ public class CallGridCurve {
         int col=condition.getInt("col");
         int N=condition.getInt("N");
 
-        int row_100=(row-1)*N+1;
-        int col_100=(col-1)*N+1;
-        int code_100;
+        int row_50=(row-1)*N+1;
+        int col_50=(col-1)*N+1;
+        int code_50;
 
         BasicDBObject document;
         String source;
@@ -66,16 +66,16 @@ public class CallGridCurve {
         JSONObject obj;
         int count_fang=0;
         int count_woaiwojia=0;
-        for(int i=row_100;i<=row_100+N;i++){
-            for(int j=col_100;j<=col_100+N;j++){
+        for(int i=row_50;i<=row_50+N;i++){
+            for(int j=col_50;j<=col_50+N;j++){
 
                 document = new BasicDBObject();
 
                 source=condition.getString("source");
                 //document.put("source",source);
 
-                code_100=j+2000*(i-1);
-                document.put("code",code_100);
+                code_50=j+4000*(i-1);
+                document.put("code",code_50);
 
                 document.put("row",i);
                 document.put("col",j);
@@ -147,8 +147,8 @@ public class CallGridCurve {
                 int counts=0;
                 for(int i=0;i<list_woaiwojia.size();i++){
                     obj=list_woaiwojia.get(i);
-                    if(obj.containsKey("average_price")){
-                        average_price=obj.getDouble("average_price");
+                    if(obj.containsKey("price")){
+                        average_price=obj.getDouble("price");
                         totalprice+=average_price;
                         counts++;
                     }
@@ -181,8 +181,8 @@ public class CallGridCurve {
                 int counts=0;
                 for(int i=0;i<list_fang.size();i++){
                     obj=list_fang.get(i);
-                    if(obj.containsKey("average_price")){
-                        average_price=obj.getDouble("average_price");
+                    if(obj.containsKey("price")){
+                        average_price=obj.getDouble("price");
                         totalprice+=average_price;
                         counts++;
                     }
@@ -233,45 +233,64 @@ public class CallGridCurve {
         JSONObject totalresult=new JSONObject();
         List<Integer> min=new ArrayList<>();
         List<Integer> max=new ArrayList<>();
+        int suggestedMin_1=0;
+        int suggestedMax_1=0;
+        int suggestedMin_2=0;
+        int suggestedMax_2=0;
+        int suggestedMin_3=0;
+        int suggestedMax_3=0;
+        int suggestedMin=0;
+        int suggestedMax=0;
+        JSONObject result;
 
 
-        int suggestedMin_1=fang_time_price_list.get(0).getInt("average_price");
-        int suggestedMax_1=fang_time_price_list.get(fang_time_price_list.size()-1).getInt("average_price")+1;
-        min.add(suggestedMin_1);
-        max.add(suggestedMax_1);
-        //将list数组按照时间排序
-        Collections.sort(fang_time_price_list, new UtilFile.TimeComparator());
-        JSONObject result=new JSONObject();
-        result.put("data",fang_time_price_list);
-        totalresult.put("fang",result);
-        //System.out.println(result.toString());
+        if(fang_time_price_list.size()!=0){
+            suggestedMin_1=fang_time_price_list.get(0).getInt("average_price");
+            suggestedMax_1=fang_time_price_list.get(fang_time_price_list.size()-1).getInt("average_price")+1;
+            min.add(suggestedMin_1);
+            max.add(suggestedMax_1);
+            //将list数组按照时间排序
+            Collections.sort(fang_time_price_list, new UtilFile.TimeComparator());
+            result=new JSONObject();
+            result.put("data",fang_time_price_list);
+            totalresult.put("fang",result);
+            //System.out.println(result.toString());
+        }
 
-        int suggestedMin_2=woaiwojia_time_price_list.get(0).getInt("average_price");
-        int suggestedMax_2=woaiwojia_time_price_list.get(woaiwojia_time_price_list.size()-1).getInt("average_price")+1;
-        min.add(suggestedMin_2);
-        max.add(suggestedMax_2);
-        //将list数组按照时间排序
-        Collections.sort(woaiwojia_time_price_list, new UtilFile.TimeComparator());
-        result=new JSONObject();
-        result.put("data",woaiwojia_time_price_list);
-        totalresult.put("woaiwojia",result);
-        //System.out.println(result.toString());
+        if(woaiwojia_time_price_list.size()!=0){
+            suggestedMin_2=woaiwojia_time_price_list.get(0).getInt("average_price");
+            suggestedMax_2=woaiwojia_time_price_list.get(woaiwojia_time_price_list.size()-1).getInt("average_price")+1;
+            min.add(suggestedMin_2);
+            max.add(suggestedMax_2);
+            //将list数组按照时间排序
+            Collections.sort(woaiwojia_time_price_list, new UtilFile.TimeComparator());
+            result=new JSONObject();
+            result.put("data",woaiwojia_time_price_list);
+            totalresult.put("woaiwojia",result);
+            //System.out.println(result.toString());
+        }
 
-        int suggestedMin_3=blend_time_price_list.get(0).getInt("average_price");
-        int suggestedMax_3=blend_time_price_list.get(blend_time_price_list.size()-1).getInt("average_price")+1;
-        min.add(suggestedMin_3);
-        max.add(suggestedMax_3);
-        //将list数组按照时间排序
-        Collections.sort(blend_time_price_list, new UtilFile.TimeComparator());
-        result=new JSONObject();
-        result.put("data",blend_time_price_list);
-        totalresult.put("blend",result);
-        //System.out.println(result.toString());
+        if(blend_time_price_list.size()!=0){
+            suggestedMin_3=blend_time_price_list.get(0).getInt("average_price");
+            suggestedMax_3=blend_time_price_list.get(blend_time_price_list.size()-1).getInt("average_price")+1;
+            min.add(suggestedMin_3);
+            max.add(suggestedMax_3);
+            //将list数组按照时间排序
+            Collections.sort(blend_time_price_list, new UtilFile.TimeComparator());
+            result=new JSONObject();
+            result.put("data",blend_time_price_list);
+            totalresult.put("blend",result);
+            //System.out.println(result.toString());
+        }
 
         Collections.sort(min);
         Collections.sort(max);
-        int suggestedMin=min.get(0);
-        int suggestedMax=max.get(0);
+        if(min.size()!=0){
+            suggestedMin=min.get(0);
+        }
+        if(max.size()!=0){
+            suggestedMax=max.get(0);
+        }
         totalresult.put("suggestedMin",suggestedMin);
         totalresult.put("suggestedMax",suggestedMax);
         System.out.println(totalresult.toString());

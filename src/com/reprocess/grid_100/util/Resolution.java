@@ -5,6 +5,7 @@ package com.reprocess.grid_100.util;
  */
 public class Resolution {
 
+    /**最小分辨率下显示网格的最大分辨率即：zoom=11时，n=1*/
     public static int getResolution(int zoom){
         int N=0;
         switch(zoom){
@@ -22,7 +23,7 @@ public class Resolution {
                 break;
             case 12:N=20;
                 break;
-            case 11:N=30;
+            case 11:N=1;
                 break;
         }
         return N;

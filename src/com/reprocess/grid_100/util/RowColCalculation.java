@@ -10,27 +10,52 @@ public class RowColCalculation {
     public static double width=0.0011785999999997187;//每100m的经度差
     public static double length=9.003999999997348E-4;//每100m的纬度差
 
-    /**通过最东的坐标获取当前范围内的最小列号*/
+    public static double width_50=5.892999999998593E-4;//每50m的经度差
+    public static double length_50=4.501999999998674E-4;//每50m的纬度差
+
+
+
+    /**通过最东的坐标获取当前范围内的最小列号  100*100*/
     public static int getColMin(double west){
         int colmin=(int) Math.ceil((west-115.417284)/width);
         return colmin;
     }
+    /**通过最东的坐标获取当前范围内的最小列号  50*50*/
+    public static int getColMin_50(double west){
+        int colmin=(int) Math.ceil((west-115.417284)/width_50);
+        return colmin;
+    }
 
-    /**通过最东的坐标获取当前范围内的最大列号*/
+    /**通过最东的坐标获取当前范围内的最大列号  100*100*/
     public static int getColMax(double east){
         int colmax=(int)Math.ceil((east-115.417284)/width);
         return colmax;
     }
+    /**通过最东的坐标获取当前范围内的最大列号 50*50*/
+    public static int getColMax_50(double east){
+        int colmax=(int)Math.ceil((east-115.417284)/width_50);
+        return colmax;
+    }
 
-     /**通过最南的坐标获取当前范围内的最小行号*/
+     /**通过最南的坐标获取当前范围内的最小行号 100*100*/
     public static int getRowMin(double south){
         int rowmin=(int)Math.ceil((south-39.438283)/length);
         return rowmin;
     }
+    /**通过最南的坐标获取当前范围内的最小行号  50*50*/
+    public static int getRowMin_50(double south){
+        int rowmin=(int)Math.ceil((south-39.438283)/length_50);
+        return rowmin;
+    }
 
-    /**通过最北的坐标获取当前范围内的最大行号*/
+    /**通过最北的坐标获取当前范围内的最大行号 100*100*/
     public static int getRowMax(double north){
         int rowmax=(int)Math.ceil((north-39.438283)/length);
+        return rowmax;
+    }
+    /**通过最北的坐标获取当前范围内的最大行号  50*50*/
+    public static int getRowMax_50(double north){
+        int rowmax=(int)Math.ceil((north-39.438283)/length_50);
         return rowmax;
     }
 
@@ -52,7 +77,7 @@ public class RowColCalculation {
         return result;
     }
 
-    /**通过网格值code计算行列号值*/
+    /**通过网格值code计算行列号值 50m*50m的精度*/
     public static int[] Code_RowCol(int code,int N){
         int[] rowcol=new int[2];
         int cols=4000/N;
@@ -65,7 +90,7 @@ public class RowColCalculation {
         return rowcol;
     }
 
-    /**通过行列号值计算网格值*/
+    /**通过行列号值计算网格值  50m*50m的精度*/
     public static int RowCol_Code(int row,int col,int N){
         int code=0;
         int cols=4000/N;
@@ -78,8 +103,6 @@ public class RowColCalculation {
         double width=0.0011785999999997187*N;//每N00m的经度差
         double length=9.003999999997348E-4*N;//每N00m的纬度差
 
-       /* double width=5.892999999998593E-4;//每50m的经度差
-        double length=4.501999999998674E-4;//每50m的纬度差*/
         JSONObject corners=new JSONObject();
 
         double base_lng=115.417284;
