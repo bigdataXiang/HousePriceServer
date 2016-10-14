@@ -81,12 +81,21 @@
                             <span class="glyphicon glyphicon-align-center"></span>
                         </a>
                     </li>
-                    <li><a href="#profile" role="tab">
-                        <span class="glyphicon glyphicon-align-justify"></span>
-                    </a></li>
-                    <li><a href="#messages" role="tab">
-                        <span class="glyphicon glyphicon-map-marker"></span>
-                    </a></li>
+                    <li>
+                        <a href="#profile" role="tab">
+                            <span class="glyphicon glyphicon-align-justify"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#messages" role="tab">
+                            <span class="glyphicon glyphicon-map-marker"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#grid50" role="tab">
+                            <span class="glyphicon glyphicon-th-large"></span>
+                        </a>
+                    </li>
                 </ul>
 
                 <ul role="tablist">
@@ -350,6 +359,135 @@
                             <option>区重点小学</option>
                             <option>普通小学</option>
                         </select>
+                    </form>
+
+                </div>
+
+                <div class="sidebar-pane" id="grid50">
+                    <h1 class="sidebar-header">50m网格插值
+                        <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
+                    </h1>
+
+                    <!--下拉列表-->
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="source_50" class="col-sm-2 control-label">数据来源</label>
+                            <select id="source_50" class ="form-control" style='width:200px;'>
+                                <option>请选择</option>
+                                <option>我爱我家</option>
+                                <option>房天下</option>
+                                <option>安居客</option>
+                                <option>链家</option>
+                                <option>全部</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="type_50" class="col-sm-2 control-label">房源类型</label>
+                            <select id="type_50" class ="form-control" style='width:200px;'>
+                                <option>请选择</option>
+                                <option>新房</option>
+                                <option>二手房</option>
+                                <option>租房</option>
+                                <option>求租</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="gridValue_50" class="col-sm-2 control-label">网格颜色意义</label>
+                            <select id="gridValue_50" style='width:200px;'>
+                                <option>请选择</option>
+                                <option>房价加速度</option>
+                                <option>房价</option>
+                            </select>
+                        </div>
+                    </form>
+
+                    <!--标签栏-->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#price" role="tab" data-toggle="tab">房价</a></li>
+                        <li role="presentation"><a href="#acceleration" role="tab" data-toggle="tab">房价加速度</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="price_50">
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="gridTime_50" class="col-sm-2 control-label">网格房价时间</label>
+                                    <select id="gridTime_50" style='width:200px;'>
+                                        <option>请选择</option>
+                                        <option id="201507_50">2015年07月</option>
+                                        <option id="201508_50">2015年08月</option>
+                                        <option id="201509_50">2015年09月</option>
+                                        <option id="201510_50">2015年10月</option>
+                                        <option id="201511_50">2015年11月</option>
+                                        <option id="201512_50">2015年12月</option>
+                                        <option id="201601_50">2016年01月</option>
+                                        <option id="201602_50">2016年02月</option>
+                                        <option id="201603_50">2016年03月</option>
+                                        <option id="201604_50">2016年04月</option>
+                                        <option id="201605_50">2016年05月</option>
+                                        <option id="201606_50">2016年06月</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="acceleration_50">
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="startTime_50" class="col-sm-2 control-label">加速度起始时间</label>
+                                    <select id="startTime_50" style='width:200px;'>
+                                        <option>请选择</option>
+                                        <option>2015年07月</option>
+                                        <option>2015年08月</option>
+                                        <option>2015年09月</option>
+                                        <option>2015年10月</option>
+                                        <option>2015年11月</option>
+                                        <option>2015年12月</option>
+                                        <option>2016年01月</option>
+                                        <option>2016年02月</option>
+                                        <option>2016年03月</option>
+                                        <option>2016年04月</option>
+                                        <option>2016年05月</option>
+                                        <option>2016年06月</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="endTime_50" class="col-sm-2 control-label">加速度终止时间</label>
+                                    <select id="endTime_50" style='width:200px;'>
+                                        <option>请选择</option>
+                                        <option>2015年07月</option>
+                                        <option>2015年08月</option>
+                                        <option>2015年09月</option>
+                                        <option>2015年10月</option>
+                                        <option>2015年11月</option>
+                                        <option>2015年12月</option>
+                                        <option>2016年01月</option>
+                                        <option>2016年02月</option>
+                                        <option>2016年03月</option>
+                                        <option>2016年04月</option>
+                                        <option>2016年05月</option>
+                                        <option>2016年06月</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="computation_50" class="col-sm-2 control-label">加速度计算方式</label>
+                                    <select id="computation_50" style='width:200px;'>
+                                        <option>请选择</option>
+                                        <option>最值计算法</option>
+                                        <option>起止时间计算法</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="finish_50" class="col-sm-2 control-label">是否完成选择</label>
+                            <select id="finish_50" class ="form-control" style='width:200px;'>
+                                <option>请选择</option>
+                                <option>是</option>
+                                <option>否</option>
+                            </select>
+                        </div>
                     </form>
 
                 </div>
@@ -902,6 +1040,7 @@
         }
     });
 
+        //弹出曲线框的时候触发的事件
         $("#select_source").change(function(){
         var x = document.getElementById("select_source").selectedIndex;
         var y = document.getElementById("select_source").options;
@@ -1021,6 +1160,7 @@
         var cityfocus = [];
         var regionfocus = [];
         var ordinary = [];
+        //原始数据的触发
         $("#finish").change(function(){
             var x = document.getElementById("finish").selectedIndex;
             var y = document.getElementById("finish").options;
@@ -1031,6 +1171,19 @@
                 alert("请再次选择需要显示的数据");
             }
         });
+        //插值数据的触发
+        $("#finish_50").change(function(){
+            var x = document.getElementById("finish_50").selectedIndex;
+            var y = document.getElementById("finish_50").options;
+            var finish = y[x].text;
+            if(finish=="是"){
+                creatGrid_50();
+            }else if(finish=="否"){
+                alert("请再次选择需要显示的数据");
+            }
+        });
+
+
         //creatGrid：通过获取当前屏幕的经纬度坐标实现该范围内的网格可视化
         function creatGrid() {
             var bounds = map.getBounds();
@@ -1103,6 +1256,79 @@
                 });
             }
         }
+        //creatGrid_50：通过获取当前屏幕的经纬度坐标实现该范围内的网格可视化(基础数据是50*50网格)
+        function creatGrid_50() {
+            var bounds = map.getBounds();
+            console.log(bounds);
+            var west = bounds.getWest();
+            var east = bounds.getEast();
+            var south = bounds.getSouth();
+            var north = bounds.getNorth();
+            var zoom = map.getZoom();
+            console.log(zoom);
+
+            var x = document.getElementById("gridValue_50").selectedIndex;
+            var y = document.getElementById("gridValue_50").options;
+            var gridValue = y[x].text;
+            if (gridValue == "房价加速度") {
+                x = document.getElementById("startTime_50").selectedIndex;
+                y = document.getElementById("startTime_50").options;
+                var startTime = y[x].text;
+
+                x = document.getElementById("endTime_50").selectedIndex;
+                y = document.getElementById("endTime_50").options;
+                var endTime = y[x].text;
+
+                x = document.getElementById("source_50").selectedIndex;
+                y = document.getElementById("source_50").options;
+                var source = y[x].text;
+
+                x = document.getElementById("computation_50").selectedIndex;
+                y = document.getElementById("computation_50").options;
+                var computation = y[x].text;
+
+                var json = {
+                    "west": west,
+                    "east": east,
+                    "south": south,
+                    "north": north,
+                    "zoom": zoom,
+                    "starttime": startTime,
+                    "endtime": endTime,
+                    "source": source,
+                    "computation":computation
+                };
+                $.post("/gridacceleration_50", "" + JSON.stringify(json), function (result) {
+                    var price = JSON.parse(result);
+                    draw_rectangle_Acceleration_50(bounds, price);
+                });
+
+            } else if (gridValue == "房价") {
+                x = document.getElementById("gridTime_50").selectedIndex;
+                y = document.getElementById("gridTime_50").options;
+                var gridTime = y[x].text;
+
+                x = document.getElementById("source_50").selectedIndex;
+                y = document.getElementById("source_50").options;
+                var source = y[x].text;
+
+                var json = {
+                    "west": west,
+                    "east": east,
+                    "south": south,
+                    "north": north,
+                    "zoom": zoom,
+                    "gridTime": gridTime,
+                    "source": source
+                };
+                $.post("/gridcolor_50", "" + JSON.stringify(json), function (result) {
+                    var price = JSON.parse(result);
+                    console.log("每移动一次开始画网格");
+                    draw_rectangle_houseprice_50(price);//1表示显示插值数据的曲线，2表示显示原始数据的曲线
+                });
+            }
+        }
+
         //dragend：拖动地图时能实现不同网格的生成，主要用于同一zoom下的不同范围内的网格生成
         map.on('dragend', function (e) {
             creatGrid();
@@ -1463,6 +1689,8 @@
         }
         alert("总共画了"+contour.length+"个多边形");
     }
+
+        //原始数据网格绘制
         function draw_rectangle_houseprice(price) {
         var N = price.N;
         var width = 0.0011785999999997187 * N;//每N00m的经度差
@@ -1552,6 +1780,94 @@
         }
 
     }
+        function draw_rectangle_Acceleration(bounds, price) {
+            var west = bounds.getWest();
+            var east = bounds.getEast();
+            var south = bounds.getSouth();
+            var north = bounds.getNorth();
+            var N = price.N;
+            var width = 0.0011785999999997187 * N;//每N00m的经度差
+            var length = 9.003999999997348E-4 * N;//每N00m的纬度差
+            var r_min = price.r_min;
+            var r_max = price.r_max;
+            var c_min = price.c_min;
+            var c_max = price.c_max;
+
+            var row;
+            var col;
+
+            //将之前的图层删除
+            if (rects.length != 0) {
+                for (var i = 0; i < rects.length; i++) {
+                    map = map.removeLayer(rects[i]);
+                }
+                rects = [];
+            }
+
+            var count = 0;
+            for (row = r_min; row <= r_max; row++) {
+                for (col = c_min; col <= c_max; col++) {
+
+                    //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                    var dist_wid = (col - 1) * width;
+                    var dist_len = (row - 1) * length;
+                    var bounds = [[39.438283 + dist_len, (115.417284 + dist_wid)], [(39.438283 + length) + dist_len, ((115.417284 + width) + dist_wid)]];//(左下角，右上角)
+                    var rect;
+                    var gridvalue = price.data[count];
+
+                    var gridcode_java = gridvalue.code;
+                    var gridcode_js = col + (row - 1) * (2000 / N);
+
+                    var gridcolor = gridvalue.color;
+                    var gridrow = gridvalue.row;
+                    var gridcol = gridvalue.col;
+                    var acceleration = gridvalue.acceleration;
+
+                    if (acceleration != 0) {
+                        rect = L.rectangle(bounds, {
+                            color: mycolor(255, 255, 255),
+                            opacity: 0.9,
+                            fillColor: gridcolor,
+                            weight: 1,
+                            fillOpacity: 0.6,
+                            className: "" + gridcode_js + "," + row + "," + col
+                        });//,className:gridcode_java
+                        rect.index = count;
+                        rect.data = price.data[rect.index];
+
+                        rect.on('click', function (e) {
+                            var json = {
+                                "row": this.data.row,
+                                "col": this.data.col,
+                                "code": this.data.code,
+                                "N": N
+                            };
+
+                            $.post("/price", JSON.stringify(json),
+                                    function (data) {
+                                        var ctx = document.getElementById("myChart").getContext("2d");
+                                        pricedata = JSON.parse(data);
+
+                                        var max = pricedata.suggestedMax;
+                                        var min = pricedata.suggestedMin;
+
+                                        var grid = JSON.stringify(json);
+                                        var gridinfo = JSON.parse(grid);
+                                        var info = "编码：" + gridinfo.code + "," + gridinfo.row + "行" + gridinfo.col + "列";
+                                        window.myLine = new Chart(ctx, dataStruct(pricedata, info, max, min));
+                                        $('#myModal').modal();
+                                    }
+                            )
+                        });
+
+                        rect.addTo(map);
+                        rects.push(rect);
+                    }
+                    count++;
+                }
+            }
+
+        }
         function draw_rectangle_interpolation(price) {
         var N = price.N;
         var width = 0.0011785999999997187 * N;//每N00m的经度差
@@ -1638,94 +1954,183 @@
         }
 
     }
-        function draw_rectangle_Acceleration(bounds, price) {
-        var west = bounds.getWest();
-        var east = bounds.getEast();
-        var south = bounds.getSouth();
-        var north = bounds.getNorth();
-        var N = price.N;
-        var width = 0.0011785999999997187 * N;//每N00m的经度差
-        var length = 9.003999999997348E-4 * N;//每N00m的纬度差
-        var r_min = price.r_min;
-        var r_max = price.r_max;
-        var c_min = price.c_min;
-        var c_max = price.c_max;
 
-        var row;
-        var col;
+        //插值数据网格绘制
+        function draw_rectangle_houseprice_50(price) {
+            var N = price.N;
+            var width = 5.892999999998593E-4 * N;//每N50m的经度差
+            var length = 4.501999999998674E-4 * N;//每N50m的纬度差
+            var r_min = price.r_min;
+            var r_max = price.r_max;
+            var c_min = price.c_min;
+            var c_max = price.c_max;
 
-        //将之前的图层删除
-        if (rects.length != 0) {
-            for (var i = 0; i < rects.length; i++) {
-                map = map.removeLayer(rects[i]);
-            }
-            rects = [];
-        }
+            var row;
+            var col;
 
-        var count = 0;
-        for (row = r_min; row <= r_max; row++) {
-            for (col = c_min; col <= c_max; col++) {
-
-                //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
-                var dist_wid = (col - 1) * width;
-                var dist_len = (row - 1) * length;
-                var bounds = [[39.438283 + dist_len, (115.417284 + dist_wid)], [(39.438283 + length) + dist_len, ((115.417284 + width) + dist_wid)]];//(左下角，右上角)
-                var rect;
-                var gridvalue = price.data[count];
-
-                var gridcode_java = gridvalue.code;
-                var gridcode_js = col + (row - 1) * (2000 / N);
-
-                var gridcolor = gridvalue.color;
-                var gridrow = gridvalue.row;
-                var gridcol = gridvalue.col;
-                var acceleration = gridvalue.acceleration;
-
-                if (acceleration != 0) {
-                    rect = L.rectangle(bounds, {
-                        color: mycolor(255, 255, 255),
-                        opacity: 0.9,
-                        fillColor: gridcolor,
-                        weight: 1,
-                        fillOpacity: 0.6,
-                        className: "" + gridcode_js + "," + row + "," + col
-                    });//,className:gridcode_java
-                    rect.index = count;
-                    rect.data = price.data[rect.index];
-
-                    rect.on('click', function (e) {
-                        var json = {
-                            "row": this.data.row,
-                            "col": this.data.col,
-                            "code": this.data.code,
-                            "N": N
-                        };
-
-                        $.post("/price", JSON.stringify(json),
-                                function (data) {
-                                    var ctx = document.getElementById("myChart").getContext("2d");
-                                    pricedata = JSON.parse(data);
-
-                                    var max = pricedata.suggestedMax;
-                                    var min = pricedata.suggestedMin;
-
-                                    var grid = JSON.stringify(json);
-                                    var gridinfo = JSON.parse(grid);
-                                    var info = "编码：" + gridinfo.code + "," + gridinfo.row + "行" + gridinfo.col + "列";
-                                    window.myLine = new Chart(ctx, dataStruct(pricedata, info, max, min));
-                                    $('#myModal').modal();
-                                }
-                        )
-                    });
-
-                    rect.addTo(map);
-                    rects.push(rect);
+            //将之前的图层删除
+            if (rects.length != 0) {
+                for (var i = 0; i < rects.length; i++) {
+                    map = map.removeLayer(rects[i]);
                 }
-                count++;
+                rects = [];
             }
+
+            var count = 0;
+            for (row = r_min; row <= r_max; row++) {
+                for (col = c_min; col <= c_max; col++) {
+
+                    //parseInt:取整数部分
+                    //Math.ceil():只要有小数就加1
+                    var cols=parseInt(4000 / N);
+                    var gridcode_js = col +  cols* (row - 1);
+                    //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                    var dist_wid = (col - 1) * width;
+                    var dist_len = (row - 1) * length;
+                    var bounds = [[39.438283 + dist_len, (115.417284 + dist_wid)], [(39.438283 + length) + dist_len, ((115.417284 + width) + dist_wid)]];//(左下角，右上角)
+                    var rect;
+                    var gridvalue = price.data[count];
+                    var gridcode_java = gridvalue.code;
+                    var gridcolor = gridvalue.color;
+                    var gridrow = gridvalue.row;
+                    var gridcol = gridvalue.col;
+                    var averageprice = gridvalue.average_price;
+
+                    if (gridcode_js == gridcode_java) {
+                        if (averageprice != 0) {
+                            //console.log(count);
+                            rect = L.rectangle(bounds, {
+                                color: mycolor(255, 255, 255),
+                                opacity: 0.9,
+                                fillColor: gridcolor,
+                                weight: 1,
+                                fillOpacity: 0.6,
+                                className: "" + gridcode_java
+                            });//,className:gridcode_java
+                            rect.index = count;
+                            rect.data = price.data[rect.index];
+
+                            rect.on('click', function (e) {
+                                var json = {
+                                    "row": this.data.row,
+                                    "col": this.data.col,
+                                    "code": this.data.code,
+                                    "N": N
+                                };
+
+                                $.post("/pricecurve_50", JSON.stringify(json),
+                                        function (data) {
+                                            var ctx = document.getElementById("myChart").getContext("2d");
+                                            pricedata = JSON.parse(data);
+
+                                            var max = pricedata.suggestedMax;
+                                            var min = pricedata.suggestedMin;
+
+                                            var grid = JSON.stringify(json);
+                                            var gridinfo = JSON.parse(grid);
+                                            var info = "编码：" + gridinfo.code + "," + gridinfo.row + "行" + gridinfo.col + "列";
+                                            window.myLine = new Chart(ctx, dataStruct(pricedata, info, max, min));
+                                            $('#myModal').modal();
+                                        }
+                                )
+                            });
+
+                            rect.addTo(map);
+                            rects.push(rect);
+                        }
+                        count++;
+                    }
+                    //count++;
+                }
+            }
+
+        }
+        function draw_rectangle_Acceleration_50(bounds, price) {
+            var N = price.N;
+            var width = 5.892999999998593E-4 * N;//每N50m的经度差
+            var length = 4.501999999998674E-4 * N;//每N50m的纬度差
+            var r_min = price.r_min;
+            var r_max = price.r_max;
+            var c_min = price.c_min;
+            var c_max = price.c_max;
+
+            var row;
+            var col;
+
+            //将之前的图层删除
+            if (rects.length != 0) {
+                for (var i = 0; i < rects.length; i++) {
+                    map = map.removeLayer(rects[i]);
+                }
+                rects = [];
+            }
+
+            var count = 0;
+            for (row = r_min; row <= r_max; row++) {
+                for (col = c_min; col <= c_max; col++) {
+
+                    //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                    var dist_wid = (col - 1) * width;
+                    var dist_len = (row - 1) * length;
+                    var bounds = [[39.438283 + dist_len, (115.417284 + dist_wid)], [(39.438283 + length) + dist_len, ((115.417284 + width) + dist_wid)]];//(左下角，右上角)
+                    var rect;
+                    var gridvalue = price.data[count];
+
+                    var gridcode_java = gridvalue.code;
+                    var gridcode_js = col + (row - 1) * (4000 / N);
+
+                    var gridcolor = gridvalue.color;
+                    var gridrow = gridvalue.row;
+                    var gridcol = gridvalue.col;
+                    var acceleration = gridvalue.acceleration;
+
+                    if (acceleration != 0) {
+                        rect = L.rectangle(bounds, {
+                            color: mycolor(255, 255, 255),
+                            opacity: 0.9,
+                            fillColor: gridcolor,
+                            weight: 1,
+                            fillOpacity: 0.6,
+                            className: "" + gridcode_js + "," + row + "," + col
+                        });//,className:gridcode_java
+                        rect.index = count;
+                        rect.data = price.data[rect.index];
+
+                        rect.on('click', function (e) {
+                            var json = {
+                                "row": this.data.row,
+                                "col": this.data.col,
+                                "code": this.data.code,
+                                "N": N
+                            };
+
+                            $.post("/pricecurve_50", JSON.stringify(json),
+                                    function (data) {
+                                        var ctx = document.getElementById("myChart").getContext("2d");
+                                        pricedata = JSON.parse(data);
+
+                                        var max = pricedata.suggestedMax;
+                                        var min = pricedata.suggestedMin;
+
+                                        var grid = JSON.stringify(json);
+                                        var gridinfo = JSON.parse(grid);
+                                        var info = "编码：" + gridinfo.code + "," + gridinfo.row + "行" + gridinfo.col + "列";
+                                        window.myLine = new Chart(ctx, dataStruct(pricedata, info, max, min));
+                                        $('#myModal').modal();
+                                    }
+                            )
+                        });
+
+                        rect.addTo(map);
+                        rects.push(rect);
+                    }
+                    count++;
+                }
+            }
+
         }
 
-    }
+
         /*var layerControl = new L.Control.Layers();
         layerControl.addTo(map);*/
         resize();

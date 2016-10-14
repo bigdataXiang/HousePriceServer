@@ -3,6 +3,8 @@ package com.reprocess.grid_50;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.reprocess.grid_100.CallInterestGrid;
+import com.reprocess.grid_100.util.RowColCalculation;
+import com.reprocess.grid_100.util.SetCondition;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
@@ -24,7 +26,7 @@ public class CallPriceAcceleration extends CallInterestGrid {
 
     public Response get(String body){
 
-        JSONObject condition=setCallPriceAcceleration(body);
+        JSONObject condition= SetCondition.setCallPriceAcceleration_50(body);
         String resultdata=callMongo(condition);
         System.out.println(resultdata);
 
@@ -177,8 +179,8 @@ public class CallPriceAcceleration extends CallInterestGrid {
 
             //System.out.println("转换前的100*100的网格数据"+doc);
 
-            //将doc中的row、col、code从100分辨率的转换成N00分辨率的
-            result_doc=codeMapping100toN00(row_doc,col_doc,N);
+            //将doc中的row、col、code从50分辨率的转换成N50分辨率的
+            result_doc= RowColCalculation.codeMapping50toN50(row_doc,col_doc,N);
             row=result_doc[0];
             doc.put("row",row);
             col=result_doc[1];
@@ -225,7 +227,7 @@ public class CallPriceAcceleration extends CallInterestGrid {
                 for(int i=0;i<codelist.size();i++){
                     obj=JSONObject.fromObject(codelist.get(i));
                     date=obj.getString("year")+"-"+obj.getString("month");
-                    average_price=obj.getDouble("average_price");
+                    average_price=obj.getDouble("price");
 
                     if(timeprice_map.containsKey(date)){
                         average_price_list=timeprice_map.get(date);
@@ -366,7 +368,7 @@ public class CallPriceAcceleration extends CallInterestGrid {
 
         for(int i=r_min;i<=r_max;i++) {
             for (int j =c_min; j<=c_max; j++) {
-                String index=""+(j + (2000/N) * (i - 1));
+                String index=""+(j + (4000/N) * (i - 1));
                 if(!totalgrid.containsKey(index)){
                     nullobj=new JSONObject();
 
