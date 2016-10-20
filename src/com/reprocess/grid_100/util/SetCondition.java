@@ -6,6 +6,7 @@ import net.sf.json.JSONObject;
  * Created by ZhouXiang on 2016/10/12.
  */
 public class SetCondition {
+    /**这是以100为基底网格的方法*/
     public static JSONObject setCallInterestGrid(String body){
         JSONObject obj=JSONObject.fromObject(body);
         System.out.println(obj);
@@ -30,6 +31,19 @@ public class SetCondition {
         int colmax=RowColCalculation.getColMax(east);
         int rowmin=RowColCalculation.getRowMin(south);
         int rowmax=RowColCalculation.getRowMax(north);
+
+        if(colmin<0){
+            colmin=0;
+        }
+        if(colmax>2000){
+            colmax=2000;
+        }
+        if(rowmin<0){
+            rowmin=0;
+        }
+        if(rowmax>2000){
+            rowmax=2000;
+        }
 
         JSONObject condition=new JSONObject();
         condition.put("N",N);
@@ -56,6 +70,7 @@ public class SetCondition {
         int zoom=obj.getInt("zoom");
         int N= Resolution.getResolution(zoom);
 
+
         //2016年01月
         String time=obj.getString("gridTime");
         int year=Integer.parseInt(time.substring(0,time.indexOf("年")));
@@ -68,6 +83,19 @@ public class SetCondition {
         int colmax=RowColCalculation.getColMax_50(east);
         int rowmin=RowColCalculation.getRowMin_50(south);
         int rowmax=RowColCalculation.getRowMax_50(north);
+
+        if(colmin<0){
+            colmin=0;
+        }
+        if(colmax>4000){
+            colmax=4000;
+        }
+        if(rowmin<0){
+            rowmin=0;
+        }
+        if(rowmax>4000){
+            rowmax=4000;
+        }
 
         JSONObject condition=new JSONObject();
         condition.put("N",N);
@@ -83,6 +111,7 @@ public class SetCondition {
         return condition;
     }
 
+    /**这是以100为基底网格的方法*/
     public static JSONObject setCallPriceAcceleration(String body){
         JSONObject obj=JSONObject.fromObject(body);
 
@@ -108,6 +137,19 @@ public class SetCondition {
         int colmax=RowColCalculation.getColMax(east);
         int rowmin=RowColCalculation.getRowMin(south);
         int rowmax=RowColCalculation.getRowMax(north);
+
+        if(colmin<0){
+            colmin=0;
+        }
+        if(colmax>2000){
+            colmax=2000;
+        }
+        if(rowmin<0){
+            rowmin=0;
+        }
+        if(rowmax>2000){
+            rowmax=2000;
+        }
 
         //<option>最值计算法</option>
         //<option>起止时间计算法</option>
@@ -154,6 +196,19 @@ public class SetCondition {
         int colmax=RowColCalculation.getColMax_50(east);
         int rowmin=RowColCalculation.getRowMin_50(south);
         int rowmax=RowColCalculation.getRowMax_50(north);
+
+        if(colmin<0){
+            colmin=0;
+        }
+        if(colmax>4000){
+            colmax=4000;
+        }
+        if(rowmin<0){
+            rowmin=0;
+        }
+        if(rowmax>4000){
+            rowmax=4000;
+        }
 
         //<option>最值计算法</option>
         //<option>起止时间计算法</option>

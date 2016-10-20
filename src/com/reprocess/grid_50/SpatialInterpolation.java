@@ -50,7 +50,8 @@ public class SpatialInterpolation extends NiMatrix{
     public static void main(String[] args){
 
 
-        getInterpolationResult();
+        //getInterpolationResult();
+        System.out.println(step_10());
 
     }
 
@@ -200,10 +201,13 @@ public class SpatialInterpolation extends NiMatrix{
             }else {
                 qualified_interpolation_codes.add(code);
                 FileTool.Dump(code,"D:\\中期考核\\grid50\\mae大于1.txt","utf-8");
-            }
 
-            String str=code+","+mse+","+rmse+","+mae;
+                String str=code+","+mse+","+rmse+","+mae;
+                FileTool.Dump(str,"D:\\中期考核\\grid50\\插值误差.txt","utf-8");
+            }
+            /*String str=code+","+mse+","+rmse+","+mae;
             FileTool.Dump(str,"D:\\中期考核\\grid50\\插值误差.txt","utf-8");
+*/
         }
 
         System.out.println("插值失败的网格有："+qualified_interpolation_codes.size());
@@ -236,6 +240,52 @@ public class SpatialInterpolation extends NiMatrix{
     public static void step_9(){
         toMongoDB("GridData_Resold_50_Interpolation",1,"woaiwojia");
     }
+
+    /**计算空间插值的权重A*/
+    public static JSONObject step_10(){
+
+        /**1、初始化数据集*/
+        step_1();
+        JSONArray lack_value_grids=step_2();
+        /**2、计算有缺失数据的网格与全部网格的相关系数 r ,并且返回相关性最强的10个*/
+        JSONObject code_relatedCode=step_3(lack_value_grids,1);
+
+        Iterator it=code_relatedCode.keys();
+        String key_code="";
+        JSONArray value_objs;
+        JSONObject obj;
+        String code="";
+        double r=0;
+
+        JSONObject A=new JSONObject();
+        if(it.hasNext()){
+            while(it.hasNext()){
+                key_code=(String) it.next();
+                value_objs=code_relatedCode.getJSONArray(key_code);
+
+                int n=value_objs.size();
+                double avenrage_r=0;
+                double total_r=0;
+                for(int i=0;i<n;i++){
+                    obj=(JSONObject) value_objs.get(i);
+                    code=obj.getString("code");
+                    r=obj.getDouble("r");
+
+                    total_r+=r;
+                }
+
+                avenrage_r=total_r/n;
+                A.put(key_code,avenrage_r);
+            }
+        }
+
+        return A;
+    }
+
+
+
+
+
 
 
 

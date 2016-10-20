@@ -21,24 +21,29 @@ public class Txt_Excel {
 	public  double area;
 	public  double unit_price;
 	public  int fitment;
-	public  double volume_rate;
-	public  double green_rate;
-	public  int rooms;
-	public  int halls;
-	public  int kitchen;
-	public  int bathrooms;
-	public  double  floor;
+	public  String rooms;
+	public  String halls;
+	public  String kitchen;
+	public  String bathrooms;
+	public  String   flooron;
+	public  String  floors;
 	public  double direction;
 	public double ln_price;
 	public double ln_unitprice;
-	public static String Folder = "D:\\test\\woaiwojia_rentout_2016_0401.txt";
+	public String built_year;
+	public String totalarea;
+	public String households;
+	public String volume_rate;
+	public String park;
+	public String green_rate;
+	public static String Folder = "D:\\test\\anjuke_rentout_2015_1106.txt";
 
 	public static void main(String argv[]) throws Exception {
-		/*System.out.println("测试开始!");
+		System.out.println("测试开始!");
 		writeExcel();
-		System.out.println("测试结束!");*/
+		System.out.println("测试结束!");
 
-		double e=Math.E;
+		/*double e=Math.E;
 		double result =test_Regression_Results(58,4,2,1,1,17.5,1);
 		double price=Math.pow(e,result);
 		System.out.println(price);
@@ -47,7 +52,7 @@ public class Txt_Excel {
 		System.out.println(price);
 		result =test_Regression_Results(60,4,2,1,1,1,6);
 		price=Math.pow(e,result);
-		System.out.println(price);
+		System.out.println(price);*/
 
 	}
 
@@ -65,58 +70,94 @@ public class Txt_Excel {
 
 		Vector<String> rds = FileTool.Load(Folder, "UTF-8");
 
-		JSONObject obj;
+		JSONObject obj=new JSONObject();
 		String element;
-		for (int i = 0; i < rds.size(); i++) {
-			element = rds.elementAt(i);
-			//System.out.println(element);
-			obj = JSONObject.fromObject(element);
-			Txt_Excel te=new Txt_Excel(obj);
-			row = sheet.createRow(i + 1);
-			for (int k = 0; k <= 11; k++) {
-				switch (k) {
-					case 0:
-						row.createCell(0).setCellValue(te.price);
-						break;
-					case 1:
-						row.createCell(1).setCellValue(te.area);
-						break;
-					case 2:
-						row.createCell(2).setCellValue(te.unit_price);
-						break;
-					case 3:
-						row.createCell(3).setCellValue(te.fitment);
-						break;
-					case 4:
-						row.createCell(4).setCellValue(te.rooms);
-						break;
-					case 5:
-						row.createCell(5).setCellValue(te.halls);
-						break;
-					case 6:
-						row.createCell(6).setCellValue(te.kitchen);
-						break;
-					case 7:
-						row.createCell(7).setCellValue(te.bathrooms);
-						break;
-					case 8:
-						row.createCell(8).setCellValue(te.floor);
-						break;
-					case 9:
-						row.createCell(9).setCellValue(te.direction);
-						break;
-					case 10:
-						row.createCell(10).setCellValue(te.ln_price);
-						break;
-					case 11:
-						row.createCell(11).setCellValue(te.ln_unitprice);
-						break;
-				}
+		int count=0;
+		try{
 
+			for (int i = 0; i < 70000; i++) {
+				element = rds.elementAt(i);
+				//System.out.println(element);
+				obj = JSONObject.fromObject(element);
+				Txt_Excel te=new Txt_Excel(obj);
+				//System.out.println(te.built_year);
+				if(te.built_year.length()!=0&&te.green_rate.length()!=0&&te.volume_rate.length()!=0&&te.flooron.length()!=0&&te.floors.length()!=0){
+					count++;
+					boolean year=Tool.judgeContainsStr(te.built_year);
+					if(te.bathrooms.indexOf("室")==-1&&te.green_rate.length()!=0&&!year){
+						row = sheet.createRow(count);
+						int y=2016-Integer.parseInt(te.built_year);
+						for (int k = 0; k <= 18; k++) {
+							switch (k) {
+								case 0:
+									row.createCell(0).setCellValue(te.price);
+									break;
+								case 1:
+									row.createCell(1).setCellValue(te.area);
+									break;
+								case 2:
+									row.createCell(2).setCellValue(te.unit_price);
+									break;
+								case 3:
+									row.createCell(3).setCellValue(te.fitment);
+									break;
+								case 4:
+									row.createCell(4).setCellValue(te.rooms);
+									break;
+								case 5:
+									row.createCell(5).setCellValue(te.halls);
+									break;
+								case 6:
+									row.createCell(6).setCellValue(te.kitchen);
+									break;
+								case 7:
+									row.createCell(7).setCellValue(te.bathrooms);
+									break;
+								case 8:
+									row.createCell(8).setCellValue(te.flooron);
+									break;
+								case 9:
+									row.createCell(9).setCellValue(te.floors);
+									break;
+								case 10:
+									row.createCell(10).setCellValue(te.direction);
+									break;
+								case 11:
+									row.createCell(11).setCellValue(te.ln_price);
+									break;
+								case 12:
+									row.createCell(12).setCellValue(te.ln_unitprice);
+									break;
+								case 13:
+									row.createCell(13).setCellValue(y);
+									break;
+								case 14:
+									row.createCell(14).setCellValue(te.totalarea);
+									break;
+								case 15:
+									row.createCell(15).setCellValue(te.households);
+									break;
+								case 16:
+									row.createCell(16).setCellValue(te.volume_rate);
+									break;
+								case 17:
+									row.createCell(17).setCellValue(te.park);
+									break;
+								case 18:
+									row.createCell(18).setCellValue(te.green_rate);
+									break;
+							}
+
+						}
+					}
+
+				}
 			}
 
-
+		}catch (NullPointerException e){
+			System.out.println(obj);
 		}
+
 		FileOutputStream fos = new FileOutputStream(Folder.replace(".txt", "") + "_excel.csv");
 		wb.write(fos);
 		if (null != fos) {
@@ -129,7 +170,7 @@ public class Txt_Excel {
 		//设置行高
 		row.setHeightInPoints(30);
 		Cell cell = row.createCell(0);
-		for (int i = 0; i <= 11; i++) {
+		for (int i = 0; i <= 18; i++) {
 			switch (i) {
 				case 0:
 					row.createCell(0).setCellValue("price");
@@ -156,16 +197,37 @@ public class Txt_Excel {
 					row.createCell(7).setCellValue("bathroom");
 					break;
 				case 8:
-					row.createCell(8).setCellValue("floor");
+					row.createCell(8).setCellValue("flooron");
 					break;
 				case 9:
-					row.createCell(9).setCellValue("direction");
+					row.createCell(9).setCellValue("floors");
 					break;
 				case 10:
-					row.createCell(10).setCellValue("ln_price");
+					row.createCell(10).setCellValue("direction");
 					break;
 				case 11:
-					row.createCell(11).setCellValue("ln_unitprice");
+					row.createCell(11).setCellValue("ln_price");
+					break;
+				case 12:
+					row.createCell(12).setCellValue("ln_unitprice");
+					break;
+				case 13:
+					row.createCell(13).setCellValue("built_year");
+					break;
+				case 14:
+					row.createCell(14).setCellValue("totalarea");
+					break;
+				case 15:
+					row.createCell(15).setCellValue("households");
+					break;
+				case 16:
+					row.createCell(16).setCellValue("volume_rate");
+					break;
+				case 17:
+					row.createCell(17).setCellValue("park");
+					break;
+				case 18:
+					row.createCell(18).setCellValue("green_rate");
 					break;
 			}
 		}
@@ -179,6 +241,34 @@ public class Txt_Excel {
 			area=obj.getDouble("area");
 			unit_price= obj.getDouble("unit_price");
 			ln_unitprice=Math.log(obj.getDouble("unit_price"));
+			if(obj.containsKey("built_year")){
+				built_year=obj.getString("built_year");
+				if(built_year.indexOf("-")!=-1){
+					built_year=built_year.substring(0,built_year.indexOf("-"));
+				}
+			}else {
+				built_year="";
+			}
+			if(obj.containsKey("direction")){
+				direction=setDirection(obj.getString("direction"));
+			}else {
+				direction=0;
+			}
+			//"storeys":{"flooron":"下部","floors":"21"}
+			if(obj.containsKey("storeys")){
+				JSONObject storeys=obj.getJSONObject("storeys");
+				if(storeys.containsKey("flooron")){
+					flooron=storeys.getString("flooron");
+				}else {
+					flooron="";
+				}
+				if(storeys.containsKey("floors")){
+					floors=storeys.getString("floors");
+				}else {
+					floors="";
+				}
+
+			}
 
 			if(obj.containsKey("fitment")){
 				fitment=setFitment(obj.getString("fitment"));
@@ -186,63 +276,74 @@ public class Txt_Excel {
 				fitment=0;
 			}
 
-			/*if(obj.containsKey("volume_rate")){
+			if(obj.containsKey("totalarea")){
+				totalarea=obj.getString("totalarea").replace("(小型小区)","").replace("(中型小区)","").replace("(大型小区)","");
+				if(totalarea.indexOf("万")!=-1){
+					totalarea=totalarea.replace("万","");
+					int ta=(int)Double.parseDouble(totalarea)*10000;
+					totalarea=ta+"";
+				}
+			}else {
+				totalarea="";
+			}
+
+			if(obj.containsKey("households")){
+				households=obj.getString("households").replace("户","");
+			}else {
+				households="";
+			}
+
+			if(obj.containsKey("volume_rate")){
 				if(!obj.getString("volume_rate").equals("null")){
-					volume_rate=obj.getDouble("volume_rate");
+					volume_rate=obj.getString("volume_rate");
 				}else {
-					volume_rate=0;
+					volume_rate="";
 				}
 
 			}else{
-				volume_rate=0;
+				volume_rate="";
+			}
+
+			if(obj.containsKey("park")){
+				park=obj.getString("park");
+			}else {
+				park="";
 			}
 
 			if(obj.containsKey("green_rate")){
 				if(!obj.getString("green_rate").equals("null")){
-					green_rate=obj.getDouble("green_rate");
+					green_rate=obj.getString("green_rate").replace("%","");
 				}else {
-					green_rate=0;
+					green_rate="";
 				}
 
 			}else {
-				green_rate=0;
-			}*/
+				green_rate="";
+			}
 
 			//"layout":{"rooms":"2","halls":"1","kitchen":"","bathrooms":"1"},
 			JSONObject layout=obj.getJSONObject("layout");
 			if(layout.getString("rooms").length()!=0){
-				rooms=layout.getInt("rooms");
+				rooms=layout.getString("rooms");
 			}else {
-				rooms=0;
+				rooms="";
 			}
 			if(layout.getString("halls").length()!=0){
-				halls=layout.getInt("halls");
+				halls=layout.getString("halls");
 			}else {
-				halls=0;
+				halls="";
 			}
 			if(layout.getString("kitchen").length()!=0){
-				kitchen=layout.getInt("kitchen");
+				kitchen=layout.getString("kitchen");
 			}else {
-				kitchen=0;
+				kitchen="";
 			}
 			if(layout.getString("bathrooms").length()!=0){
-				bathrooms=layout.getInt("bathrooms");
+				bathrooms=layout.getString("bathrooms");
 			}else {
-				bathrooms=0;
+				bathrooms="";
 			}
 
-			//"storeys":{"flooron":"下部","floors":"21"}
-			JSONObject storeys=obj.getJSONObject("storeys");
-			String flooron=storeys.getString("flooron");
-			int floors=storeys.getInt("floors");
-			floor=setFloor(flooron,floors);
-
-			direction=setDirection(obj.getString("direction"));
-			if(obj.containsKey("direction")){
-				direction=setDirection(obj.getString("direction"));
-			}else {
-				direction=0;
-			}
 
 		}catch (JSONException e){
 
@@ -291,6 +392,14 @@ public class Txt_Excel {
 			case "普装": value=2;
 				break;
 			case "毛坯": value=1;
+				break;
+			case "精装修": value=4;
+				break;
+			case "普通装修": value=2;
+				break;
+			case "豪华装修": value=5;
+				break;
+			case "简单装修": value=3;
 				break;
 	}
 		return value;

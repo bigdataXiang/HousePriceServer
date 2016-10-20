@@ -73,31 +73,4 @@ public class Color {
         return color;
     }
 
-    /*
-    * 这是网格加速度之前的一套配色方案
-    *  if(price>900){
-            color="#BA0000";
-        }else if(price>800&&price<=900){
-            color="#C70000";
-        }else if(price>700&&price<=800){
-            color="#ED0000";
-        }else if(price>600&&price<=700){
-            color="#FF0000";
-        }else if(price>500&&price<=600){
-            color="#FF4000";
-        }else if(price>400&&price<=500){
-            color="#FC5800";
-        }else if(price>300&&price<=400){
-            color="#FF5900";
-        }else if(price>250&&price<=300){
-            color="#FF9D14";
-        }else if(price>200&&price<=250){
-            color="#FFD900";
-        }else if(price>100&&price<=200){
-            color="#CCFF00";
-        }else{
-            color="#CFFC5D";
-        }
-    *
-    * */
 }

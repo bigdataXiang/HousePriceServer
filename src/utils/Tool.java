@@ -9,6 +9,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Tool {
 	public static void main(String[] args) throws UnsupportedEncodingException {
@@ -16,6 +18,17 @@ public class Tool {
 		//delectRedundancy("D:/baidu/xiangmu/xiangmu-Result.txt");
 		//GetJsonText.jsonAddressMatch("D:/baidu/fangan/fangan-Result-delectRedundancy_NullException.txt");
 
+	}
+	/**
+	 * 该方法主要使用正则表达式来判断字符串中是否包含字母
+	 * @author fenggaopan 2015年7月21日 上午9:49:40
+	 * @param cardNum 待检验的原始卡号
+	 * @return 返回是否包含
+	 */
+	public static boolean judgeContainsStr(String cardNum) {
+		String regex=".*[a-zA-Z]+.*";
+		Matcher m= Pattern.compile(regex).matcher(cardNum);
+		return m.matches();
 	}
 
 	/**

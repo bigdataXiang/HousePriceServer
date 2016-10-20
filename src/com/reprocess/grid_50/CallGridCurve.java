@@ -251,11 +251,11 @@ public class CallGridCurve {
             max.add(suggestedMax_1);
             //将list数组按照时间排序
             Collections.sort(fang_time_price_list, new UtilFile.TimeComparator());
-            result=new JSONObject();
-            result.put("data",fang_time_price_list);
-            totalresult.put("fang",result);
-            //System.out.println(result.toString());
         }
+        result=new JSONObject();
+        result.put("data",fang_time_price_list);
+        totalresult.put("fang",result);
+        //System.out.println(result.toString());
 
         if(woaiwojia_time_price_list.size()!=0){
             suggestedMin_2=woaiwojia_time_price_list.get(0).getInt("average_price");
@@ -264,11 +264,11 @@ public class CallGridCurve {
             max.add(suggestedMax_2);
             //将list数组按照时间排序
             Collections.sort(woaiwojia_time_price_list, new UtilFile.TimeComparator());
-            result=new JSONObject();
-            result.put("data",woaiwojia_time_price_list);
-            totalresult.put("woaiwojia",result);
-            //System.out.println(result.toString());
         }
+        result=new JSONObject();
+        result.put("data",woaiwojia_time_price_list);
+        totalresult.put("woaiwojia",result);
+        //System.out.println(result.toString());
 
         if(blend_time_price_list.size()!=0){
             suggestedMin_3=blend_time_price_list.get(0).getInt("average_price");
@@ -277,11 +277,11 @@ public class CallGridCurve {
             max.add(suggestedMax_3);
             //将list数组按照时间排序
             Collections.sort(blend_time_price_list, new UtilFile.TimeComparator());
-            result=new JSONObject();
-            result.put("data",blend_time_price_list);
-            totalresult.put("blend",result);
-            //System.out.println(result.toString());
         }
+        result=new JSONObject();
+        result.put("data",blend_time_price_list);
+        totalresult.put("blend",result);
+        //System.out.println(result.toString());
 
         Collections.sort(min);
         Collections.sort(max);

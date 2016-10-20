@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args)  throws Exception{
         InetSocketAddress addr = new InetSocketAddress(8090);//
-        HttpServer server = HttpServer.create(addr, 0);
+        HttpServer server =  HttpServer.create(addr, 0);
 
         //前缀
         server.createContext("/", new MainHandler());

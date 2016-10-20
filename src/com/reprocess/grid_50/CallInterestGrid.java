@@ -23,13 +23,13 @@ public class CallInterestGrid {
         double width=5.892999999998593E-4;//每50m的经度差
         double length=4.501999999998674E-4;//每50m的纬度差
 
-        int colmin=(int)Math.ceil((115.73135375976562-115.417284)/width);
-        int colmax=(int)Math.ceil((117.04971313476562-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.665442308708904-39.438283)/length);
-        int rowmax=(int)Math.ceil((40.14791364536759-39.438283)/length);
+        int colmin=(int)Math.ceil((116.15020751953125-115.417284)/width);
+        int colmax=(int)Math.ceil((116.80938720703124-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.777144238002684-39.438283)/length);
+        int rowmax=(int)Math.ceil((40.01236487583935-39.438283)/length);
 
         JSONObject condition=new JSONObject();
-        condition.put("N",40);
+        condition.put("N",20);
         condition.put("rowmax",rowmax);
         condition.put("rowmin",rowmin);
         condition.put("colmax",colmax);
@@ -46,7 +46,10 @@ public class CallInterestGrid {
     public Response get(String body){
 
         JSONObject condition= SetCondition.setCallInterestGrid_50(body);
-        String resultdata=CallMongo(condition);
+
+        String resultdata="";
+        resultdata=CallMongo(condition);
+
 
         Response r= new Response();
         r.setCode(200);
@@ -203,12 +206,12 @@ public class CallInterestGrid {
         //将小网格合并成大网格
         JSONObject nullobj;
 
-        for(int i=r_min;i<=r_max;i++) {
+        /*for(int i=r_min;i<=r_max;i++) {
             for (int j =c_min; j<=c_max; j++) {
-                String codeindex=""+(j + (2000/N) * (i - 1));
-                if(!codekey.containsKey(codeindex)){
+                int codeindex=(j + (4000/N) * (i - 1));
+                if(!codekey.containsKey(""+codeindex)){
                     nullobj=new JSONObject();
-                    nullobj.put("code",Integer.parseInt(codeindex));
+                    nullobj.put("code",codeindex);
                     nullobj.put("average_price",0);
                     nullobj.put("row",i);
                     nullobj.put("col",j);
@@ -218,7 +221,7 @@ public class CallInterestGrid {
                 }
 
             }
-        }
+        }*/
 
         Collections.sort(jsonArray, new UtilFile.CodeComparator()); // 根据网格code排序
         JSONObject object= new JSONObject();
@@ -233,5 +236,6 @@ public class CallInterestGrid {
 
         return object.toString();
     }
+
 
 }

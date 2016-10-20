@@ -61,7 +61,7 @@ public class RowColCalculation {
 
     /**建立(N*50)*(N*50)的网格编码与50*50的网格编码的映射关系*/
     public static int[] codeMapping50toN50(int row_50,int col_50,int N){
-        int cols=4000/N;
+        int cols=4000;
         int row;
         int col;
         int code;
