@@ -399,8 +399,8 @@
 
                     <!--标签栏-->
                     <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#price" role="tab" data-toggle="tab">房价</a></li>
-                        <li role="presentation"><a href="#acceleration" role="tab" data-toggle="tab">房价加速度</a></li>
+                        <li role="presentation" class="active"><a href="#price_50" role="tab" data-toggle="tab">房价</a></li>
+                        <li role="presentation"><a href="#acceleration_50" role="tab" data-toggle="tab">房价加速度</a></li>
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="price_50">
@@ -409,18 +409,18 @@
                                     <label for="gridTime_50" class="col-sm-2 control-label">网格房价时间</label>
                                     <select id="gridTime_50" style='width:200px;'>
                                         <option>请选择</option>
-                                        <option id="201507_50">2015年07月</option>
-                                        <option id="201508_50">2015年08月</option>
-                                        <option id="201509_50">2015年09月</option>
-                                        <option id="201510_50">2015年10月</option>
-                                        <option id="201511_50">2015年11月</option>
-                                        <option id="201512_50">2015年12月</option>
-                                        <option id="201601_50">2016年01月</option>
-                                        <option id="201602_50">2016年02月</option>
-                                        <option id="201603_50">2016年03月</option>
-                                        <option id="201604_50">2016年04月</option>
-                                        <option id="201605_50">2016年05月</option>
-                                        <option id="201606_50">2016年06月</option>
+                                        <option >2015年07月</option>
+                                        <option >2015年08月</option>
+                                        <option >2015年09月</option>
+                                        <option >2015年10月</option>
+                                        <option >2015年11月</option>
+                                        <option >2015年12月</option>
+                                        <option >2016年01月</option>
+                                        <option >2016年02月</option>
+                                        <option >2016年03月</option>
+                                        <option >2016年04月</option>
+                                        <option >2016年05月</option>
+                                        <option >2016年06月</option>
                                     </select>
                                 </div>
                             </form>
@@ -486,6 +486,12 @@
                         </div>
                     </form>
 
+                    <!--测试时间延时框-->
+                    <form class="form-horizontal" role="form">
+                        <input type="button" value="显示计时的消息框！" onClick = "timedMsg()">
+                    <p>点击上面的按钮。5 秒后会显示一个消息框。</p>
+                    </form>
+
                 </div>
 
                 <div class="sidebar-pane" id="settings">
@@ -529,9 +535,90 @@
 
 
 <script type="text/javascript">
+    //把map定义成全局变量
+    var map;
+    var resize = function () {
+        var $map = $('#map');
+        $map.height($(window).height() - $('div.navbar').outerHeight());
+        if (map) {
+            map.invalidateSize();
+        }
+    };
+    $(window).on('resize', function () {
+        resize();
+    });
+    resize();
+    var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {maxZoom: 18, minZoom: 10});
+    var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {maxZoom: 18, minZoom: 10});
+    var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {maxZoom: 18, minZoom: 10});
+    var normal = L.layerGroup([normalm]),
+            image = L.layerGroup([imgm, imga]);
+    var baseLayers = {
+        "地图": normal,
+        "影像": image,
+    }
+    var overlayLayers = {};
+    map = L.map("map", {
+        layers: [normal],
+        zoomControl: true
+    }).setView([39.906985851984146, 116.39055488416854], 3);
+    map.setView([39.906985851984146, 116.39055488416854], 3);
+    function timedMsg()
+    {
+        //var t=setTimeout("alert('5 seconds!')",5000);
+        alert("执行定时程序");
+        //var t=setTimeout(setPriceGrid("房价","","","我爱我家","","2015年10月"),5000);
+        var t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2015年10月\")",5000);
+
+    }
+
+    function setPriceGrid(gridValue,startTime,endTime,source,computation,gridTime){
+        console.log(map);
+        var bounds = map.getBounds();
+        var west = bounds.getWest();
+        var east = bounds.getEast();
+        var south = bounds.getSouth();
+        var north = bounds.getNorth();
+        var zoom = map.getZoom();
+
+        if (gridValue == "房价加速度") {
+            var json = {
+                "west": west,
+                "east": east,
+                "south": south,
+                "north": north,
+                "zoom": zoom,
+                "starttime": startTime,
+                "endtime": endTime,
+                "source": source,
+                "computation":computation
+            };
+            $.post("/gridacceleration_50", "" + JSON.stringify(json), function (result) {
+                var price = JSON.parse(result);
+                draw_rectangle_Acceleration_50(bounds, price);
+            });
+        }
+        else if(gridValue == "房价"){
+            var json = {
+                "west": west,
+                "east": east,
+                "south": south,
+                "north": north,
+                "zoom": zoom,
+                "gridTime": gridTime,
+                "source": source
+            };
+            $.post("/gridcolor_50", "" + JSON.stringify(json), function (result) {
+                var price = JSON.parse(result);
+                console.log("每移动一次开始画网格");
+                draw_rectangle_houseprice_50(price);//1表示显示插值数据的曲线，2表示显示原始数据的曲线
+            });
+        }
+
+    }
     $(document).ready(function () {
 
-        var map;
+        /*var map;
         var resize = function () {
         var $map = $('#map');
         $map.height($(window).height() - $('div.navbar').outerHeight());
@@ -557,10 +644,9 @@
         layers: [normal],
         zoomControl: true
     }).setView([39.906985851984146, 116.39055488416854], 3);
-        map.setView([39.906985851984146, 116.39055488416854], 3);
+        map.setView([39.906985851984146, 116.39055488416854], 3);*/
 
         var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
-
 
         $("#schoolType").change(function () {
         var x = document.getElementById("schoolType").selectedIndex;
@@ -1257,6 +1343,7 @@
                 });
             }
         }
+
         //creatGrid_50：通过获取当前屏幕的经纬度坐标实现该范围内的网格可视化(基础数据是50*50网格)
         function creatGrid_50() {
             var bounds = map.getBounds();
