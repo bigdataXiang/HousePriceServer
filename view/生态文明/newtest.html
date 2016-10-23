@@ -492,6 +492,13 @@
                     <!--<p>点击上面的按钮。5 秒后会显示一个消息框。</p>-->
                     </form>
 
+                    <form class="form-horizontal" role="form">
+                        <input type="button" value="动态房价循环展示" onClick = "loopTimedMsg()">
+                        <button onclick="window.clearInterval(loopTimedMsg())">停止循环展示</button>
+                    </form>
+
+
+
                 </div>
 
                 <div class="sidebar-pane" id="settings">
@@ -563,9 +570,13 @@
         zoomControl: true
     }).setView([39.906985851984146, 116.39055488416854], 3);
     map.setView([39.906985851984146, 116.39055488416854], 3);
+
+
+
+
     function timedMsg()
     {
-        alert("执行定时程序");
+        //alert("执行定时程序");
         var t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2015年10月\")",1);
         console.log("10月");
         t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2015年11月\")",1000);
@@ -584,7 +595,6 @@
         console.log("5月");
 
     }
-
     function setPriceGrid(gridValue,startTime,endTime,source,computation,gridTime){
         console.log(map);
         var bounds = map.getBounds();
@@ -629,6 +639,14 @@
         }
 
     }
+    function loopTimedMsg(){
+
+        var int=self.setInterval("timedMsg()",5000)
+    }
+
+
+
+
    // $(document).ready(function () {
 
         /*var map;
