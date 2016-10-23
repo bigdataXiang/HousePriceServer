@@ -488,8 +488,8 @@
 
                     <!--测试时间延时框-->
                     <form class="form-horizontal" role="form">
-                        <input type="button" value="显示计时的消息框！" onClick = "timedMsg()">
-                    <p>点击上面的按钮。5 秒后会显示一个消息框。</p>
+                        <input type="button" value="动态房价展示" onClick = "timedMsg()">
+                    <!--<p>点击上面的按钮。5 秒后会显示一个消息框。</p>-->
                     </form>
 
                 </div>
@@ -565,10 +565,23 @@
     map.setView([39.906985851984146, 116.39055488416854], 3);
     function timedMsg()
     {
-        //var t=setTimeout("alert('5 seconds!')",5000);
         alert("执行定时程序");
-        //var t=setTimeout(setPriceGrid("房价","","","我爱我家","","2015年10月"),5000);
-        var t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2015年10月\")",5000);
+        var t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2015年10月\")",1);
+        console.log("10月");
+        t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2015年11月\")",1000);
+        console.log("11月");
+        t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2015年12月\")",1000);
+        console.log("12月");
+        t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2016年01月\")",1000);
+        console.log("1月");
+        t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2016年02月\")",1000);
+        console.log("2月");
+        t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2016年03月\")",1000);
+        console.log("3月");
+        t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2016年04月\")",1000);
+        console.log("4月");
+        t=setTimeout("setPriceGrid(\"房价\",\"\",\"\",\"我爱我家\",\"\",\"2016年05月\")",1000);
+        console.log("5月");
 
     }
 
@@ -610,7 +623,7 @@
             };
             $.post("/gridcolor_50", "" + JSON.stringify(json), function (result) {
                 var price = JSON.parse(result);
-                console.log("每移动一次开始画网格");
+                //console.log("每移动一次开始画网格");
                 draw_rectangle_houseprice_50(price);//1表示显示插值数据的曲线，2表示显示原始数据的曲线
             });
         }
