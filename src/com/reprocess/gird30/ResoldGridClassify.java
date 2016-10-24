@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class ResoldGridClassify extends GridMerge {
     public static void main(String[] args){
 
-        initial3();
+        initial1();
 
     }
     public static void timingRun(String time){
