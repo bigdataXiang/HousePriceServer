@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.reprocess.grid_100.Code_Price_RowCol;
 import com.reprocess.grid_100.PoiCode;
+import com.reprocess.grid_100.SchoolPoi;
 import com.svail.db.db;
 import net.sf.json.JSONObject;
 
@@ -34,7 +35,11 @@ public class GridFeatureStatistics {
             System.out.println("ok!");
         }
     }
-    public static  Map<String,List<Integer>> houseType_codelists_map=new HashMap<>();
+    //注意，统计不同月份的数据的时候，全局变量要清空！！！
+    public static  Map<String,List<Integer>> houseType_codelists_map=new HashMap<>();//存储每一个户型都有那些网格有信息
+    public static  Map<String,List<Integer>> direction_codelists_map=new HashMap<>();//存储每一个朝向都有那些网格有信息
+    public static  Map<String,List<Integer>> code_arealists_map=new HashMap<>();
+    public static  Map<String,List<String>> code_floorlists_map=new HashMap<>();
 
     //1：将每个格网的数据（obj）存储在codelists_map中，其中key是格网code，value是装了所有房源数据的list
     public static void callDataFromMongo(JSONObject condition){
@@ -66,10 +71,11 @@ public class GridFeatureStatistics {
 
         String house_type;
         int area;
-        int floors;
+        String floors;
         String direction;
         String flooron;
 
+        int count=0;
         if(cursor.hasNext()) {
             while (cursor.hasNext()){
                 BasicDBObject cs = (BasicDBObject)cursor.next();
@@ -94,22 +100,51 @@ public class GridFeatureStatistics {
                 if(rls == null || rls.size() == 0){
                     coll_import.insert(cs);
                 }else{
-                    System.out.println("该数据已经存在!");
+                    //System.out.println("该数据已经存在!");
                 }
 
                 house_type=obj.getString("house_type");
                 if(houseType_codelists_map.containsKey(house_type)){
-                    List<Integer> objs_list=houseType_codelists_map.get(house_type);
-                    objs_list.add(Integer.parseInt(code));
-                    houseType_codelists_map.put(house_type,objs_list);
+                    List<Integer> codes_list=houseType_codelists_map.get(house_type);
+                    codes_list.add(Integer.parseInt(code));
+                    houseType_codelists_map.put(house_type,codes_list);
                 }else {
-                    List<Integer> objs_list=new ArrayList<>();
-                    objs_list.add(Integer.parseInt(code));
-                    houseType_codelists_map.put(house_type,objs_list);
+                    List<Integer> codes_list=new ArrayList<>();
+                    codes_list.add(Integer.parseInt(code));
+                    houseType_codelists_map.put(house_type,codes_list);
                 }
+
+                direction=obj.getString("direction");
+                if(direction_codelists_map.containsKey(direction)){
+
+                    List<Integer> codes_list=direction_codelists_map.get(house_type);
+                    codes_list.add(Integer.parseInt(code));
+                    direction_codelists_map.put(direction,codes_list);
+
+                }else {
+
+                    List<Integer> codes_list=new ArrayList<>();
+                    codes_list.add(Integer.parseInt(code));
+                    direction_codelists_map.put(direction,codes_list);
+                }
+
+                floors=obj.getString("floors");
+                if(code_floorlists_map.containsKey(code)){
+
+                    List<String> floors_list=code_floorlists_map.get(code);
+                    floors_list.add(floors);
+                    code_floorlists_map.put(code,floors_list);
+
+                }else {
+                    List<String> floors_list=new ArrayList<>();
+                    floors_list.add(floors);
+                    code_floorlists_map.put(code,floors_list);
+                }
+
+                ++count;
             }
         }
-        System.out.println("共有" + houseType_codelists_map.size() + "个网格有数据");
+        System.out.println("共有" +count+ "条数据");
     }
 
 
@@ -165,13 +200,15 @@ public class GridFeatureStatistics {
         }
     }
 
-    //3:遍历整个code_houseType_map，计算每个网格里边的户型的个数
+    //3:遍历整个code_houseType_map，计算每个网格里边的户型的个数，并生成json格式数据
     public static void statisticCode(){
 
         int code;
         String houseType;
         int num;
         Map<String,Integer> houseType_num;
+
+        int count=0;
         for(Map.Entry<Integer,Map<String,Integer>> entry:code_houseType_map.entrySet()){
             code=entry.getKey();
             houseType_num=entry.getValue();
@@ -182,9 +219,11 @@ public class GridFeatureStatistics {
                 houseType=entry1.getKey();
                 num=entry1.getValue();
                 obj.put(houseType,num);
+                count+=num;
             }
-            System.out.println(obj);
+           // System.out.println(obj);
         }
+        System.out.println("共有"+count+"条户型信息");
     }
 
 
