@@ -35,11 +35,13 @@ public class GridFeatureStatistics {
             System.out.println("ok!");
         }
     }
+
+
     //注意，统计不同月份的数据的时候，全局变量要清空！！！
-    public static  Map<String,List<Integer>> houseType_codelists_map=new HashMap<>();//存储每一个户型都有那些网格有信息
-    public static  Map<String,List<Integer>> direction_codelists_map=new HashMap<>();//存储每一个朝向都有那些网格有信息
-    public static  Map<String,List<Integer>> code_arealists_map=new HashMap<>();
-    public static  Map<String,List<String>> code_floorlists_map=new HashMap<>();
+    public static Map<Integer,Map<String,Integer>> code_houseType_map=new HashMap<>();
+    public static Map<Integer,Map<String,Integer>> code_direction_map=new HashMap<>();
+    public static Map<Integer,Map<String,Integer>> code_floors_map=new HashMap<>();
+    public static Map<Integer,Map<String,Integer>> code_area_map=new HashMap<>();
 
     //1：将每个格网的数据（obj）存储在codelists_map中，其中key是格网code，value是装了所有房源数据的list
     public static void callDataFromMongo(JSONObject condition){
@@ -65,12 +67,12 @@ public class GridFeatureStatistics {
         JSONObject obj;
         double lng;
         double lat;
-        String code;
+        int code;
         int row;
         int col;
 
         String house_type;
-        int area;
+        double area;
         String floors;
         String direction;
         String flooron;
@@ -87,11 +89,11 @@ public class GridFeatureStatistics {
                 lng=obj.getDouble("lng");
                 lat=obj.getDouble("lat");
                 String[] result= PoiCode.setPoiCode_50(lat,lng).split(",");
-                code = result[0];
+                code = Integer.parseInt(result[0]);
                 row=Integer.parseInt(result[1]);
                 col=Integer.parseInt(result[2]);
 
-                obj.put("code",Integer.parseInt(code));
+                obj.put("code",code);
                 obj.put("row",row);
                 obj.put("col",col);
 
@@ -104,42 +106,19 @@ public class GridFeatureStatistics {
                 }
 
                 house_type=obj.getString("house_type");
-                if(houseType_codelists_map.containsKey(house_type)){
-                    List<Integer> codes_list=houseType_codelists_map.get(house_type);
-                    codes_list.add(Integer.parseInt(code));
-                    houseType_codelists_map.put(house_type,codes_list);
-                }else {
-                    List<Integer> codes_list=new ArrayList<>();
-                    codes_list.add(Integer.parseInt(code));
-                    houseType_codelists_map.put(house_type,codes_list);
-                }
+                setAttributeMap(code,house_type,code_houseType_map);
+
 
                 direction=obj.getString("direction");
-                if(direction_codelists_map.containsKey(direction)){
+                setAttributeMap(code,direction,code_direction_map);
 
-                    List<Integer> codes_list=direction_codelists_map.get(house_type);
-                    codes_list.add(Integer.parseInt(code));
-                    direction_codelists_map.put(direction,codes_list);
-
-                }else {
-
-                    List<Integer> codes_list=new ArrayList<>();
-                    codes_list.add(Integer.parseInt(code));
-                    direction_codelists_map.put(direction,codes_list);
-                }
 
                 floors=obj.getString("floors");
-                if(code_floorlists_map.containsKey(code)){
+                setAttributeMap(code,floors,code_floors_map);
 
-                    List<String> floors_list=code_floorlists_map.get(code);
-                    floors_list.add(floors);
-                    code_floorlists_map.put(code,floors_list);
 
-                }else {
-                    List<String> floors_list=new ArrayList<>();
-                    floors_list.add(floors);
-                    code_floorlists_map.put(code,floors_list);
-                }
+                area=obj.getDouble("area");
+                setAttributeMap(code,""+area,code_area_map);
 
                 ++count;
             }
@@ -148,7 +127,6 @@ public class GridFeatureStatistics {
     }
 
 
-    public static Map<Integer,Map<String,Integer>> code_houseType_map=new HashMap<>();
     //2:遍历整个houseType_codelists_map，逐个统计格网内的信息
     public static void statisticGridInfor(){
         int code;
@@ -224,6 +202,27 @@ public class GridFeatureStatistics {
            // System.out.println(obj);
         }
         System.out.println("共有"+count+"条户型信息");
+    }
+
+    public static void setAttributeMap(int code,String attribute,Map<Integer,Map<String,Integer>> map){
+        if(map.containsKey(code)){
+
+            Map<String,Integer> num_map=map.get(code);
+            if(num_map.containsKey(attribute)){
+                int num=num_map.get(attribute);
+                num_map.put(attribute,++num);
+                map.put(code,num_map);
+
+            }else {
+                num_map.put(attribute,1);
+                map.put(code,num_map);
+            }
+
+        }else {
+            Map<String,Integer> num_map=new HashMap<>();
+            num_map.put(attribute,1);
+            map.put(code,num_map);
+        }
     }
 
 
