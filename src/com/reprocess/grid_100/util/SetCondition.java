@@ -60,7 +60,7 @@ public class SetCondition {
     }
     public static JSONObject setCallInterestGrid_50(String body){
         JSONObject obj=JSONObject.fromObject(body);
-        System.out.println(obj);
+        //System.out.println(obj);
 
         double west=obj.getDouble("west");
         double east=obj.getDouble("east");

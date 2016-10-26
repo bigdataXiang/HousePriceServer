@@ -49,6 +49,7 @@ public class MainHandler implements HttpHandler {
                 break;
             case "/pricecurve_50":response=new com.reprocess.grid_50.CallGridCurve().get(body);
                 break;
+            case "/investment":response=new com.reprocess.grid_50.GridFeatureStatistics().get(body);
 
 
             //以下这三个不需要用

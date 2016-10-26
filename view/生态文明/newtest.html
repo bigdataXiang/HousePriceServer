@@ -231,6 +231,17 @@
                         </div>
                     </form>
 
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="investment" class="col-sm-2 control-label">投资门槛计算方式</label>
+                            <select id="investment" class ="form-control" style='width:200px;'>
+                                <option>请选择</option>
+                                <option>总价加权</option>
+                                <option>均价加权</option>
+                            </select>
+                        </div>
+                    </form>
+
                 </div>
 
                 <div class="sidebar-pane" id="profile">
@@ -649,33 +660,6 @@
 
    // $(document).ready(function () {
 
-        /*var map;
-        var resize = function () {
-        var $map = $('#map');
-        $map.height($(window).height() - $('div.navbar').outerHeight());
-        if (map) {
-            map.invalidateSize();
-        }
-    };
-        $(window).on('resize', function () {
-        resize();
-    });
-        resize();
-        var normalm = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {maxZoom: 18, minZoom: 10});
-        var imgm = L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {maxZoom: 18, minZoom: 10});
-        var imga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {maxZoom: 18, minZoom: 10});
-        var normal = L.layerGroup([normalm]),
-            image = L.layerGroup([imgm, imga]);
-        var baseLayers = {
-        "地图": normal,
-        "影像": image,
-    }
-        var overlayLayers = {};
-        map = L.map("map", {
-        layers: [normal],
-        zoomControl: true
-    }).setView([39.906985851984146, 116.39055488416854], 3);
-        map.setView([39.906985851984146, 116.39055488416854], 3);*/
 
         var sidebar = L.control.sidebar('sidebar', {position: 'right'}).addTo(map);
 
@@ -1301,6 +1285,44 @@
             delect_all_rectangle();
         });
 
+   /* <label for="investment" class="col-sm-2 control-label">投资门槛计算方式</label>
+            <select id="investment" class ="form-control" style='width:200px;'>
+            <option>请选择</option>
+            <option>总价加权</option>
+            <option>均价加权</option>
+            </select>*/
+    $("#investment").change(function(){
+        var bounds = map.getBounds();
+        var west = bounds.getWest();
+        var east = bounds.getEast();
+        var south = bounds.getSouth();
+        var north = bounds.getNorth();
+        var zoom = map.getZoom();
+
+        var x = document.getElementById("investment").selectedIndex;
+        var y = document.getElementById("investment").options;
+        var investment = y[x].text;
+
+
+        var json = {
+            "west": west,
+            "east": east,
+            "south": south,
+            "north": north,
+            "zoom": zoom,
+            "gridTime": "2015年10月",
+            "source": "我爱我家",
+            "investment":investment
+        };
+
+        $.post("/investment", "" + JSON.stringify(json), function (result) {
+            var price = JSON.parse(result);
+            draw_rectangle_investment_50(price);
+        });
+
+    });
+
+
 
         //creatGrid：通过获取当前屏幕的经纬度坐标实现该范围内的网格可视化
         function creatGrid() {
@@ -1369,7 +1391,7 @@
                 };
                 $.post("/gridcolor", "" + JSON.stringify(json), function (result) {
                     var price = JSON.parse(result);
-                    console.log("每移动一次开始画网格");
+                    //console.log("每移动一次开始画网格");
                     draw_rectangle_houseprice(price);
                 });
             }
@@ -2086,6 +2108,7 @@
 
     }
 
+
         //插值数据网格绘制
         function draw_rectangle_houseprice_50(price) {
             var N = price.N;
@@ -2255,6 +2278,90 @@
                         rects.push(rect);
                     }
                     count++;
+                }
+            }
+
+        }
+        function draw_rectangle_investment_50(price) {
+            var N = price.N;
+            var width = 5.892999999998593E-4 * N;//每N50m的经度差
+            var length = 4.501999999998674E-4 * N;//每N50m的纬度差
+            var r_min = price.r_min;
+            var r_max = price.r_max;
+            var c_min = price.c_min;
+            var c_max = price.c_max;
+
+            var row;
+            var col;
+
+            //将之前的图层删除
+            if (rects.length != 0) {
+                for (var i = 0; i < rects.length; i++) {
+                    map = map.removeLayer(rects[i]);
+                }
+                rects = [];
+            }
+
+            var count = 0;
+            for (row = r_min; row <= r_max; row++) {
+                for (col = c_min; col <= c_max; col++) {
+
+                    //parseInt:取整数部分
+                    //Math.ceil():只要有小数就加1
+                    var cols=parseInt(4000 / N);
+                    var gridcode_js = col +  cols* (row - 1);
+                    //网格是从左至右一行一行地填充，故对于某一固定的行，每个网格距离初始网格的经度跨度一直在变，而纬度跨度不变
+                    var dist_wid = (col - 1) * width;
+                    var dist_len = (row - 1) * length;
+                    var bounds = [[39.438283 + dist_len, (115.417284 + dist_wid)], [(39.438283 + length) + dist_len, ((115.417284 + width) + dist_wid)]];//(左下角，右上角)
+                    var rect;
+                    var gridvalue = price.data[count];
+                    var gridcode_java = gridvalue.code;
+                    var gridcolor = gridvalue.color;
+                    var gridrow = gridvalue.row;
+                    var gridcol = gridvalue.col;
+                    var averageprice = gridvalue.average_price;
+
+                    if (gridcode_js == gridcode_java) {
+                        if (averageprice != 0) {
+                            //console.log(count);
+                            rect = L.rectangle(bounds, {
+                                color: mycolor(255, 255, 255),
+                                opacity: 0.9,
+                                fillColor: gridcolor,
+                                weight: 1,
+                                fillOpacity: 0.6,
+                                className: "" + gridcode_java
+                            });//,className:gridcode_java
+                            rect.index = count;
+                            rect.data = price.data[rect.index];
+
+                            rect.on('click', function (e) {
+                                var json = {
+                                    "row": this.data.row,
+                                    "col": this.data.col,
+                                    "code": this.data.code,
+                                    "N": N
+                                };
+
+                                /*$.post("/pricecurve_50", JSON.stringify(json),
+                                        function (data) {
+                                            pricedata = JSON.parse(data);
+                                        }
+                                )*/
+                                var latlng = L.latLng(39.906985851984146, 116.39055488416854);
+                                var content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "北京天安门" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
+                                var popup = L.popup()
+                                        .setLatLng(latlng)
+                                        .setContent(content);
+                                this.rect.bindPopup(popup);
+                            });
+
+                            rect.addTo(map);
+                            rects.push(rect);
+                        }
+                        count++;
+                    }
                 }
             }
 

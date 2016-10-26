@@ -4,6 +4,11 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.reprocess.grid_100.PoiCode;
+import com.reprocess.grid_100.util.NumJudge;
+import com.reprocess.grid_100.util.Resolution;
+import com.reprocess.grid_100.util.RowColCalculation;
+import com.reprocess.grid_100.util.Source;
+import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONObject;
 import utils.FileTool;
@@ -35,12 +40,81 @@ public class GridFeatureStatistics {
         }
     }
 
+    public Response get(String body){
+
+        JSONObject obj= JSONObject.fromObject(body);
+
+        double west=obj.getDouble("west");
+        double east=obj.getDouble("east");
+        double south=obj.getDouble("south");
+        double north=obj.getDouble("north");
+
+        int zoom=obj.getInt("zoom");
+        int N= Resolution.getResolution(zoom);
+
+        //2016年01月
+        String time=obj.getString("gridTime");
+        int year=Integer.parseInt(time.substring(0,time.indexOf("年")));
+        int month=Integer.parseInt(time.substring(time.indexOf("年")+"年".length(),time.indexOf("月")));
+
+        String source=obj.getString("source");
+        source= Source.getSource(source);
+
+        int colmin= RowColCalculation.getColMin_50(west);
+        int colmax=RowColCalculation.getColMax_50(east);
+        int rowmin=RowColCalculation.getRowMin_50(south);
+        int rowmax=RowColCalculation.getRowMax_50(north);
+
+        if(colmin<0){
+            colmin=0;
+        }
+        if(colmax>4000){
+            colmax=4000;
+        }
+        if(rowmin<0){
+            rowmin=0;
+        }
+        if(rowmax>4000){
+            rowmax=4000;
+        }
+
+        JSONObject condition=new JSONObject();
+        condition.put("N",N);
+        condition.put("rowmax",rowmax);
+        condition.put("rowmin",rowmin);
+        condition.put("colmax",colmax);
+        condition.put("colmin",colmin);
+        condition.put("year",year);
+        condition.put("month",month);
+        condition.put("source",source);
+        condition.put("export_collName","BasicData_Resold_50");//这个表里只有十月份的数据，若要其他月份的数据还需要写成BasicData_Resold_100
+        condition.put("import_collName","BasicData_Resold_50");
+
+        Response r= new Response();
+        r.setCode(200);
+        r.setContent("");
+        return r;
+    }
+
+    public static void getInvestment(JSONObject condition){
+
+        callDataFromMongo(condition);
+
+        statisticCode();
+
+        ergodicStatistics();
+
+        System.out.println("ok!");
+    }
+
 
     //注意，统计不同月份的数据的时候，全局变量要清空！！！
     public static Map<Integer,Map<String,Integer>> code_houseType_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_direction_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_floors_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_area_map=new HashMap<>();
+    public static Map<Integer,Map<String,Integer>> code_price_map=new HashMap<>();
+    public static Map<Integer,Map<String,Integer>> code_unitprice_map=new HashMap<>();
 
     //1：将每个格网的数据（obj）存储在codelists_map中，其中key是格网code，value是装了所有房源数据的list
     public static void callDataFromMongo(JSONObject condition){
@@ -75,6 +149,8 @@ public class GridFeatureStatistics {
         String floors;
         String direction;
         String flooron;
+        String price;
+        String unit_price;
 
         int count=0;
         if(cursor.hasNext()) {
@@ -121,7 +197,33 @@ public class GridFeatureStatistics {
 
                 if(obj.containsKey("area")){
                     area=obj.getString("area");
-                    setAttributeMap(code,area,code_area_map);
+                    boolean num= NumJudge.isNum(area);
+                    if(num){
+                        setAttributeMap(code,area,code_area_map);
+                    }else {
+                        System.out.println(code+":"+area);
+                    }
+
+                }
+
+                if(obj.containsKey("price")){
+                    price=obj.getString("price");
+                    boolean num= NumJudge.isNum(price);
+                    if(num){
+                        setAttributeMap(code,price,code_price_map);
+                    }else {
+                        System.out.println(code+":"+price);
+                    }
+                }
+
+                if(obj.containsKey("unit_price")){
+                    unit_price=obj.getString("unit_price");
+                    boolean num= NumJudge.isNum(unit_price);
+                    if(num){
+                        setAttributeMap(code,unit_price,code_unitprice_map);
+                    }else {
+                        System.out.println(code+":"+unit_price);
+                    }
                 }
 
                 ++count;
@@ -136,11 +238,16 @@ public class GridFeatureStatistics {
         stasticAttributeNum(code_direction_map);
         stasticAttributeNum(code_floors_map);
         stasticAttributeNum(code_area_map);
+        stasticAttributeNum(code_price_map);
+        stasticAttributeNum(code_unitprice_map);
     }
 
     //3、遍历所有网格，汇总每一个网格的统计信息
     public static void ergodicStatistics(){
         JSONObject obj;
+        double weight_area=0;
+        double weight_price=0;
+        double weight_unitprice=0;
         for(int code=1;code<=4000*4000;code++){
 
             obj=new JSONObject();
@@ -165,11 +272,34 @@ public class GridFeatureStatistics {
             if(code_area_map.containsKey(code)){
                 Map<String,Integer> area=code_area_map.get(code);
                 JSONObject ar=getAttributeJson(area);
+
+                weight_area=getInvestmentThreshold(area);
                 obj.put("area",ar);
+
             }
+
+            if(code_price_map.containsKey(code)){
+                Map<String,Integer> price=code_price_map.get(code);
+                JSONObject pr=getAttributeJson(price);
+
+                weight_price=getInvestmentThreshold(price);
+                obj.put("price",pr);
+            }
+
+            if(code_unitprice_map.containsKey(code)){
+                Map<String,Integer> unitprice=code_unitprice_map.get(code);
+                JSONObject up=getAttributeJson(unitprice);
+
+                weight_unitprice=getInvestmentThreshold(unitprice);
+                obj.put("unitprice",up);
+            }
+
+
 
             if(obj.size()!=0){
                 obj.put("code",code);
+                obj.put("weight_price",weight_price);
+                obj.put("weight_price_un",weight_area*weight_unitprice);
                 FileTool.Dump(obj.toString(),"D:\\test\\栅格特征统计.txt","utf-8");
             }
         }
@@ -222,7 +352,7 @@ public class GridFeatureStatistics {
         System.out.println("共有"+count+"条"+attribute+"信息");
     }
 
-    //遍历code下的子map，并将所有的值以json形式返回
+    //遍历code下的子map，并将所有的值以json形式返回,这里统计的是每个属性所含有的个数
     public static JSONObject getAttributeJson(Map<String,Integer> attribute){
 
         String attr;
@@ -237,8 +367,31 @@ public class GridFeatureStatistics {
         return object;
     }
 
-    //两种不同的投资门槛值的计算，一是算房源总价的加权值
+    public static double getInvestmentThreshold(Map<String,Integer> attribute){
 
-    //二是算计算房源的均价，计算房源的均面积，再相乘得总价
+        String attr;
+        int num;
+        int totalnum=0;
+        double ratio=0;
+        double weightresult=0;
+        for(Map.Entry<String,Integer> entry:attribute.entrySet()){
+            num=entry.getValue();
+            totalnum+=num;
+        }
+
+        for(Map.Entry<String,Integer> entry:attribute.entrySet()){
+            attr=entry.getKey();
+            num=entry.getValue();
+
+            if(totalnum!=0){
+                ratio=(double)num/(double)totalnum;
+            }
+
+            weightresult+=ratio*Double.parseDouble(attr);
+        }
+        return weightresult;
+    }
+
+    //两种不同的投资门槛值的计算，一是算房源总价的加权值,二是算计算房源的均价，计算房源的均面积，再相乘得总价
 
 }

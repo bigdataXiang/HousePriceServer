@@ -36,7 +36,6 @@ public class CallGridCurve {
         Response r= new Response();
         r.setCode(200);
         r.setContent(callGridData_Resold_50_Interpolation(condition));
-        //System.out.println(callGridData_Resold_100(condition));
         return r;
 
 
