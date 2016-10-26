@@ -43,7 +43,7 @@ public class Color {
         return color;
     }
 
-    /**房价加速度的配色方案*/
+    /**房价加速度的配色方案,也可以用于投资总值的配色*/
     public static String setColorRegion_Acceleration(double price){
         String color="";
 
@@ -72,5 +72,7 @@ public class Color {
         }
         return color;
     }
+
+
 
 }

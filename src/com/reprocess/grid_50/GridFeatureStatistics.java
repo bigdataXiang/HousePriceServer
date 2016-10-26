@@ -4,12 +4,10 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.reprocess.grid_100.PoiCode;
-import com.reprocess.grid_100.util.NumJudge;
-import com.reprocess.grid_100.util.Resolution;
-import com.reprocess.grid_100.util.RowColCalculation;
-import com.reprocess.grid_100.util.Source;
+import com.reprocess.grid_100.util.*;
 import com.svail.bean.Response;
 import com.svail.db.db;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import utils.FileTool;
 
@@ -34,7 +32,7 @@ public class GridFeatureStatistics {
 
             statisticCode();
 
-            ergodicStatistics();
+            ergodicStatistics(condition);
 
             System.out.println("ok!");
         }
@@ -43,6 +41,8 @@ public class GridFeatureStatistics {
     public Response get(String body){
 
         JSONObject obj= JSONObject.fromObject(body);
+
+        String investment=obj.getString("investment");
 
         double west=obj.getDouble("west");
         double east=obj.getDouble("east");
@@ -79,6 +79,7 @@ public class GridFeatureStatistics {
         }
 
         JSONObject condition=new JSONObject();
+        condition.put("investment",investment);
         condition.put("N",N);
         condition.put("rowmax",rowmax);
         condition.put("rowmin",rowmin);
@@ -102,7 +103,7 @@ public class GridFeatureStatistics {
 
         statisticCode();
 
-        ergodicStatistics();
+        ergodicStatistics(condition);
 
         System.out.println("ok!");
     }
@@ -115,9 +116,12 @@ public class GridFeatureStatistics {
     public static Map<Integer,Map<String,Integer>> code_area_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_price_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_unitprice_map=new HashMap<>();
+    public static TreeSet<Integer> codesSet= new TreeSet<>();
 
     //1：将每个格网的数据（obj）存储在codelists_map中，其中key是格网code，value是装了所有房源数据的list
     public static void callDataFromMongo(JSONObject condition){
+        int N=condition.getInt("N");
+
         String collName_export=condition.getString("export_collName");
         DBCollection coll_export = db.getDB().getCollection(collName_export);
 
@@ -133,6 +137,33 @@ public class GridFeatureStatistics {
                 document.put(key,value);
             }
         }
+
+        int rowmin=condition.getInt("rowmin");
+        int rowmax=condition.getInt("rowmax");
+        int colmin=condition.getInt("colmin");
+        int colmax=condition.getInt("colmax");
+
+        //将小网格合并成大网格
+        int r_min=(int) Math.ceil((double)rowmin/N);
+        int r_max=(int) Math.ceil((double)rowmax/N);
+        int c_min=(int) Math.ceil((double)colmin/N);
+        int c_max=(int) Math.ceil((double)colmax/N);
+
+        //根据大网格调用需要的小网格
+        rowmin=(r_min-1)*N+1;
+        rowmax=r_max*N;
+        colmin=(c_min-1)*N+1;
+        colmax=c_max*N;
+
+        BasicDBObject cond=new BasicDBObject();
+        cond.put("$gte",rowmin);
+        cond.put("$lte",rowmax);
+        document.put("row",cond);
+
+        cond=new BasicDBObject();
+        cond.put("$gte",colmin);
+        cond.put("$lte",colmax);
+        document.put("col",cond);
 
         DBCursor cursor = coll_export.find(document);
 
@@ -152,6 +183,10 @@ public class GridFeatureStatistics {
         String price;
         String unit_price;
 
+        int row_doc;
+        int col_doc;
+        int[] result_doc;
+
         int count=0;
         if(cursor.hasNext()) {
             while (cursor.hasNext()){
@@ -159,18 +194,18 @@ public class GridFeatureStatistics {
                 poi=cs.toString();
                 obj= JSONObject.fromObject(poi);
                 obj.remove("_id");
-                //System.out.println(obj);
 
-                lng=obj.getDouble("lng");
-                lat=obj.getDouble("lat");
-                String[] result= PoiCode.setPoiCode_50(lat,lng).split(",");
-                code = Integer.parseInt(result[0]);
-                row=Integer.parseInt(result[1]);
-                col=Integer.parseInt(result[2]);
+                row_doc=obj.getInt("row");
+                col_doc=obj.getInt("col");
 
-                obj.put("code",code);
+                result_doc=RowColCalculation.codeMapping50toN50(row_doc,col_doc,N);
+                row=result_doc[0];
                 obj.put("row",row);
+                col=result_doc[1];
                 obj.put("col",col);
+                code=result_doc[2];
+                obj.put("code",code);
+                codesSet.add(code);
 
                 //将数据存入50*50的源数据表BasicData_Resold_50中
                 DBCursor rls =coll_import.find(cs);
@@ -243,30 +278,44 @@ public class GridFeatureStatistics {
     }
 
     //3、遍历所有网格，汇总每一个网格的统计信息
-    public static void ergodicStatistics(){
+    //{"r_min":38,"r_max":64,"c_min":63,"c_max":119,"N":20,"data":[{"code":7467,"average_price":4.927035666666665,"color":"#04E738","row":38,"col":67}]}
+    public static JSONObject ergodicStatistics(JSONObject condition){
+        String investment=condition.getString("investment");
+        int N=condition.getInt("N");
+
+        JSONObject total=new JSONObject();
+        List<JSONObject> data=new ArrayList<>();
         JSONObject obj;
         double weight_area=0;
         double weight_price=0;
         double weight_unitprice=0;
-        for(int code=1;code<=4000*4000;code++){
+        String color="";
+        double average_price=0;
+        int row;
+        int col;
+        int[] rc=new int[2];
+        int code;
+        Object[] codeslist=codesSet.toArray();
+        for(int i=1;i<=codeslist.length;i++){
 
+            code=(int)codeslist[i];
             obj=new JSONObject();
             if(code_houseType_map.containsKey(code)){
                 Map<String,Integer> houseType=code_houseType_map.get(code);
                 JSONObject type=getAttributeJson(houseType);
-                obj.put("houseType",type);
+                //obj.put("houseType",type);
             }
 
             if(code_direction_map.containsKey(code)){
                 Map<String,Integer> direction=code_direction_map.get(code);
                 JSONObject dir=getAttributeJson(direction);
-                obj.put("direction",dir);
+                //obj.put("direction",dir);
             }
 
             if(code_floors_map.containsKey(code)){
                 Map<String,Integer> floors=code_floors_map.get(code);
                 JSONObject floor=getAttributeJson(floors);
-                obj.put("floors",floor);
+                //obj.put("floors",floor);
             }
 
             if(code_area_map.containsKey(code)){
@@ -274,7 +323,7 @@ public class GridFeatureStatistics {
                 JSONObject ar=getAttributeJson(area);
 
                 weight_area=getInvestmentThreshold(area);
-                obj.put("area",ar);
+                //obj.put("area",ar);
 
             }
 
@@ -283,7 +332,7 @@ public class GridFeatureStatistics {
                 JSONObject pr=getAttributeJson(price);
 
                 weight_price=getInvestmentThreshold(price);
-                obj.put("price",pr);
+                //obj.put("price",pr);
             }
 
             if(code_unitprice_map.containsKey(code)){
@@ -291,18 +340,32 @@ public class GridFeatureStatistics {
                 JSONObject up=getAttributeJson(unitprice);
 
                 weight_unitprice=getInvestmentThreshold(unitprice);
-                obj.put("unitprice",up);
+                //obj.put("unitprice",up);
             }
 
 
 
             if(obj.size()!=0){
                 obj.put("code",code);
-                obj.put("weight_price",weight_price);
-                obj.put("weight_price_un",weight_area*weight_unitprice);
-                FileTool.Dump(obj.toString(),"D:\\test\\栅格特征统计.txt","utf-8");
+                if(investment.equals("总价加权")){
+                    average_price=weight_price;
+                }else if(investment.equals("均价加权")){
+                    average_price=weight_area*weight_unitprice;
+                }
+                obj.put("average_price",average_price);
+                color= Color.setColorRegion_Acceleration(average_price);
+                obj.put("color",color);
+                rc=RowColCalculation.Code_RowCol(code,N);
+                row=rc[0];
+                col=rc[1];
+                obj.put("row",row);
+                obj.put("col",col);
+                data.add(obj);
+                //FileTool.Dump(obj.toString(),"D:\\test\\栅格特征统计.txt","utf-8");
             }
         }
+
+        return total;
     }
 
     //建立一个map，其中key为code，value是一个属性值——个数的一个子map
