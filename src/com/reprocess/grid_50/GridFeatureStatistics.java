@@ -3,11 +3,10 @@ package com.reprocess.grid_50;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
-import com.reprocess.grid_100.Code_Price_RowCol;
 import com.reprocess.grid_100.PoiCode;
-import com.reprocess.grid_100.SchoolPoi;
 import com.svail.db.db;
 import net.sf.json.JSONObject;
+import utils.FileTool;
 
 import java.util.*;
 
@@ -28,9 +27,9 @@ public class GridFeatureStatistics {
             //2.从数据库中调出满足condition的数据,并且将每个网格的数据存入以key-value形式存入map中
             callDataFromMongo(condition);
 
-            statisticGridInfor();
-
             statisticCode();
+
+            ergodicStatistics();
 
             System.out.println("ok!");
         }
@@ -72,7 +71,7 @@ public class GridFeatureStatistics {
         int col;
 
         String house_type;
-        double area;
+        String area;
         String floors;
         String direction;
         String flooron;
@@ -105,20 +104,25 @@ public class GridFeatureStatistics {
                     //System.out.println("该数据已经存在!");
                 }
 
-                house_type=obj.getString("house_type");
-                setAttributeMap(code,house_type,code_houseType_map);
+                if(obj.containsKey("house_type")){
+                    house_type=obj.getString("house_type");
+                    setAttributeMap(code,house_type,code_houseType_map);
+                }
 
+                if(obj.containsKey("direction")){
+                    direction=obj.getString("direction");
+                    setAttributeMap(code,direction,code_direction_map);
+                }
 
-                direction=obj.getString("direction");
-                setAttributeMap(code,direction,code_direction_map);
+                if(obj.containsKey("floors")){
+                    floors=obj.getString("floors");
+                    setAttributeMap(code,floors,code_floors_map);
+                }
 
-
-                floors=obj.getString("floors");
-                setAttributeMap(code,floors,code_floors_map);
-
-
-                area=obj.getDouble("area");
-                setAttributeMap(code,""+area,code_area_map);
+                if(obj.containsKey("area")){
+                    area=obj.getString("area");
+                    setAttributeMap(code,area,code_area_map);
+                }
 
                 ++count;
             }
@@ -126,84 +130,52 @@ public class GridFeatureStatistics {
         System.out.println("共有" +count+ "条数据");
     }
 
-
-    //2:遍历整个houseType_codelists_map，逐个统计格网内的信息
-    public static void statisticGridInfor(){
-        int code;
-        List<Integer> codes_list;
-        JSONObject obj;
-
-        String house_type;
-        int area;
-        int floors;
-        String direction;
-        String flooron;
-
-        for(Map.Entry<String,List<Integer>> entry:houseType_codelists_map.entrySet()){
-
-            house_type=entry.getKey();
-            codes_list=entry.getValue();
-            Map<Integer,Integer> codes_statistics=new HashMap<>();
-
-            for(int i=0;i<codes_list.size();i++){
-                code=codes_list.get(i);
-
-                if(codes_statistics.containsKey(code)){
-                    int num=codes_statistics.get(code);
-                    codes_statistics.put(code,++num);
-
-                }else {
-                    codes_statistics.put(code,1);
-                }
-
-                if(code_houseType_map.containsKey(code)){
-                    Map<String,Integer> houseType_num_map=code_houseType_map.get(code);
-                    if(houseType_num_map.containsKey(house_type)){
-                        int num=houseType_num_map.get(house_type);
-                        houseType_num_map.put(house_type,++num);
-                        code_houseType_map.put(code,houseType_num_map);
-
-                    }else {
-                        houseType_num_map.put(house_type,1);
-                        code_houseType_map.put(code,houseType_num_map);
-                    }
-
-
-                }else {
-                    Map<String,Integer> houseType_num_map=new HashMap<>();
-                    houseType_num_map.put(house_type,1);
-                    code_houseType_map.put(code,houseType_num_map);
-                }
-            }
-        }
-    }
-
-    //3:遍历整个code_houseType_map，计算每个网格里边的户型的个数，并生成json格式数据
+    //2:遍历整个code_houseType_map，计算每个网格里边的户型的个数，并生成json格式数据
     public static void statisticCode(){
-
-        int code;
-        String houseType;
-        int num;
-        Map<String,Integer> houseType_num;
-
-        int count=0;
-        for(Map.Entry<Integer,Map<String,Integer>> entry:code_houseType_map.entrySet()){
-            code=entry.getKey();
-            houseType_num=entry.getValue();
-
-            JSONObject obj=new JSONObject();
-            obj.put("code",code);
-            for(Map.Entry<String,Integer> entry1:houseType_num.entrySet()){
-                houseType=entry1.getKey();
-                num=entry1.getValue();
-                obj.put(houseType,num);
-                count+=num;
-            }
-           // System.out.println(obj);
-        }
-        System.out.println("共有"+count+"条户型信息");
+        stasticAttributeNum(code_houseType_map);
+        stasticAttributeNum(code_direction_map);
+        stasticAttributeNum(code_floors_map);
+        stasticAttributeNum(code_area_map);
     }
 
+    //3、遍历所有网格，汇总每一个网格的统计信息
+    public static void ergodicStatistics(){
+        JSONObject obj;
+        for(int code=1;code<=4000*4000;code++){
+
+            obj=new JSONObject();
+            if(code_houseType_map.containsKey(code)){
+                Map<String,Integer> houseType=code_houseType_map.get(code);
+                JSONObject type=getAttributeJson(houseType);
+                obj.put("houseType",type);
+            }
+
+            if(code_direction_map.containsKey(code)){
+                Map<String,Integer> direction=code_direction_map.get(code);
+                JSONObject dir=getAttributeJson(direction);
+                obj.put("direction",dir);
+            }
+
+            if(code_floors_map.containsKey(code)){
+                Map<String,Integer> floors=code_floors_map.get(code);
+                JSONObject floor=getAttributeJson(floors);
+                obj.put("floors",floor);
+            }
+
+            if(code_area_map.containsKey(code)){
+                Map<String,Integer> area=code_area_map.get(code);
+                JSONObject ar=getAttributeJson(area);
+                obj.put("area",ar);
+            }
+
+            if(obj.size()!=0){
+                obj.put("code",code);
+                FileTool.Dump(obj.toString(),"D:\\test\\栅格特征统计.txt","utf-8");
+            }
+        }
+    }
+
+    //建立一个map，其中key为code，value是一个属性值——个数的一个子map
     public static void setAttributeMap(int code,String attribute,Map<Integer,Map<String,Integer>> map){
         if(map.containsKey(code)){
 
@@ -225,5 +197,48 @@ public class GridFeatureStatistics {
         }
     }
 
+    //验证所有的统计结果是否与总的数据的相符
+    public static void stasticAttributeNum(Map<Integer,Map<String,Integer>> map){
+        int code;
+        String attribute="";
+        int num;
+        Map<String,Integer> attribute_num;
+
+        int count=0;
+        for(Map.Entry<Integer,Map<String,Integer>> entry:map.entrySet()){
+            code=entry.getKey();
+            attribute_num=entry.getValue();
+
+            JSONObject obj=new JSONObject();
+            obj.put("code",code);
+            for(Map.Entry<String,Integer> entry1:attribute_num.entrySet()){
+                attribute=entry1.getKey();
+                num=entry1.getValue();
+                obj.put(attribute,num);
+                count+=num;
+            }
+            // System.out.println(obj);
+        }
+        System.out.println("共有"+count+"条"+attribute+"信息");
+    }
+
+    //遍历code下的子map，并将所有的值以json形式返回
+    public static JSONObject getAttributeJson(Map<String,Integer> attribute){
+
+        String attr;
+        int num;
+        JSONObject object=new JSONObject();
+        for(Map.Entry<String,Integer> entry:attribute.entrySet()){
+            attr=entry.getKey();
+            num=entry.getValue();
+
+            object.put(attr,num);
+        }
+        return object;
+    }
+
+    //两种不同的投资门槛值的计算，一是算房源总价的加权值
+
+    //二是算计算房源的均价，计算房源的均面积，再相乘得总价
 
 }
