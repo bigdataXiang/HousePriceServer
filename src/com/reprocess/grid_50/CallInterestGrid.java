@@ -23,10 +23,10 @@ public class CallInterestGrid {
         double width=5.892999999998593E-4;//每50m的经度差
         double length=4.501999999998674E-4;//每50m的纬度差
 
-        int colmin=(int)Math.ceil((116.15020751953125-115.417284)/width);
-        int colmax=(int)Math.ceil((116.80938720703124-115.417284)/width);
-        int rowmin=(int)Math.ceil((39.777144238002684-39.438283)/length);
-        int rowmax=(int)Math.ceil((40.01236487583935-39.438283)/length);
+        int colmin=(int)Math.ceil((116.10557556152344-115.417284)/width);
+        int colmax=(int)Math.ceil((116.76475524902342-115.417284)/width);
+        int rowmin=(int)Math.ceil((39.80035972468958-39.438283)/length);
+        int rowmax=(int)Math.ceil((40.035500804437156-39.438283)/length);
 
         JSONObject condition=new JSONObject();
         condition.put("N",20);

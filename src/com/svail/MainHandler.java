@@ -50,15 +50,16 @@ public class MainHandler implements HttpHandler {
             case "/pricecurve_50":response=new com.reprocess.grid_50.CallGridCurve().get(body);
                 break;
             case "/investment":response=new com.reprocess.grid_50.GridFeatureStatistics().get(body);
+                break;
 
 
             //以下这三个不需要用
-            case "/grid1000":response=new handler_1000().get(url.getPath(),body);
+            /*case "/grid1000":response=new handler_1000().get(url.getPath(),body);
                 break;
             case "/grid2000":response=new handler_2000().get(url.getPath(),body);
                 break;
             case "/grid3000":response=new handler_3000().get(url.getPath(),body);
-                break;
+                break;*/
             default:response= new handler_static().get(url.getPath().substring(1));
                 break;
         }

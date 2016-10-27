@@ -68,7 +68,7 @@ public class PoiCode {
     public static void main(String[] args) throws IOException
     {
 
-        //System.out.println(39.442785-39.438283);
+        /*//System.out.println(39.442785-39.438283);
         double k=0.5*((0.011791000000002327+0.011580999999992514+0.011891000000005647+0.011880999999988262)/40);
         System.out.println("经度差："+k);
         System.out.println(115.417284+k);
@@ -84,7 +84,10 @@ public class PoiCode {
         double test2[]=BLToGauss(115.417284,41.059244);
         double test3[]=BLToGauss(115.417284-k,41.059244);
         dist=Math.sqrt(Math.pow((test2[0]-test3[0]),2)+Math.pow((test2[1]-test3[1]),2));//计算两点之间的平面距离
-        System.out.println("只改变经度的情况下:"+dist);
+        System.out.println("只改变经度的情况下:"+dist);*/
+
+        String str=setPoiCode_50(39.9698618524,116.410621511);
+        System.out.println(str);
 
     }
     /**
@@ -139,5 +142,7 @@ public class PoiCode {
         yval = yval + Y0;
         return new double[] { xval, yval };
     }
+
+
 
 }

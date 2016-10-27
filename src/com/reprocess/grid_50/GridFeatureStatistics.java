@@ -10,6 +10,7 @@ import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import utils.FileTool;
+import utils.UtilFile;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ import java.util.*;
  */
 public class GridFeatureStatistics {
     public static void main(String[] args){
-        for(int i=10;i<=10;i++){
+        /*for(int i=10;i<=10;i++){
             //1.选定要导出的数据的时间（月份）
             JSONObject condition=new JSONObject();
             condition.put("year","2015");
@@ -35,7 +36,53 @@ public class GridFeatureStatistics {
             ergodicStatistics(condition);
 
             System.out.println("ok!");
+        }*/
+
+        double west=116.10557556152344;
+        double east=116.76475524902342;
+        double south=39.80035972468958;
+        double north=40.035500804437156;
+
+        int colmin= RowColCalculation.getColMin_50(west);
+        int colmax=RowColCalculation.getColMax_50(east);
+        int rowmin=RowColCalculation.getRowMin_50(south);
+        int rowmax=RowColCalculation.getRowMax_50(north);
+
+        System.out.println("总共的网格个数有"+(colmax-colmin+1)*(rowmax-rowmin+1));
+
+        if(colmin<0){
+            colmin=1;
         }
+        if(colmax>4000){
+            colmax=4000;
+        }
+        if(rowmin<0){
+            rowmin=1;
+        }
+        if(rowmax>4000){
+            rowmax=4000;
+        }
+
+        JSONObject condition=new JSONObject();
+        condition.put("investment","总价加权");
+        condition.put("N",20);
+        condition.put("rowmax",rowmax);
+        condition.put("rowmin",rowmin);
+        condition.put("colmax",colmax);
+        condition.put("colmin",colmin);
+        condition.put("year",2015);
+        condition.put("month",10);
+        condition.put("source","woaiwojia");
+        condition.put("export_collName","BasicData_Resold_50");//这个表里只有十月份的数据，若要其他月份的数据还需要写成BasicData_Resold_100
+        condition.put("import_collName","BasicData_Resold_50");
+
+        getInvestment(condition);
+
+        System.out.println(total);
+
+
+        //setPois_50();
+
     }
 
     public Response get(String body){
@@ -48,6 +95,7 @@ public class GridFeatureStatistics {
         double east=obj.getDouble("east");
         double south=obj.getDouble("south");
         double north=obj.getDouble("north");
+
 
         int zoom=obj.getInt("zoom");
         int N= Resolution.getResolution(zoom);
@@ -66,13 +114,13 @@ public class GridFeatureStatistics {
         int rowmax=RowColCalculation.getRowMax_50(north);
 
         if(colmin<0){
-            colmin=0;
+            colmin=1;
         }
         if(colmax>4000){
             colmax=4000;
         }
         if(rowmin<0){
-            rowmin=0;
+            rowmin=1;
         }
         if(rowmax>4000){
             rowmax=4000;
@@ -91,9 +139,11 @@ public class GridFeatureStatistics {
         condition.put("export_collName","BasicData_Resold_50");//这个表里只有十月份的数据，若要其他月份的数据还需要写成BasicData_Resold_100
         condition.put("import_collName","BasicData_Resold_50");
 
+        getInvestment(condition);
+
         Response r= new Response();
         r.setCode(200);
-        r.setContent("");
+        r.setContent(total.toString());
         return r;
     }
 
@@ -101,10 +151,11 @@ public class GridFeatureStatistics {
 
         callDataFromMongo(condition);
 
-        statisticCode();
+        //statisticCode();
 
         ergodicStatistics(condition);
 
+        System.out.println(total.toString());
         System.out.println("ok!");
     }
 
@@ -117,6 +168,7 @@ public class GridFeatureStatistics {
     public static Map<Integer,Map<String,Integer>> code_price_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_unitprice_map=new HashMap<>();
     public static TreeSet<Integer> codesSet= new TreeSet<>();
+    public static JSONObject total=new JSONObject();
 
     //1：将每个格网的数据（obj）存储在codelists_map中，其中key是格网code，value是装了所有房源数据的list
     public static void callDataFromMongo(JSONObject condition){
@@ -148,6 +200,12 @@ public class GridFeatureStatistics {
         int r_max=(int) Math.ceil((double)rowmax/N);
         int c_min=(int) Math.ceil((double)colmin/N);
         int c_max=(int) Math.ceil((double)colmax/N);
+        total.put("r_min",r_min);
+        total.put("r_max",r_max);
+        total.put("c_min",c_min);
+        total.put("c_max",c_max);
+        total.put("N",N);
+
 
         //根据大网格调用需要的小网格
         rowmin=(r_min-1)*N+1;
@@ -166,6 +224,10 @@ public class GridFeatureStatistics {
         document.put("col",cond);
 
         DBCursor cursor = coll_export.find(document);
+
+        //List a=coll_export.find(document).toArray();
+        //System.out.println(a.size());
+
 
         String poi;
         JSONObject obj;
@@ -208,12 +270,12 @@ public class GridFeatureStatistics {
                 codesSet.add(code);
 
                 //将数据存入50*50的源数据表BasicData_Resold_50中
-                DBCursor rls =coll_import.find(cs);
+                /*DBCursor rls =coll_import.find(cs);
                 if(rls == null || rls.size() == 0){
                     coll_import.insert(cs);
                 }else{
                     //System.out.println("该数据已经存在!");
-                }
+                }*/
 
                 if(obj.containsKey("house_type")){
                     house_type=obj.getString("house_type");
@@ -279,11 +341,10 @@ public class GridFeatureStatistics {
 
     //3、遍历所有网格，汇总每一个网格的统计信息
     //{"r_min":38,"r_max":64,"c_min":63,"c_max":119,"N":20,"data":[{"code":7467,"average_price":4.927035666666665,"color":"#04E738","row":38,"col":67}]}
-    public static JSONObject ergodicStatistics(JSONObject condition){
+    public static void ergodicStatistics(JSONObject condition){
         String investment=condition.getString("investment");
         int N=condition.getInt("N");
 
-        JSONObject total=new JSONObject();
         List<JSONObject> data=new ArrayList<>();
         JSONObject obj;
         double weight_area=0;
@@ -296,29 +357,35 @@ public class GridFeatureStatistics {
         int[] rc=new int[2];
         int code;
         Object[] codeslist=codesSet.toArray();
-        for(int i=1;i<=codeslist.length;i++){
+
+        int index=0;
+        for(int i=0;i<codeslist.length;i++){
 
             code=(int)codeslist[i];
             obj=new JSONObject();
             if(code_houseType_map.containsKey(code)){
+                index++;
                 Map<String,Integer> houseType=code_houseType_map.get(code);
                 JSONObject type=getAttributeJson(houseType);
                 //obj.put("houseType",type);
             }
 
             if(code_direction_map.containsKey(code)){
+                index++;
                 Map<String,Integer> direction=code_direction_map.get(code);
                 JSONObject dir=getAttributeJson(direction);
                 //obj.put("direction",dir);
             }
 
             if(code_floors_map.containsKey(code)){
+                index++;
                 Map<String,Integer> floors=code_floors_map.get(code);
                 JSONObject floor=getAttributeJson(floors);
                 //obj.put("floors",floor);
             }
 
             if(code_area_map.containsKey(code)){
+                index++;
                 Map<String,Integer> area=code_area_map.get(code);
                 JSONObject ar=getAttributeJson(area);
 
@@ -328,6 +395,7 @@ public class GridFeatureStatistics {
             }
 
             if(code_price_map.containsKey(code)){
+                index++;
                 Map<String,Integer> price=code_price_map.get(code);
                 JSONObject pr=getAttributeJson(price);
 
@@ -336,6 +404,7 @@ public class GridFeatureStatistics {
             }
 
             if(code_unitprice_map.containsKey(code)){
+                index++;
                 Map<String,Integer> unitprice=code_unitprice_map.get(code);
                 JSONObject up=getAttributeJson(unitprice);
 
@@ -345,7 +414,7 @@ public class GridFeatureStatistics {
 
 
 
-            if(obj.size()!=0){
+            if(index!=0){
                 obj.put("code",code);
                 if(investment.equals("总价加权")){
                     average_price=weight_price;
@@ -364,8 +433,9 @@ public class GridFeatureStatistics {
                 //FileTool.Dump(obj.toString(),"D:\\test\\栅格特征统计.txt","utf-8");
             }
         }
-
-        return total;
+        Collections.sort(data, new UtilFile.CodeComparator());
+        total.put("data",data);
+        System.out.println("data的大小:"+data.size());
     }
 
     //建立一个map，其中key为code，value是一个属性值——个数的一个子map
@@ -457,4 +527,52 @@ public class GridFeatureStatistics {
 
     //两种不同的投资门槛值的计算，一是算房源总价的加权值,二是算计算房源的均价，计算房源的均面积，再相乘得总价
 
+    public static void setPois_50(){
+        String collName_export="BasicData_Resold_100";
+        DBCollection coll_export = db.getDB().getCollection(collName_export);
+
+        String collName_import="BasicData_Resold_50";
+        DBCollection coll_import = db.getDB().getCollection(collName_import);
+
+        BasicDBObject document = new BasicDBObject();
+        document.put("source","woaiwojia");
+
+        String poi;
+        JSONObject obj;
+        double lat;
+        double lng;
+        int code;
+        int row;
+        int col;
+
+        DBCursor cursor = coll_export.find(document);
+        if(cursor.hasNext()) {
+            while (cursor.hasNext()) {
+
+                BasicDBObject cs = (BasicDBObject)cursor.next();
+                cs.remove("_id");
+                lat=cs.getDouble("lat");
+                lng=cs.getDouble("lng");
+
+                String[] result=PoiCode.setPoiCode_50(lat,lng).split(",");
+                code=Integer.parseInt(result[0]);
+                row=Integer.parseInt(result[1]);
+                col=Integer.parseInt(result[2]);
+
+                cs.put("code",code);
+                cs.put("row",row);
+                cs.put("col",col);
+
+                //将数据存入50*50的源数据表BasicData_Resold_50中
+                DBCursor rls =coll_import.find(cs);
+                if(rls == null || rls.size() == 0){
+                    coll_import.insert(cs);
+                }else{
+                    //System.out.println("该数据已经存在!");
+                }
+
+            }
+        }
+
+    }
 }
