@@ -1,59 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
-    <!-- 新 Bootstrap 核心 CSS 文件 -->
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="Chart.js-2.1.6/dist/Chart.bundle.js"></script>
-    <title>Title</title>
+    <meta charset="utf-8">
+    <title>Bootstrap 实例 - 模态框（Modal）插件</title>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div id="myModal"  class="modal fade bs-example-modal-sm" role="dialog" aria-labelledby="mySmallModalLabel">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-        </div>
-    </div>
+
+<!-- 按钮触发模态框 -->
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#infoModal">
+    开始演示模态框
+</button>
+<div id="infoModal"  style="margin: 3%;height: 90%; width: 90%;background-color: #000000" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-lg"　style="margin: 3%;height: 90%; width: 90%;">
+        <div class="modal-content" style="margin: 3%;height: 90%; width: 90%">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    特征统计
+                </h4>
+            </div>
+            <div class="modal-body" id="text1">
+                This option is deprecated since v3.2.1 and will be removed in v4. We recommend instead using client-side templating or a data binding framework, or calling jQuery.load yourself.
+
+                如果提供的是 URL，将利用 jQuery 的 load 方法从此 URL 地址加载要展示的内容（只加载一次）并插入 .modal-content 内。如果使用的是 data 属性 API，还可以利用 href 属性指定内容来源地址。下面是一个实例：
+            </div>
+            <div class="modal-body" id="text2">
+                This option is deprecated since v3.2.1 and will be removed in v4. We recommend instead using client-side templating or a data binding framework, or calling jQuery.load yourself.
+
+                如果提供的是 URL，将利用 jQuery 的 load 方法从此 URL 地址加载要展示的内容（只加载一次）并插入 .modal-content 内。如果使用的是 data 属性 API，还可以利用 href 属性指定内容来源地址。下面是一个实例：
+            </div>
+            <div class="modal-body" id="text3">
+                This option is deprecated since v3.2.1 and will be removed in v4. We recommend instead using client-side templating or a data binding framework, or calling jQuery.load yourself.
+
+                如果提供的是 URL，将利用 jQuery 的 load 方法从此 URL 地址加载要展示的内容（只加载一次）并插入 .modal-content 内。如果使用的是 data 属性 API，还可以利用 href 属性指定内容来源地址。下面是一个实例：
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
 </div>
-<script type="text/javascript">
-    $(window).ready(function () {
-        var ctx = document.getElementById("myChart").getContext("2d");
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels : ["January","February","March","April","May","June","July"],
-                datasets : [
-                    {
-                        fillColor : "rgba(220,220,220,0.5)",
-                        strokeColor :"rgba(220,220,220,1)",
-                        pointColor : "rgba(220,220,220,1)",
-                        pointStrokeColor : "#fff",
-                        data : [65,59,90,81,56,55,40]
-                    },
-                    {
-                        fillColor : "rgba(151,187,205,0)",
-                        strokeColor :"rgba(151,187,205,1)",
-                        pointColor : "rgba(151,187,205,1)",
-                        pointStrokeColor : "#fff",
-                        data : [28,48,40,19,96,27,100]
-                    }
-                ]
 
-            },
-            options: {
-                // scales: {yAxes: [{
-                //         ticks: {
-                //            beginAtZero:true
-                //         }
-                //     }]
-                // }
-            }
-        });
+<input type="button" value="添加文本域" onclick="UI.test()"/>
+<div id="test"></div>
 
-        $('#myModal').modal()
-    });
-</script>
+<p>Welcome to the site <b id='boldStuff'>dude</b> </p>
+<input type='button' onclick='changeText()' value='Change Text'/>
+
 </body>
+
+<script type="text/javascript">
+    var UI = {
+        $:function(_id){return document.getElementById(_id);},
+        test:function(){
+            var btn_input = document.createElement("input");
+            btn_input.type="text";
+            btn_input.value="自赋值"+Math.random();
+            this.$("test").appendChild(btn_input);
+        }
+    };
+
+    function changeText(){
+        document.getElementById('text1').innerHTML = 'Fred Flinstone';
+        document.getElementById('text2').innerHTML = 'Fred Flinstone Fred Flinstone Fred Flinstone Fred Flinstone';
+        document.getElementById('text3').innerHTML = 'Fred Flinstone Fred FlinstoneFred FlinstoneFred FlinstoneFred FlinstoneFred Flinstone';
+    }
+</script>
 </html>

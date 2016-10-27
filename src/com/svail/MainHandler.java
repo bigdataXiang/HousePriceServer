@@ -51,6 +51,8 @@ public class MainHandler implements HttpHandler {
                 break;
             case "/investment":response=new com.reprocess.grid_50.GridFeatureStatistics().get(body);
                 break;
+            case "/gridinfo":response=new com.reprocess.grid_50.CallGridFeature().get(body);
+                break;
             default:response= new handler_static().get(url.getPath().substring(1));
                 break;
         }

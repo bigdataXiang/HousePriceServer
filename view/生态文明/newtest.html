@@ -10,7 +10,7 @@
     </style>
 
     <link rel="stylesheet" href="/view/生态文明/lib/leaflet/leaflet.css" />
-    <link href="/view/生态文明/lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!--<link href="/view/生态文明/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
     <link href="/view/生态文明/stylesheets/ui.css" rel="stylesheet">
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/view/生态文明/sidebar-v2-master/css/leaflet-sidebar.css" />
@@ -101,7 +101,7 @@
                     <!--下拉列表-->
                     <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label for="source" class="col-sm-2 control-label">数据来源</label>
+                        <label for="source" class="col-sm-4 control-label">数据来源</label>
                         <select id="source" class ="form-control" style='width:200px;'>
                             <option>请选择</option>
                             <option>我爱我家</option>
@@ -112,7 +112,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="type" class="col-sm-2 control-label">房源类型</label>
+                        <label for="type" class="col-sm-4 control-label">房源类型</label>
                         <select id="type" class ="form-control" style='width:200px;'>
                             <option>请选择</option>
                             <option>新房</option>
@@ -122,7 +122,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="gridValue" class="col-sm-2 control-label">网格颜色意义</label>
+                        <label for="gridValue" class="col-sm-4 control-label">网格颜色意义</label>
                         <select id="gridValue" style='width:200px;'>
                             <option>请选择</option>
                             <option>房价加速度</option>
@@ -142,7 +142,7 @@
                         <div role="tabpanel" class="tab-pane active" id="price">
                             <form class="form-horizontal" role="form">
                                 <div class="form-group">
-                                    <label for="gridTime" class="col-sm-2 control-label">网格房价时间</label>
+                                    <label for="gridTime" class="col-sm-4 control-label">网格房价时间</label>
                                     <select id="gridTime" style='width:200px;'>
                                         <option>请选择</option>
                                         <option id="201507">2015年07月</option>
@@ -164,7 +164,7 @@
                         <div role="tabpanel" class="tab-pane" id="acceleration">
                             <form class="form-horizontal" role="form">
                                 <div class="form-group">
-                                    <label for="startTime" class="col-sm-2 control-label">加速度起始时间</label>
+                                    <label for="startTime" class="col-sm-4 control-label">加速度起始时间</label>
                                     <select id="startTime" style='width:200px;'>
                                         <option>请选择</option>
                                         <option>2015年07月</option>
@@ -182,7 +182,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="endTime" class="col-sm-2 control-label">加速度终止时间</label>
+                                    <label for="endTime" class="col-sm-4 control-label">加速度终止时间</label>
                                     <select id="endTime" style='width:200px;'>
                                         <option>请选择</option>
                                         <option>2015年07月</option>
@@ -200,7 +200,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="computation" class="col-sm-2 control-label">加速度计算方式</label>
+                                    <label for="computation" class="col-sm-4 control-label">加速度计算方式</label>
                                     <select id="computation" style='width:200px;'>
                                         <option>请选择</option>
                                         <option>最值计算法</option>
@@ -212,7 +212,7 @@
                         <div role="tabpanel" class="tab-pane" id="invest">
                             <form class="form-horizontal" role="form">
                                 <div class="form-group">
-                                    <label for="gridTime_invest" class="col-sm-2 control-label">投资时间</label>
+                                    <label for="gridTime_invest" class="col-sm-4 control-label">投资时间</label>
                                     <select id="gridTime_invest" style='width:200px;'>
                                         <option>请选择</option>
                                         <option>2015年07月</option>
@@ -231,7 +231,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="computation_invest" class="col-sm-2 control-label">投资额计算方法</label>
+                                    <label for="computation_invest" class="col-sm-4 control-label">投资额计算方法</label>
                                     <select id="computation_invest" style='width:200px;'>
                                         <option>请选择</option>
                                         <option>总价加权</option>
@@ -246,7 +246,7 @@
 
                     <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label for="finish" class="col-sm-2 control-label">是否完成选择</label>
+                        <label for="finish" class="col-sm-4 control-label">是否完成选择</label>
                         <select id="finish" class ="form-control" style='width:200px;'>
                             <option>请选择</option>
                             <option>是</option>
@@ -257,7 +257,7 @@
 
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="delect" class="col-sm-2 control-label">是否取消当前选择</label>
+                            <label for="delect" class="col-sm-4 control-label">是否取消当前选择</label>
                             <select id="delect" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>是</option>
@@ -268,7 +268,7 @@
 
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="investment" class="col-sm-2 control-label">投资门槛计算方式</label>
+                            <label for="investment" class="col-sm-4 control-label">投资门槛计算方式</label>
                             <select id="investment" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>总价加权</option>
@@ -286,7 +286,7 @@
                     </h1>
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="chazhi" class="col-sm-2 control-label">是否显示插值数据</label>
+                            <label for="chazhi" class="col-sm-4 control-label">是否显示插值数据</label>
                             <select id="chazhi" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>否</option>
@@ -298,7 +298,7 @@
 
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="contourline" class="col-sm-2 control-label">是否显示等值线</label>
+                            <label for="contourline" class="col-sm-4 control-label">是否显示等值线</label>
                             <select id="contourline" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>否</option>
@@ -310,7 +310,7 @@
 
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="contourvalue" class="col-sm-2 control-label">选择等值线范围</label>
+                            <label for="contourvalue" class="col-sm-4 control-label">选择等值线范围</label>
                             <select id="contourvalue" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>2万以下</option>
@@ -332,7 +332,7 @@
 
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="contourvalue_hq" class="col-sm-2 control-label">选择等值线范围(hq)</label>
+                            <label for="contourvalue_hq" class="col-sm-4 control-label">选择等值线范围(hq)</label>
                             <select id="contourvalue_hq" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>2万以下</option>
@@ -354,7 +354,7 @@
 
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="polygon" class="col-sm-2 control-label">是否显示等值面</label>
+                            <label for="polygon" class="col-sm-4 control-label">是否显示等值面</label>
                             <select id="polygon" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>否</option>
@@ -366,7 +366,7 @@
 
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="polyvalue" class="col-sm-2 control-label">选择等值面范围(hq)</label>
+                            <label for="polyvalue" class="col-sm-4 control-label">选择等值面范围(hq)</label>
                             <select id="polyvalue" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>2万以下</option>
@@ -413,7 +413,7 @@
                     <!--下拉列表-->
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="source_50" class="col-sm-2 control-label">数据来源</label>
+                            <label for="source_50" class="col-sm-4 control-label">数据来源</label>
                             <select id="source_50" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>我爱我家</option>
@@ -424,7 +424,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="type_50" class="col-sm-2 control-label">房源类型</label>
+                            <label for="type_50" class="col-sm-4 control-label">房源类型</label>
                             <select id="type_50" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>新房</option>
@@ -434,7 +434,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="gridValue_50" class="col-sm-2 control-label">网格颜色意义</label>
+                            <label for="gridValue_50" class="col-sm-4 control-label">网格颜色意义</label>
                             <select id="gridValue_50" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>房价加速度</option>
@@ -452,7 +452,7 @@
                         <div role="tabpanel" class="tab-pane active" id="price_50">
                             <form class="form-horizontal" role="form">
                                 <div class="form-group">
-                                    <label for="gridTime_50" class="col-sm-2 control-label">网格房价时间</label>
+                                    <label for="gridTime_50" class="col-sm-4 control-label">网格房价时间</label>
                                     <select id="gridTime_50" style='width:200px;'>
                                         <option>请选择</option>
                                         <option >2015年07月</option>
@@ -474,7 +474,7 @@
                         <div role="tabpanel" class="tab-pane" id="acceleration_50">
                             <form class="form-horizontal" role="form">
                                 <div class="form-group">
-                                    <label for="startTime_50" class="col-sm-2 control-label">加速度起始时间</label>
+                                    <label for="startTime_50" class="col-sm-4 control-label">加速度起始时间</label>
                                     <select id="startTime_50" style='width:200px;'>
                                         <option>请选择</option>
                                         <option>2015年07月</option>
@@ -492,7 +492,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="endTime_50" class="col-sm-2 control-label">加速度终止时间</label>
+                                    <label for="endTime_50" class="col-sm-4 control-label">加速度终止时间</label>
                                     <select id="endTime_50" style='width:200px;'>
                                         <option>请选择</option>
                                         <option>2015年07月</option>
@@ -510,7 +510,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="computation_50" class="col-sm-2 control-label">加速度计算方式</label>
+                                    <label for="computation_50" class="col-sm-4 control-label">加速度计算方式</label>
                                     <select id="computation_50" style='width:200px;'>
                                         <option>请选择</option>
                                         <option>最值计算法</option>
@@ -523,7 +523,7 @@
 
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="finish_50" class="col-sm-2 control-label">是否完成选择</label>
+                            <label for="finish_50" class="col-sm-4 control-label">是否完成选择</label>
                             <select id="finish_50" class ="form-control" style='width:200px;'>
                                 <option>请选择</option>
                                 <option>是</option>
@@ -556,36 +556,49 @@
         <div id="map" class="sidebar-map"></div>
     </div>
     </div>
+
+<!--价格曲线模态框-->
 <div id="myModal" style="margin: 3%;height: 90%; width: 90%"  class="modal fade bs-example-modal-sm" role="dialog" aria-labelledby="mySmallModalLabel">
     <div class="modal-dialog modal-sm" style="width: 85%;height: 85%;width: 85%;height: 90%;">
         <!--上一行是调节表格后面的白色模板的-->
         <div class="modal-content" style="width: 90%;height: 90%;width: 90%;height: 90%">
-            <!---->
-            <!--<h4 id="charttitle"></h4>-->
+
             <canvas id="myChart" style="width: 90%;height: 90%;width: 90%;height: 90%"></canvas>
 
+            <div class="modal-footer" style="padding: 0px;border-top: 0px">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
         </div>
-<br/>
-        <form>
-            source
-            <select id="select_source" class ="form-control" style="width:200px; display: inline">
-                <option>请选择</option>
-                <option>我爱我家</option>
-                <option>房天下</option>
-                <option>安居客</option>
-                <option>链家</option>
-                <option>全部</option>
-            </select>
-            <button id="addDataset">Add Dataset</button>
-            <button id="removeDataset">Remove Dataset</button>
-            <button id="addData">Add Data</button>
-            <button id="removeData">Remove Data</button>
-            <button id="changeDataObject">Change Data Object</button>
-        </form>
+
+
 
     </div>
 </div>
-
+<!--特征统计模态框-->
+<div id="infoModal"  style="margin: 3%;height: 90%; width: 90%;" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-lg"　style="margin: 3%;height: 90%; width: 90%">
+        <div class="modal-content" style="margin: 3%;height: 90%; width: 90%">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    特征统计
+                </h4>
+            </div>
+            <div class="modal-body" id="text1">
+            </div>
+            <div class="modal-body" id="text2">
+            </div>
+            <div class="modal-body" id="text3">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 
 <script type="text/javascript">
     //把map定义成全局变量
@@ -1321,16 +1334,6 @@
             delect_all_rectangle();
         });
 
-   /* <label for="investment" class="col-sm-2 control-label">投资门槛计算方式</label>
-            <select id="investment" class ="form-control" style='width:200px;'>
-            <option>请选择</option>
-            <option>总价加权</option>
-            <option>均价加权</option>
-            </select>*/
-    /*$("#investment").change(function(){
-        creatGrid_investment_50();
-
-    });*/
 
         //creatGrid_investment_50：以50*50格网为基元，计算投资效益
         function creatGrid_investment_50() {
@@ -2420,17 +2423,17 @@
                                     "N": N
                                 };
 
-                                /*$.post("/pricecurve_50", JSON.stringify(json),
-                                        function (data) {
-                                            pricedata = JSON.parse(data);
-                                        }
-                                )*/
-                                var latlng = L.latLng(39.906985851984146, 116.39055488416854);
-                                var content = "<DIV><span style=\"font-weight:bold;\"></span></DIV><HR/><DIV><span>" + "天安门" + "</span></DIV><BR/><DIV><span  style=\"font-weight:bold;\">位置:	</span> <span>" + "北京天安门" + "</span></DIV><DIV><span  style=\"font-weight:bold;\">类型:	</span><span>" + "文明古迹" + "<span></DIV>";
-                                var popup = L.popup()
-                                        .setLatLng(latlng)
-                                        .setContent(content);
-                                this.rect.bindPopup(popup);
+                                $.post("/gridinfo", JSON.stringify(json), function (data) {
+
+                                    var information = JSON.parse(data);
+                                    var gridinfo = information.info;
+                                    $('#infoModal').modal();
+                                    $("#text1").html(gridinfo);
+                                  }
+                                )
+                                /*$("#text1").html("SSS");
+                                $('#infoModal').modal();*/
+
                             });
 
                             rect.addTo(map);
@@ -2442,10 +2445,11 @@
             }
 
         }
+    function changeText(){
+        document.getElementById('text2').innerHTML = 'Fred Flinstone Fred Flinstone Fred Flinstone Fred Flinstone';
+        document.getElementById('text3').innerHTML = 'Fred Flinstone Fred FlinstoneFred FlinstoneFred FlinstoneFred FlinstoneFred Flinstone';
+    }
 
-
-        /*var layerControl = new L.Control.Layers();
-        layerControl.addTo(map);*/
         resize();
 
         //生成随机颜色和尺度
