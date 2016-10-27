@@ -127,6 +127,7 @@
                             <option>请选择</option>
                             <option>房价加速度</option>
                             <option>房价</option>
+                            <option>投资价格</option>
                         </select>
                     </div>
                     </form>
@@ -135,6 +136,7 @@
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#price" role="tab" data-toggle="tab">房价</a></li>
                         <li role="presentation"><a href="#acceleration" role="tab" data-toggle="tab">房价加速度</a></li>
+                        <li role="presentation"><a href="#invest" role="tab" data-toggle="tab">投资价格</a></li>
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="price">
@@ -207,6 +209,39 @@
                                 </div>
                             </form>
                         </div>
+                        <div role="tabpanel" class="tab-pane" id="invest">
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="gridTime_invest" class="col-sm-2 control-label">投资时间</label>
+                                    <select id="gridTime_invest" style='width:200px;'>
+                                        <option>请选择</option>
+                                        <option>2015年07月</option>
+                                        <option>2015年08月</option>
+                                        <option>2015年09月</option>
+                                        <option>2015年10月</option>
+                                        <option>2015年11月</option>
+                                        <option>2015年12月</option>
+                                        <option>2016年01月</option>
+                                        <option>2016年02月</option>
+                                        <option>2016年03月</option>
+                                        <option>2016年04月</option>
+                                        <option>2016年05月</option>
+                                        <option>2016年06月</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="computation_invest" class="col-sm-2 control-label">投资额计算方法</label>
+                                    <select id="computation_invest" style='width:200px;'>
+                                        <option>请选择</option>
+                                        <option>总价加权</option>
+                                        <option>均价加权</option>
+                                    </select>
+                                </div>
+
+                            </form>
+                        </div>
+
                     </div>
 
                     <form class="form-horizontal" role="form">
@@ -1264,6 +1299,7 @@
             var finish = y[x].text;
             if(finish=="是"){
                 creatGrid();
+                creatGrid_investment_50();
             }else if(finish=="否"){
                 alert("请再次选择需要显示的数据");
             }
@@ -1291,38 +1327,50 @@
             <option>总价加权</option>
             <option>均价加权</option>
             </select>*/
-    $("#investment").change(function(){
-        var bounds = map.getBounds();
-        var west = bounds.getWest();
-        var east = bounds.getEast();
-        var south = bounds.getSouth();
-        var north = bounds.getNorth();
-        var zoom = map.getZoom();
+    /*$("#investment").change(function(){
+        creatGrid_investment_50();
 
-        var x = document.getElementById("investment").selectedIndex;
-        var y = document.getElementById("investment").options;
-        var investment = y[x].text;
+    });*/
 
+        //creatGrid_investment_50：以50*50格网为基元，计算投资效益
+        function creatGrid_investment_50() {
+            var bounds = map.getBounds();
+            var west = bounds.getWest();
+            var east = bounds.getEast();
+            var south = bounds.getSouth();
+            var north = bounds.getNorth();
+            var zoom = map.getZoom();
 
-        var json = {
-            "west": west,
-            "east": east,
-            "south": south,
-            "north": north,
-            "zoom": zoom,
-            "gridTime": "2015年10月",
-            "source": "我爱我家",
-            "investment":investment
-        };
+            var x1 = document.getElementById("computation_invest").selectedIndex;
+            var y1 = document.getElementById("computation_invest").options;
+            var investment = y1[x1].text;
 
-        $.post("/investment", "" + JSON.stringify(json), function (result) {
-            var price = JSON.parse(result);
-            draw_rectangle_investment_50(price);
-        });
+            var x2 = document.getElementById("gridTime_invest").selectedIndex;
+            var y2 = document.getElementById("gridTime_invest").options;
+            var time = y2[x2].text;
 
-    });
+            var x3 = document.getElementById("source").selectedIndex;
+            var y3 = document.getElementById("source").options;
+            var source = y3[x3].text;
 
 
+
+            var json = {
+                "west": west,
+                "east": east,
+                "south": south,
+                "north": north,
+                "zoom": zoom,
+                "gridTime": time,
+                "source": source,
+                "investment":investment
+            };
+
+            $.post("/investment", "" + JSON.stringify(json), function (result) {
+                var price = JSON.parse(result);
+                draw_rectangle_investment_50(price);
+            });
+        }
 
         //creatGrid：通过获取当前屏幕的经纬度坐标实现该范围内的网格可视化
         function creatGrid() {
@@ -1393,6 +1441,34 @@
                     var price = JSON.parse(result);
                     //console.log("每移动一次开始画网格");
                     draw_rectangle_houseprice(price);
+                });
+            }else if(gridValue == "投资价格"){
+                x = document.getElementById("computation_invest").selectedIndex;
+                y = document.getElementById("computation_invest").options;
+                var investment = y[x].text;
+
+                x = document.getElementById("gridTime_invest").selectedIndex;
+                y = document.getElementById("gridTime_invest").options;
+                var time = y[x].text;
+
+                x = document.getElementById("source").selectedIndex;
+                y = document.getElementById("source").options;
+                var source = y[x].text;
+
+                var json = {
+                    "west": west,
+                    "east": east,
+                    "south": south,
+                    "north": north,
+                    "zoom": zoom,
+                    "gridTime": time,
+                    "source": source,
+                    "investment":investment
+                };
+
+                $.post("/investment", "" + JSON.stringify(json), function (result) {
+                    var price = JSON.parse(result);
+                    draw_rectangle_investment_50(price);
                 });
             }
         }

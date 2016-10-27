@@ -282,7 +282,7 @@ public class GridElementInvestment {
                 }else{
                     System.out.println("该数据已经存在!");
                 }
-                FileTool.Dump(obj.toString(),"D:\\test\\栅格特征统计.txt","utf-8");
+                //FileTool.Dump(document.toString(),"D:\\test\\栅格特征统计.txt","utf-8");
             }
         }
     }

@@ -19,29 +19,13 @@ import java.util.*;
  */
 public class GridFeatureStatistics {
     public static void main(String[] args){
-        /*for(int i=10;i<=10;i++){
-            //1.选定要导出的数据的时间（月份）
-            JSONObject condition=new JSONObject();
-            condition.put("year","2015");
-            condition.put("month",i);
-            condition.put("source","woaiwojia");
-            condition.put("export_collName","BasicData_Resold_100");
-            condition.put("import_collName","BasicData_Resold_50");
 
-            //2.从数据库中调出满足condition的数据,并且将每个网格的数据存入以key-value形式存入map中
-            callDataFromMongo(condition);
+       //{"west":116.11106872558592,"east":116.77024841308594,"south":39.754976693133145,"north":39.99027326196773,"zoom":12,"gridTime":"2015年10月","source":"我爱我家","investment":"总价加权"}
 
-            statisticCode();
-
-            ergodicStatistics(condition);
-
-            System.out.println("ok!");
-        }*/
-
-        double west=116.10557556152344;
-        double east=116.76475524902342;
-        double south=39.80035972468958;
-        double north=40.035500804437156;
+        double west=116.11106872558592;
+        double east=116.77024841308594;
+        double south=39.754976693133145;
+        double north=39.99027326196773;
 
         int colmin= RowColCalculation.getColMin_50(west);
         int colmax=RowColCalculation.getColMax_50(east);
@@ -73,19 +57,26 @@ public class GridFeatureStatistics {
         condition.put("year",2015);
         condition.put("month",10);
         condition.put("source","woaiwojia");
-        condition.put("export_collName","BasicData_Resold_50");//这个表里只有十月份的数据，若要其他月份的数据还需要写成BasicData_Resold_100
-        condition.put("import_collName","BasicData_Resold_50");
+        condition.put("export_collName","GridData_Resold_Investment_50");//这个表里只有十月份的数据，若要其他月份的数据还需要写成BasicData_Resold_100
 
         getInvestment(condition);
 
-        System.out.println(total);
-
-
-        //setPois_50();
+        //System.out.println(total);
 
     }
 
     public Response get(String body){
+
+
+         code_houseType_map=new HashMap<>();
+         code_direction_map=new HashMap<>();
+         code_floors_map=new HashMap<>();
+         code_area_map=new HashMap<>();
+         code_price_map=new HashMap<>();
+         code_unitprice_map=new HashMap<>();
+         code_flooron_map=new HashMap<>();
+         codesSet= new TreeSet<>();
+         total=new JSONObject();
 
         JSONObject obj= JSONObject.fromObject(body);
 
@@ -136,8 +127,7 @@ public class GridFeatureStatistics {
         condition.put("year",year);
         condition.put("month",month);
         condition.put("source",source);
-        condition.put("export_collName","BasicData_Resold_50");//这个表里只有十月份的数据，若要其他月份的数据还需要写成BasicData_Resold_100
-        condition.put("import_collName","BasicData_Resold_50");
+        condition.put("export_collName","GridData_Resold_Investment_50");//这个表里只有十月份的数据，若要其他月份的数据还需要写成BasicData_Resold_100
 
         getInvestment(condition);
 
@@ -151,7 +141,7 @@ public class GridFeatureStatistics {
 
         callDataFromMongo(condition);
 
-        //statisticCode();
+       // statisticCode();
 
         ergodicStatistics(condition);
 
@@ -167,6 +157,7 @@ public class GridFeatureStatistics {
     public static Map<Integer,Map<String,Integer>> code_area_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_price_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_unitprice_map=new HashMap<>();
+    public static Map<Integer,Map<String,Integer>> code_flooron_map=new HashMap<>();
     public static TreeSet<Integer> codesSet= new TreeSet<>();
     public static JSONObject total=new JSONObject();
 
@@ -176,9 +167,6 @@ public class GridFeatureStatistics {
 
         String collName_export=condition.getString("export_collName");
         DBCollection coll_export = db.getDB().getCollection(collName_export);
-
-        String collName_import=condition.getString("import_collName");
-        DBCollection coll_import = db.getDB().getCollection(collName_import);
 
         BasicDBObject document = new BasicDBObject();
         Iterator<String> it=condition.keys();
@@ -225,14 +213,12 @@ public class GridFeatureStatistics {
 
         DBCursor cursor = coll_export.find(document);
 
-        //List a=coll_export.find(document).toArray();
-        //System.out.println(a.size());
+        List a=coll_export.find(document).toArray();
+        System.out.println("一共调用了"+a.size()+"个基本网格");
 
 
         String poi;
         JSONObject obj;
-        double lng;
-        double lat;
         int code;
         int row;
         int col;
@@ -269,16 +255,24 @@ public class GridFeatureStatistics {
                 obj.put("code",code);
                 codesSet.add(code);
 
-                //将数据存入50*50的源数据表BasicData_Resold_50中
-                /*DBCursor rls =coll_import.find(cs);
-                if(rls == null || rls.size() == 0){
-                    coll_import.insert(cs);
-                }else{
-                    //System.out.println("该数据已经存在!");
-                }*/
-
-                if(obj.containsKey("house_type")){
-                    house_type=obj.getString("house_type");
+//{ "houseType" : "2室1厅1卫,9;3室1厅1卫,1;1室1厅1卫,6;" ,
+// "direction" : "南,8;南北,8;" ,
+// "floors" : "22,1;5,6;6,9;" ,
+// "flooron" : "中部,7;上部,4;下部,5;" ,
+// "area" : "43.0,1;57.0,1;102.0,1;58.0,1;104.0,1;49.0,11;" ,
+// "price" : "420.0,1;200.0,11;410.0,1;240.0,1;165.0,1;245.0,1;" ,
+// "unitprice" : "4.0816326,11;3.8372092,1;3.9423077,1;4.117647,1;4.2982454,1;4.137931,1;" ,
+// "code" : 4605735 ,
+// "row" : 1152 ,
+// "col" : 1735 ,
+// "weight_price" : 230.0 ,
+// "weight_unitprice" : 230.09321447929688 ,
+// "year" : "2015" ,
+// "month" : "10" ,
+// "source" : "woaiwojia"}
+                //System.out.println(obj);
+                if(obj.containsKey("houseType")){
+                    house_type=obj.getString("houseType");
                     setAttributeMap(code,house_type,code_houseType_map);
                 }
 
@@ -292,35 +286,24 @@ public class GridFeatureStatistics {
                     setAttributeMap(code,floors,code_floors_map);
                 }
 
+                if(obj.containsKey("flooron")){
+                    flooron=obj.getString("flooron");
+                    setAttributeMap(code,flooron,code_flooron_map);
+                }
+
                 if(obj.containsKey("area")){
                     area=obj.getString("area");
-                    boolean num= NumJudge.isNum(area);
-                    if(num){
-                        setAttributeMap(code,area,code_area_map);
-                    }else {
-                        System.out.println(code+":"+area);
-                    }
-
+                    setAttributeMap(code,area,code_area_map);
                 }
 
                 if(obj.containsKey("price")){
                     price=obj.getString("price");
-                    boolean num= NumJudge.isNum(price);
-                    if(num){
-                        setAttributeMap(code,price,code_price_map);
-                    }else {
-                        System.out.println(code+":"+price);
-                    }
+                    setAttributeMap(code,price,code_price_map);
                 }
 
-                if(obj.containsKey("unit_price")){
-                    unit_price=obj.getString("unit_price");
-                    boolean num= NumJudge.isNum(unit_price);
-                    if(num){
-                        setAttributeMap(code,unit_price,code_unitprice_map);
-                    }else {
-                        System.out.println(code+":"+unit_price);
-                    }
+                if(obj.containsKey("unitprice")){
+                    unit_price=obj.getString("unitprice");
+                    setAttributeMap(code,unit_price,code_unitprice_map);
                 }
 
                 ++count;
@@ -440,22 +423,32 @@ public class GridFeatureStatistics {
 
     //建立一个map，其中key为code，value是一个属性值——个数的一个子map
     public static void setAttributeMap(int code,String attribute,Map<Integer,Map<String,Integer>> map){
+       //"houseType" : "2室1厅1卫,9;3室1厅1卫,1;1室1厅1卫,6;" ,
         if(map.containsKey(code)){
 
             Map<String,Integer> num_map=map.get(code);
-            if(num_map.containsKey(attribute)){
-                int num=num_map.get(attribute);
-                num_map.put(attribute,++num);
-                map.put(code,num_map);
-
-            }else {
-                num_map.put(attribute,1);
-                map.put(code,num_map);
+            String[] results=attribute.split(";");
+            for(int i=0;i<results.length;i++){
+                String[] type=results[i].split(",");
+                String attr=type[0];
+                int num=Integer.parseInt(type[1]);
+                if(num_map.containsKey(attr)){
+                    int temp=num_map.get(attr);
+                    num=num+temp;
+                    num_map.put(attr,num);
+                }else{
+                    num_map.put(attr,num);
+                }
             }
+            map.put(code,num_map);
 
         }else {
             Map<String,Integer> num_map=new HashMap<>();
-            num_map.put(attribute,1);
+            String[] results=attribute.split(";");
+            for(int i=0;i<results.length;i++){
+                String[] type=results[i].split(",");
+                num_map.put(type[0],Integer.parseInt(type[1]));
+            }
             map.put(code,num_map);
         }
     }
