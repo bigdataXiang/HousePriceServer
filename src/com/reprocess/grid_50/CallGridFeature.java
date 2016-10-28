@@ -146,26 +146,26 @@ public class CallGridFeature {
     public static String GridAttributeSummary(){
         JSONObject obj=new JSONObject();
 
-        //String house_type=ergodicMap(houseType_map);
-        List<JSONObject> house_type=ergodicMap(houseType_map);
+        String house_type=ergodicMap(houseType_map);
+        //List<JSONObject> house_type=ergodicMap(houseType_map);
         obj.put("house_type",house_type);
-        //String direction=ergodicMap(direction_map);
-        List<JSONObject> direction=ergodicMap(direction_map);
+        String direction=ergodicMap(direction_map);
+        //List<JSONObject> direction=ergodicMap(direction_map);
         obj.put("direction",direction);
-        //String floors=ergodicMap(floors_map);
-        List<JSONObject> floors=ergodicMap(floors_map);
+        String floors=ergodicMap(floors_map);
+        //List<JSONObject> floors=ergodicMap(floors_map);
         obj.put("floors",floors);
-        //String flooron=ergodicMap(flooron_map);
-        List<JSONObject> flooron=ergodicMap(flooron_map);
+        String flooron=ergodicMap(flooron_map);
+        //List<JSONObject> flooron=ergodicMap(flooron_map);
         obj.put("flooron",flooron);
-        //String area=ergodicMap(area_map);
-        List<JSONObject> area=ergodicMap(area_map);
+        String area=ergodicMap(area_map);
+        //List<JSONObject> area=ergodicMap(area_map);
         obj.put("area",area);
-        //String price=ergodicMap(price_map);
-        List<JSONObject> price=ergodicMap(price_map);
+        String price=ergodicMap(price_map);
+        //List<JSONObject> price=ergodicMap(price_map);
         obj.put("price",price);
-        //String unitprice=ergodicMap(unitprice_map);
-        List<JSONObject> unitprice=ergodicMap(unitprice_map);
+        String unitprice=ergodicMap(unitprice_map);
+        //List<JSONObject> unitprice=ergodicMap(unitprice_map);
         obj.put("unitprice",unitprice);
 
         return obj.toString();
@@ -188,7 +188,7 @@ public class CallGridFeature {
         }
     }
 
-    public static List<JSONObject> ergodicMap(Map<String,Integer> map){
+    public static String ergodicMap(Map<String,Integer> map){
         List<JSONObject> list=new ArrayList<>();
         String str="";
         for(Map.Entry<String,Integer> entry:map.entrySet()){
@@ -197,10 +197,10 @@ public class CallGridFeature {
             int num=entry.getValue();
             str+=type+","+num+";";
 
-            JSONObject obj=new JSONObject();
+            /*JSONObject obj=new JSONObject();
             obj.put(type,num);
-            list.add(obj);
+            list.add(obj);*/
         }
-        return list;
+        return str;
     }
 }
