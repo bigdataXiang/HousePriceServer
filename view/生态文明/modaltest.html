@@ -13,7 +13,7 @@
 <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#infoModal">
     开始演示模态框
 </button>
-<div id="infoModal"  style="margin: 3%;height: 90%; width: 90%;background-color: #000000" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+<div id="infoModal"  style="margin: 3%;height: 90%; width: 90%" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
     <div class="modal-dialog  modal-lg"　style="margin: 3%;height: 90%; width: 90%;">
         <div class="modal-content" style="margin: 3%;height: 90%; width: 90%">
             <div class="modal-header">
@@ -47,8 +47,6 @@
     </div><!-- /.modal -->
 </div>
 
-<input type="button" value="添加文本域" onclick="UI.test()"/>
-<div id="test"></div>
 
 <p>Welcome to the site <b id='boldStuff'>dude</b> </p>
 <input type='button' onclick='changeText()' value='Change Text'/>
@@ -56,15 +54,6 @@
 </body>
 
 <script type="text/javascript">
-    var UI = {
-        $:function(_id){return document.getElementById(_id);},
-        test:function(){
-            var btn_input = document.createElement("input");
-            btn_input.type="text";
-            btn_input.value="自赋值"+Math.random();
-            this.$("test").appendChild(btn_input);
-        }
-    };
 
     function changeText(){
         document.getElementById('text1').innerHTML = 'Fred Flinstone';

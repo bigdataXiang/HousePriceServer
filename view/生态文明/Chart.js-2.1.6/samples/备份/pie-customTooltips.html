@@ -3,7 +3,6 @@
 
 <head>
     <title>Pie Chart with Custom Tooltips</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
     <script src="../dist/Chart.bundle.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
@@ -35,21 +34,12 @@
 </head>
 
 <body>
-
-    <form class="form-horizontal" role="form">
-	    <div class="form-group">
-			<div width="50%" id="canvas-holder" style="width: 300px;">
-				<h2 align="center">户型</h2>
-				<canvas id="chart-area1" width="50%" height="50%" />
-			</div>
-		</div>
-		<div class="form-group">
-			<div width="50%" id="canvas-holder-1" style="width: 300px;">
-				<h2 align="center">朝向</h2>
-				<canvas id="chart-area2" width="50%" height="50%" />
-			</div>
-		</div>
-	</form>
+    <div id="canvas-holder" style="width: 50px;">
+        <canvas id="chart-area1" width="50" height="50" />
+    </div>
+    <div id="canvas-holder-1" style="width: 300px;">
+        <canvas id="chart-area2" width="300" height="300" />
+    </div>
 
     <div id="chartjs-tooltip"></div>
 
@@ -107,6 +97,18 @@
       }
 
       var position = $(this._chart.canvas)[0].getBoundingClientRect();
+
+      // Display, position, and set styles for font
+      tooltipEl.css({
+        opacity: 1,
+        width: tooltip.width ? (tooltip.width + 'px') : 'auto',
+        left: position.left + tooltip.x + 'px',
+        top: position.top + top + 'px',
+        fontFamily: tooltip._fontFamily,
+        fontSize: tooltip.fontSize,
+        fontStyle: tooltip._fontStyle,
+        padding: tooltip.yPadding + 'px ' + tooltip.xPadding + 'px',
+      });
     };
 
     var config = {
@@ -132,22 +134,21 @@
         },
         options: {
             responsive: true,
-			//是否添加图例
             legend: {
-                display: true,
-				align: 'right', //水平方向位置
-				verticalAlign: 'bottom', //垂直方向位置
-				x: 0, //距离x轴的距离
-				y: 100 //距离Y轴的距离
+                display: false,
+            },
+            tooltips: {
+                enabled: false,
             }
         }
     };
 
     window.onload = function() {
+        var ctx1 = document.getElementById("chart-area1").getContext("2d");
+        window.myPie = new Chart(ctx1, config);
+
         var ctx2 = document.getElementById("chart-area2").getContext("2d");
         window.myPie = new Chart(ctx2, config);
-		var ctx3 = document.getElementById("chart-area1").getContext("2d");
-		window.myPie = new Chart(ctx3, config);
     };
     </script>
 </body>
