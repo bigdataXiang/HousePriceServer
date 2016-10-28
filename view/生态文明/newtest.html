@@ -63,7 +63,7 @@
             padding: 8px;
             border-style: solid;
             border-color: #a9c6c9;
-            font-size : 2em;
+            font-size : 1em;
             font-family : 楷体;
         }
         table tr{
@@ -75,7 +75,8 @@
             padding: 8px;
             border-style: solid;
             border-color: #a9c6c9;
-            font-size : 2em;
+            font-size : 1em;
+            font-family : 楷体;
         }
     </style>
 
@@ -2628,22 +2629,37 @@
 
                                 $.post("/gridinfo", JSON.stringify(json), function (data) {
 
-                                    $('#infoModal').modal();
+
                                     var information = JSON.parse(data);
                                     var house_type=information.house_type;
+                                    moveTr('house_type');
+                                    id=0;
                                     tableAssignment(house_type,'house_type');
                                     var direction=information.direction;
+                                    moveTr('direction');
+                                    id=0;
                                     tableAssignment(direction,'direction');
                                     var floors=information.floors;
+                                    moveTr('floors');
+                                    id=0;
                                     tableAssignment(floors,'floors');
                                     var flooron=information.flooron;
+                                    moveTr('flooron');
+                                    id=0;
                                     tableAssignment(flooron,'flooron');
                                     var area=information.area;
+                                    moveTr('area');
+                                    id=0;
                                     tableAssignment(area,'area');
                                     var price=information.price;
+                                    moveTr('totalprice');
+                                    id=0;
                                     tableAssignment(price,'totalprice');
                                     var unitprice=information.unitprice;
+                                    moveTr('unitprice');
+                                    id=0;
                                     tableAssignment(unitprice,'unitprice');
+                                    $('#infoModal').modal();
                                   }
                                 )
                             });
@@ -2907,7 +2923,7 @@
     //})
 
     //增删表格的行数
-    var id=1;
+    var id;
     function add(text1,text2,table_id){
 
         id++;
@@ -2918,7 +2934,7 @@
 
         var row = theTable.insertRow(rowCount);//在tale里动态的增加tr
 
-        row.id=id;
+        row.id=table_id+"_"+id;
         $("#"+id).attr("onmouseover","this.style.backgroundColor=\'#ffff66\';");
         $("#"+id).attr("onmouseout","this.style.backgroundColor=\'#C6E2FF\';");
 
@@ -2931,15 +2947,19 @@
         cell2.style.cssText="text-align:center";     //tr中内容居中显示
 
     }
-    function moveTr(tr_id,table_id){
+    //在增加之前先得把之前的table全部删掉
+    function moveTr(table_id){
 
-        var tb=document.getElementById(table_id);   //获取table
+        var theTable = document.getElementById(table_id);//table的id
+        var rows = theTable.rows; //取得这个table下的所有行
+        var length=rows.length;
+        //我明白了，rows.length是变化的，因为删了一行，length应该减1,每一行所对应的下标是动态变化的
+        for(var i=1;i<rows.length;)//循环遍历所有的tr行
+        {
+            var tr=rows[i];
+            theTable.deleteRow(tr.rowIndex);
+        }
 
-        var tr=document.getElementById(tr_id);  //根据id获取具体的tr
-
-        tb.deleteRow(tr.rowIndex);  //删除行
-
-        unit(); //调用此方法，对界面有些地方的value进行更新
     }
     function tableAssignment(type,tableid) {
         var text;
