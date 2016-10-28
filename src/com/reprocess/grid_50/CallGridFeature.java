@@ -29,7 +29,7 @@ public class CallGridFeature {
         condition.put("export_collName","GridData_Resold_Investment_50");
 
         callIntesetGridInfo(condition);
-        GridAttributeSummary();
+        System.out.println(GridAttributeSummary());
     }
     public Response get(String body){
 

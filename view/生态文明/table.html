@@ -109,57 +109,17 @@
                 var house_type=information.house_type;
                 tableAssignment(house_type,'house_type');
                 var direction=information.direction;
-                texts=direction.split(";");
-                for (var m = 0; m < texts.length-1; m++) {
-                    text=texts[m].split(",");
-                    text1=text[1];
-                    text2=text[0];
-                    add(text1,text2,'direction');
-                }
-
-
+                tableAssignment(direction,'direction');
                 var floors=information.floors;
-                texts=floors.split(";");
-                for (var m = 0; m < texts.length-1; m++) {
-                    text=texts[m].split(",");
-                    text1=text[1];
-                    text2=text[0];
-                    add(text1,text2,'floors');
-                }
-
-
+                tableAssignment(floors,'floors');
                 var flooron=information.flooron;
-                texts=flooron.split(";");
-                for (var m = 0; m < texts.length-1; m++) {
-                    text=texts[m].split(",");
-                    text1=text[1];
-                    text2=text[0];
-                    add(text1,text2,'flooron');
-                }
-
-
+                tableAssignment(flooron,'flooron');
                 var area=information.area;
-                texts=area.split(";");
-                for (var m = 0; m < texts.length-1; m++) {
-                    
-                }
-                text=area.split(",");
-                text1=text[1];
-                text2=text[0];
-                add(text1,text2,'area');
-
+                tableAssignment(area,'area');
                 var price=information.price;
-                text=price.split(",");
-                text1=text[1];
-                text2=text[0];
-                add(text1,text2,'totalprice');
-
+                tableAssignment(price,'totalprice');
                 var unitprice=information.unitprice;
-                text=unitprice.split(",");
-                text1=text[1];
-                text2=text[0];
-                add(text1,text2,'unitprice');
-
+                tableAssignment(unitprice,'unitprice');
              }
             )
         }

@@ -629,7 +629,7 @@
                 </h4>
 
                 <!--表并列排列-->
-            <table width="100%" align="center" style="border-color:rgba(0,0,0,0)">
+            <!--这是暂时不用的了<table width="100%" align="center" style="border-color:rgba(0,0,0,0)">
                 <tr style="border-color:rgba(0,0,0,0);background-color:rgba(0,0,0,0)">
                      <td width="25%" style="float: left;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
                             <table class="table-bordered hovertable" id="house_type">
@@ -645,7 +645,7 @@
                             </table>
                         </td>
                      <td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
-                     <table class="table-bordered hovertable" id="flooron"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                     <table class="table-bordered hovertable" id="flooron">&lt;!&ndash;table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮&ndash;&gt;
                          <caption>所在楼层</caption>
                          <tr>
                              <th align="center">类型</th>
@@ -658,7 +658,7 @@
                      </table>
                  </td>
                      <td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
-                         <table class="table-bordered hovertable" id="floors"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                         <table class="table-bordered hovertable" id="floors">&lt;!&ndash;table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮&ndash;&gt;
                              <caption>总楼层</caption>
                              <tr>
                                  <th align="center">类型</th>
@@ -671,7 +671,7 @@
                          </table>
                      </td>
                      <td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
-                        <table class="table-bordered hovertable" id="direction"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                        <table class="table-bordered hovertable" id="direction">&lt;!&ndash;table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮&ndash;&gt;
                             <caption>朝向</caption>
                             <tr>
                                 <th align="center">类型</th>
@@ -686,7 +686,7 @@
                 </tr>
                 <tr style="border-color:rgba(0,0,0,0);background-color:rgba(0,0,0,0)">
                     <td width="40%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
-                        <table class="table-bordered hovertable" id="unitprice"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                        <table class="table-bordered hovertable" id="unitprice">&lt;!&ndash;table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮&ndash;&gt;
                             <caption>单价(万元/㎡)</caption>
                             <tr>
                                 <th align="center">类型</th>
@@ -699,7 +699,7 @@
                         </table>
                     </td>
                     <td width="30%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
-                        <table class="table-bordered hovertable" id="area"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                        <table class="table-bordered hovertable" id="area">&lt;!&ndash;table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮&ndash;&gt;
                             <caption>面积(㎡)</caption>
                             <tr>
                                 <th align="center">类型</th>
@@ -712,7 +712,7 @@
                         </table>
                     </td>
                     <td width="30%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
-                        <table class="table-bordered hovertable" id="totalprice"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                        <table class="table-bordered hovertable" id="totalprice">&lt;!&ndash;table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮&ndash;&gt;
                             <caption>总价(万元)</caption>
                             <tr>
                                 <th align="center">类型</th>
@@ -725,8 +725,80 @@
                         </table>
                     </td>
                      </tr>
-            </table>
+            </table>-->
+                <table width="100%" align="center" style="border-color:rgba(0,0,0,0)">
+                    <tr style="border-color:rgba(0,0,0,0);background-color:rgba(0,0,0,0)">
+                        <td width="25%" style="float: left;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+                            <table class="table-bordered hovertable" id="house_type">
+                                <caption>户型</caption>
+                                <tr>
+                                    <th align="center">类型</th>
+                                    <th align="center">数目</th>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+                            <table class="table-bordered hovertable" id="flooron"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                                <caption>所在楼层</caption>
+                                <tr>
+                                    <th align="center">类型</th>
+                                    <th align="center">数目</th>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+                            <table class="table-bordered hovertable" id="floors"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                                <caption>总楼层</caption>
+                                <tr>
+                                    <th align="center">类型</th>
+                                    <th align="center">数目</th>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+                            <table class="table-bordered hovertable" id="direction"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                                <caption>朝向</caption>
+                                <tr>
+                                    <th align="center">类型</th>
+                                    <th align="center">数目</th>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr style="border-color:rgba(0,0,0,0);background-color:rgba(0,0,0,0)">
+                        <td width="40%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+                            <table class="table-bordered hovertable" id="unitprice"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                                <caption>单价(万元/㎡)</caption>
+                                <tr>
+                                    <th align="center">类型</th>
+                                    <th align="center">数目</th>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="30%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+                            <table class="table-bordered hovertable" id="area"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                                <caption>面积(㎡)</caption>
+                                <tr>
+                                    <th align="center">类型</th>
+                                    <th align="center">数目</th>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="30%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+                            <table class="table-bordered hovertable" id="totalprice"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                                <caption>总价(万元)</caption>
+                                <tr>
+                                    <th align="center">类型</th>
+                                    <th align="center">数目</th>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
 
+
+
+            </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
@@ -2556,15 +2628,24 @@
 
                                 $.post("/gridinfo", JSON.stringify(json), function (data) {
 
-                                    var information = JSON.parse(data);
-                                    var gridinfo = information.info;
                                     $('#infoModal').modal();
-                                    $("#text1").html(gridinfo);
+                                    var information = JSON.parse(data);
+                                    var house_type=information.house_type;
+                                    tableAssignment(house_type,'house_type');
+                                    var direction=information.direction;
+                                    tableAssignment(direction,'direction');
+                                    var floors=information.floors;
+                                    tableAssignment(floors,'floors');
+                                    var flooron=information.flooron;
+                                    tableAssignment(flooron,'flooron');
+                                    var area=information.area;
+                                    tableAssignment(area,'area');
+                                    var price=information.price;
+                                    tableAssignment(price,'totalprice');
+                                    var unitprice=information.unitprice;
+                                    tableAssignment(unitprice,'unitprice');
                                   }
                                 )
-                                /*$("#text1").html("SSS");
-                                $('#infoModal').modal();*/
-
                             });
 
                             rect.addTo(map);
@@ -2859,6 +2940,19 @@
         tb.deleteRow(tr.rowIndex);  //删除行
 
         unit(); //调用此方法，对界面有些地方的value进行更新
+    }
+    function tableAssignment(type,tableid) {
+        var text;
+        var text1;
+        var text2;
+
+        var texts=type.split(";");
+        for (var m = 0; m < texts.length-1; m++) {
+            text=texts[m].split(",");
+            text1=text[1];
+            text2=text[0];
+            add(text1,text2,tableid);
+        }
     }
 </script>
 </body>
