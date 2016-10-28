@@ -46,8 +46,8 @@
                 }, {
                     name: 'Chrome',
                     y: 24.03,
-                    sliced: true,
-                    selected: true
+                    /*sliced: true,
+                    selected: true 是否需要切片*/
                 }, {
                     name: 'Firefox',
                     y: 10.38
@@ -73,8 +73,19 @@
             };
             $.post("/gridinfo", JSON.stringify(json), function (data) {
                 config.title.text="户型统计图";
-                config.series[0].data[0].name="两室一厅";
-                config.series[0].data[0].y=6;
+                config.series[0].data=[];
+                var len=config.series[0].data.length;
+                var json = {
+                    "name": "户型",
+                    "y": 35
+                };
+                config.series[0].data.push(json);
+                len=config.series[0].data.length;
+
+                config.series[0].data[1].name="户型";
+                config.series[0].data[1].y=44;
+                len=config.series[0].data.length;
+
 
                 $('#container').highcharts(config);
                 var information = JSON.parse(data);
