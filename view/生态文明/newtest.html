@@ -2942,11 +2942,15 @@
         var row = theTable.insertRow(rowCount);//在tale里动态的增加tr
 
         row.id=table_id+"_"+id;
-        $("#"+id).attr("onmouseover","this.style.backgroundColor=\'#ffff66\';");
-        $("#"+id).attr("onmouseout","this.style.backgroundColor=\'#C6E2FF\';");
+        $("#"+table_id+"_"+id).attr("onmouseover","this.style.backgroundColor=\'#ffff66\';");
+        $("#"+table_id+"_"+id).attr("onmouseout","this.style.backgroundColor=\'#C6E2FF\';");
 
         var cell1 = row.insertCell(0);//在tr中动态的增加td
         var cell2 = row.insertCell(0);//在tr中动态的增加td
+
+        var a=$("#"+table_id+"_"+id).attr("table_id+\"_\"+id");
+        var b=$("#"+table_id+"_"+id).attr("onmouseover");
+        var c=$("#"+table_id+"_"+id).attr("onmouseout");
 
         cell1.innerText=text1;
         cell1.style.cssText="text-align:center";     //tr中内容居中显示
