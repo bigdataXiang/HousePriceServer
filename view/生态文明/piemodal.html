@@ -14,7 +14,7 @@
         ${demo.css}
     </style>
     <script type="text/javascript">
-        var data={
+        var config={
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
@@ -22,7 +22,7 @@
                 type: 'pie'
             },
             title: {
-                text: 'Browser market shares January, 2015 to May, 2015'
+                text: '1111'
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -63,20 +63,49 @@
                 }]
             }]
         };
-        $(function () {
 
-            $(document).ready(function () {
-                $('#container').highcharts(data);
+        function calldata() {
+            var json = {
+                "row": 60,
+                "col": 75,
+                "code": 11875,
+                "N": 20
+            };
+            $.post("/gridinfo", JSON.stringify(json), function (data) {
+                config.title.text="户型统计图";
+                config.series[0].data[0].name="两室一厅";
+                config.series[0].data[0].y=6;
 
-            });
-        });
+                $('#container').highcharts(config);
+                var information = JSON.parse(data);
+                var texts;
+                var text;
+
+                var house_type=information.house_type;
+
+                var direction=information.direction;
+
+                var floors=information.floors;
+
+                var flooron=information.flooron;
+
+                var area=information.area;
+
+                var price=information.price;
+
+                var unitprice=information.unitprice;
+
+              }
+            )
+        }
+
     </script>
 </head>
 <body>
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Large modal</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg" onclick="calldata()">Large modal</button>
 <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
