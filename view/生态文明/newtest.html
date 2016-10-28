@@ -2537,11 +2537,21 @@
                             rect.data = price.data[rect.index];
 
                             rect.on('click', function (e) {
+                                var xx = document.getElementById("gridTime_invest").selectedIndex;
+                                var yy = document.getElementById("gridTime_invest").options;
+                                var gridTime = yy[xx].text;
+
+                                xx = document.getElementById("source").selectedIndex;
+                                yy = document.getElementById("source").options;
+                                var source = yy[xx].text;
+
                                 var json = {
                                     "row": this.data.row,
                                     "col": this.data.col,
                                     "code": this.data.code,
-                                    "N": N
+                                    "N": N,
+                                    gridTime:gridTime,
+                                    source:source
                                 };
 
                                 $.post("/gridinfo", JSON.stringify(json), function (data) {

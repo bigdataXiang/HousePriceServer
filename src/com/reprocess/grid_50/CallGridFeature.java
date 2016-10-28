@@ -2,6 +2,7 @@ package com.reprocess.grid_50;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.reprocess.grid_100.util.Source;
 import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
@@ -41,9 +42,15 @@ public class CallGridFeature {
 
         ///gridinfo	{"row":63,"col":92,"code":12492,"N":20}
         JSONObject condition= JSONObject.fromObject(body);
-        condition.put("year","2015");
-        condition.put("month","10");
-        condition.put("source","woaiwojia");
+        String source=condition.getString("source");
+        source= Source.getSource(source);
+        String time=condition.getString("gridTime");
+        int year=Integer.parseInt(time.substring(0,time.indexOf("年")));
+        int month=Integer.parseInt(time.substring(time.indexOf("年")+"年".length(),time.indexOf("月")));
+
+        condition.put("year",""+year);
+        condition.put("month",""+month);
+        condition.put("source",source);
         condition.put("export_collName","GridData_Resold_Investment_50");
 
         callIntesetGridInfo(condition);
