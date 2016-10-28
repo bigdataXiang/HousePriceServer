@@ -2,31 +2,60 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <script src="//cdn.bootcss.com/jquery/2.1.0/jquery.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>自动创建表格</title>
     <style type="text/css">
         table{
-            width:300px;
-            height:100px;
-            border:#0C9 1px solid;
-            border-collapse:collapse;
+            font-family: verdana,arial,sans-serif;
+            font-size:11px;
+            color:#333333;
+            border-width: 10px;
+            border-color: #377199;
+            border-collapse: collapse;
+            border-style: solid;
+        }
+        table caption{
+            text-align:center;
+            font-family : 楷体;
+            font-size : 2em;
+            color:#4B0082;
+        }
+        table th{
+            background-color:#FFE4B5;
+            border-width: 10px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #a9c6c9;
+        }
+        table tr{
+            background-color:#C6E2FF;/*#d4e3e5*/
+        }
+        table td{
+            border-width: 10px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #a9c6c9;
         }
     </style>
     <script type="text/javascript" language="javascript">
 
         var id=2;
 
-        function add(text1,text2){
+        function add(text1,text2,table_id){
 
             id++;
 
-            var theTable = document.getElementById("table");//table的id
+            var theTable = document.getElementById(table_id);//table的id
 
             var rowCount = theTable.rows.length; //获得当前表格的行数
 
             var row = theTable.insertRow(rowCount);//在tale里动态的增加tr
 
             row.id=id;
+            $("#"+id).attr("onmouseover","this.style.backgroundColor=\'#ffff66\';");
+            $("#"+id).attr("onmouseout","this.style.backgroundColor=\'#C6E2FF\';");
 
             var cell1 = row.insertCell(0);//在tr中动态的增加td
             var cell2 = row.insertCell(0);//在tr中动态的增加td
@@ -38,83 +67,34 @@
 
         }
 
-        function moveTr(id){
+        function moveTr(tr_id,table_id){
 
-            var tb=document.getElementById('table');   //获取table
+            var tb=document.getElementById(table_id);   //获取table
 
-            var tr=document.getElementById(id);  //根据id获取具体的tr
+            var tr=document.getElementById(tr_id);  //根据id获取具体的tr
 
             tb.deleteRow(tr.rowIndex);  //删除行
 
             unit(); //调用此方法，对界面有些地方的value进行更新
         }
     </script>
-
-    <style type="text/css">
-        table.hovertable {}{
-            font-family: verdana,arial,sans-serif;
-            font-size:11px;
-            color:#333333;
-            border-width: 10px;
-            border-color: #377199;
-            border-collapse: collapse;
-        }
-        table.hovertable th {}{
-            background-color:#c3dde0;
-            border-width: 10px;
-            padding: 8px;
-            border-style: solid;
-            border-color: #a9c6c9;
-        }
-        table.hovertable tr {}{
-            background-color:#d4e3e5;
-        }
-        table.hovertable td {}{
-            border-width: 10px;
-            padding: 8px;
-            border-style: solid;
-            border-color: #a9c6c9;
-        }
-    </style>
 </head>
 <body>
-<input type="text" id="line">行数
-<input type="text" id="list">列数
-<input type="button" value="添加表格" onclick="autocreate()">
-<div id="d1" style="height:400px; width:300px;"></div>
 
-<table border="6" id="table">
+
+<table class="table-bordered hovertable" id="table"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
     <caption>户型</caption>
-    <tr id="1">
-        <td align="center">100</td>
-        <td align="center">200</td>
-    </tr>
-</table>
-<input type="button" value="删除表格" onclick="moveTr(1)">
-<input type="button" value="增加表格" onclick="add(500,500)">
-
-
-
-<table class="hovertable">
     <tr>
-        <th align="left">Info Header</th> <th align="left">Info Header</th>
+        <th align="center">Info Header</th>
+        <th align="center">Info Header</th>
     </tr>
-    <tr onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#d4e3e5';">
-        <td>Item 1A</td><td>Item 1B</td>
-    </tr>
-    <tr onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#d4e3e5';">
-        <td>Item 2A</td><td>Item 2B</td>
-    </tr>
-    <tr onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#d4e3e5';">
-        <td>Item 3A</td><td>Item 3B</td>
-    </tr>
-    <tr onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#d4e3e5';">
-        <td>Item 4A</td><td>Item 4B</td>
-    </tr>
-    <tr onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#d4e3e5';">
-        <td>Item 5A</td><td>Item 5B</td>
+    <tr id="1" onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#C6E2FF';">
+        <td align="center">500</td>
+        <td align="center">500</td>
     </tr>
 </table>
+<input type="button" value="删除表格" onclick="moveTr(1,'table')">
+<input type="button" value="增加表格" onclick="add(500,500,'table')">
 
 </body>
 </html>
