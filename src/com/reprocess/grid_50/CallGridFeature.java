@@ -43,15 +43,17 @@ public class CallGridFeature {
 
         ///gridinfo	{"row":63,"col":92,"code":12492,"N":20}
         JSONObject condition= JSONObject.fromObject(body);
+        condition.put("year","2015");
+        condition.put("month","10");
         condition.put("source","woaiwojia");
         condition.put("export_collName","GridData_Resold_Investment_50");
 
-        String str="just a test";
-        JSONObject obj=new JSONObject();
-        obj.put("info",str);
+        callIntesetGridInfo(condition);
+        String str=GridAttributeSummary();
+        System.out.println(str);
         Response r= new Response();
         r.setCode(200);
-        r.setContent(obj.toString());
+        r.setContent(str);
         return r;
     }
 
@@ -143,7 +145,7 @@ public class CallGridFeature {
     }
 
     //2.大网格内的属性汇总
-    public static void GridAttributeSummary(){
+    public static String GridAttributeSummary(){
         JSONObject obj=new JSONObject();
 
         String house_type=ergodicMap(houseType_map);
@@ -161,7 +163,7 @@ public class CallGridFeature {
         String unitprice=ergodicMap(unitprice_map);
         obj.put("unitprice",unitprice);
 
-        System.out.println(obj);
+        return obj.toString();
     }
 
     public static void setMap(String attribute,Map<String,Integer> num_map){
@@ -188,7 +190,7 @@ public class CallGridFeature {
 
             String type=entry.getKey();
             int num=entry.getValue();
-            str+=type+","+num;
+            str+=type+","+num+";";
         }
         return str;
     }

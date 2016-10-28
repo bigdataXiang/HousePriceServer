@@ -16,33 +16,38 @@
             border-collapse: collapse;
             border-style: solid;
         }
+        /*设置表格标题的样式*/
         table caption{
             text-align:center;
             font-family : 楷体;
-            font-size : 2em;
+            font-size : 1.5em;
             color:#4B0082;
         }
+        /*设置表的字段属性*/
         table th{
             background-color:#FFE4B5;
             border-width: 10px;
             padding: 8px;
             border-style: solid;
             border-color: #a9c6c9;
+            font-size : 2em;
+            font-family : 楷体;
         }
         table tr{
             background-color:#C6E2FF;/*#d4e3e5*/
         }
+        /*设置单元格的属性*/
         table td{
             border-width: 10px;
             padding: 8px;
             border-style: solid;
             border-color: #a9c6c9;
+            font-size : 2em;
         }
     </style>
     <script type="text/javascript" language="javascript">
 
-        var id=2;
-
+        var id=0;
         function add(text1,text2,table_id){
 
             id++;
@@ -66,7 +71,6 @@
             cell2.style.cssText="text-align:center";     //tr中内容居中显示
 
         }
-
         function moveTr(tr_id,table_id){
 
             var tb=document.getElementById(table_id);   //获取table
@@ -77,24 +81,164 @@
 
             unit(); //调用此方法，对界面有些地方的value进行更新
         }
+        function tableAssignment(type,tableid) {
+            var text;
+            var text1;
+            var text2;
+
+            var texts=type.split(";");
+            for (var m = 0; m < texts.length-1; m++) {
+                text=texts[m].split(",");
+                text1=text[1];
+                text2=text[0];
+                add(text1,text2,tableid);
+            }
+        }
+
+        function calldata() {
+            //{"row":60,"col":75,"code":11875,"N":20}
+            var json = {
+                "row": 60,
+                "col": 75,
+                "code": 11875,
+                "N": 20
+            };
+            //"unitprice":"4.8257375,3"}
+            $.post("/gridinfo", JSON.stringify(json), function (data) {
+                var information = JSON.parse(data);
+                var house_type=information.house_type;
+                tableAssignment(house_type,'house_type');
+                var direction=information.direction;
+                texts=direction.split(";");
+                for (var m = 0; m < texts.length-1; m++) {
+                    text=texts[m].split(",");
+                    text1=text[1];
+                    text2=text[0];
+                    add(text1,text2,'direction');
+                }
+
+
+                var floors=information.floors;
+                texts=floors.split(";");
+                for (var m = 0; m < texts.length-1; m++) {
+                    text=texts[m].split(",");
+                    text1=text[1];
+                    text2=text[0];
+                    add(text1,text2,'floors');
+                }
+
+
+                var flooron=information.flooron;
+                texts=flooron.split(";");
+                for (var m = 0; m < texts.length-1; m++) {
+                    text=texts[m].split(",");
+                    text1=text[1];
+                    text2=text[0];
+                    add(text1,text2,'flooron');
+                }
+
+
+                var area=information.area;
+                texts=area.split(";");
+                for (var m = 0; m < texts.length-1; m++) {
+                    
+                }
+                text=area.split(",");
+                text1=text[1];
+                text2=text[0];
+                add(text1,text2,'area');
+
+                var price=information.price;
+                text=price.split(",");
+                text1=text[1];
+                text2=text[0];
+                add(text1,text2,'totalprice');
+
+                var unitprice=information.unitprice;
+                text=unitprice.split(",");
+                text1=text[1];
+                text2=text[0];
+                add(text1,text2,'unitprice');
+
+             }
+            )
+        }
+
     </script>
 </head>
 <body>
 
-
-<table class="table-bordered hovertable" id="table"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
-    <caption>户型</caption>
-    <tr>
-        <th align="center">Info Header</th>
-        <th align="center">Info Header</th>
+<table width="100%" align="center" style="border-color:rgba(0,0,0,0)">
+    <tr style="border-color:rgba(0,0,0,0);background-color:rgba(0,0,0,0)">
+        <td width="25%" style="float: left;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+            <table class="table-bordered hovertable" id="house_type">
+                <caption>户型</caption>
+                <tr>
+                    <th align="center">类型</th>
+                    <th align="center">数目</th>
+                </tr>
+            </table>
+        </td>
+        <td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+            <table class="table-bordered hovertable" id="flooron"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                <caption>所在楼层</caption>
+                <tr>
+                    <th align="center">类型</th>
+                    <th align="center">数目</th>
+                </tr>
+            </table>
+        </td>
+        <td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+            <table class="table-bordered hovertable" id="floors"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                <caption>总楼层</caption>
+                <tr>
+                    <th align="center">类型</th>
+                    <th align="center">数目</th>
+                </tr>
+            </table>
+        </td>
+        <td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+            <table class="table-bordered hovertable" id="direction"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                <caption>朝向</caption>
+                <tr>
+                    <th align="center">类型</th>
+                    <th align="center">数目</th>
+                </tr>
+            </table>
+        </td>
     </tr>
-    <tr id="1" onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#C6E2FF';">
-        <td align="center">500</td>
-        <td align="center">500</td>
+    <tr style="border-color:rgba(0,0,0,0);background-color:rgba(0,0,0,0)">
+        <td width="40%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+            <table class="table-bordered hovertable" id="unitprice"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                <caption>单价(万元/㎡)</caption>
+                <tr>
+                    <th align="center">类型</th>
+                    <th align="center">数目</th>
+                </tr>
+            </table>
+        </td>
+        <td width="30%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+            <table class="table-bordered hovertable" id="area"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                <caption>面积(㎡)</caption>
+                <tr>
+                    <th align="center">类型</th>
+                    <th align="center">数目</th>
+                </tr>
+            </table>
+        </td>
+        <td width="30%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+            <table class="table-bordered hovertable" id="totalprice"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+                <caption>总价(万元)</caption>
+                <tr>
+                    <th align="center">类型</th>
+                    <th align="center">数目</th>
+                </tr>
+            </table>
+        </td>
     </tr>
 </table>
-<input type="button" value="删除表格" onclick="moveTr(1,'table')">
-<input type="button" value="增加表格" onclick="add(500,500,'table')">
+<input type="button" value="test" onclick="calldata()">
+
 
 </body>
 </html>
