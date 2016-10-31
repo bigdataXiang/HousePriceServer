@@ -21,8 +21,8 @@ public class GridElementInvestment {
     public static void main(String[] args){
         JSONObject condition=new JSONObject();
         condition.put("N",1);
-        condition.put("year",2015);
-        condition.put("month",10);
+        condition.put("year","2016");
+        condition.put("month","05");
         condition.put("source","woaiwojia");
         condition.put("export_collName","BasicData_Resold_100");
         condition.put("import_collName","GridData_Resold_Investment_50");
@@ -193,6 +193,7 @@ public class GridElementInvestment {
         DBCollection coll_import = db.getDB().getCollection(collName_import);
         BasicDBObject document;
         int index=0;
+        int documentcount=0;
         for(int i=0;i<codeslist.length;i++){
 
             code=(int)codeslist[i];
@@ -274,10 +275,11 @@ public class GridElementInvestment {
                     }
                 }
 
-                System.out.println(document);
+                //System.out.println(document);
                 //将数据存入50*50的源数据表GridData_Resold_Investment_50中
                 DBCursor rls =coll_import.find(document);
                 if(rls == null || rls.size() == 0){
+                    documentcount++;
                     coll_import.insert(document);
                 }else{
                     System.out.println("该数据已经存在!");
@@ -285,6 +287,7 @@ public class GridElementInvestment {
                 //FileTool.Dump(document.toString(),"D:\\test\\栅格特征统计.txt","utf-8");
             }
         }
+        System.out.println("一共导入"+documentcount+"条数据");
     }
 
     //建立一个map，其中key为code，value是一个属性值——个数的一个子map

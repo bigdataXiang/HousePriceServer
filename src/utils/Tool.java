@@ -1,5 +1,9 @@
 package utils;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import net.sf.json.JSONObject;
 
 import java.io.*;
@@ -17,6 +21,27 @@ public class Tool {
 		//delectRedundancy("D:/百度_代码+试运行结果/0524/生态文明建设项目工程/生态文明建设项目.txt");
 		//delectRedundancy("D:/baidu/xiangmu/xiangmu-Result.txt");
 		//GetJsonText.jsonAddressMatch("D:/baidu/fangan/fangan-Result-delectRedundancy_NullException.txt");
+
+	}
+	/**
+	 * 获取某网页的xml内容
+	 * @param url
+	 * @return
+	 */
+	public static String fetchURL(String url){
+		String content="";
+		try {
+			final WebClient webClient = new WebClient(BrowserVersion.CHROME);
+			webClient.getOptions().setJavaScriptEnabled(false);
+			webClient.getOptions().setCssEnabled(false);
+			HtmlPage page;
+			page = webClient.getPage(url);
+			content=page.asXml();
+		} catch (FailingHttpStatusCodeException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return content;
 
 	}
 	/**
