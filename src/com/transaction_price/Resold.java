@@ -3,11 +3,7 @@ package com.transaction_price;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
+import java.util.*;
 
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -32,8 +28,8 @@ import utils.Tool;
 public class Resold {
     private static String BJ_RESOLDS = "RESOLD";
     public static String LOG = "D:\\test\\woaiwojia\\";
-    public static String FOLDER1="D:\\test\\fang\\"+"房天下二手房成交数据.txt";
-    public static String FOLDER2="D:\\test\\fang\\"+"房天下二手房成交数据_zhoubian.txt";
+    public static String FOLDER1="D:\\test\\fang\\子区域\\"+"房天下二手房成交数据.txt";
+    public static String FOLDER2="D:\\test\\fang\\子区域\\"+"房天下二手房成交数据_zhoubian.txt";
     public static String regions_5i5j[] = {
             "/anzhen/","/aolinpikegongyuan/","/beishatan/","/beiyuan/","/baiziwan/","/changying/",
             "/cbd/","/chaoqing/","/chaoyangbeilu/","/chaoyanggongyuan/","/chaoyangmen/","/dashanzi/",
@@ -63,14 +59,19 @@ public class Resold {
 
     public static void main(String[] args){
 
-        for(int i=0;i<regions_fang.length;i++){
+        Vector<String> regions=FileTool.Load("D:\\test\\fang\\子区域\\fang.txt","utf-8");
 
-            getResoldApartmentInfo_fang(regions_fang[i]);
-            String str="已经抓取完"+i+":"+regions_fang[i];
-            FileTool.Dump(str,"D:\\test\\fang\\finishlog.txt","utf-8");
+        JSONObject obj=JSONObject.fromObject(regions.elementAt(0));
+        Iterator<String> it=obj.values().iterator();
+        String url="";
+        int i=0;
+        while (it.hasNext()){
+            url=it.next();
+            getResoldApartmentInfo_fang(url);
+            String str="已经抓取完"+i+":"+url;
+            FileTool.Dump(str,"D:\\test\\fang\\子区域\\finishlog.txt","utf-8");
+            i++;
         }
-
-
     }
 
     //抓取我爱我家二手房成交数据

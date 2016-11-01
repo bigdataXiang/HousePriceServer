@@ -1,5 +1,6 @@
 package com.transaction_price;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -13,9 +14,7 @@ import org.htmlparser.util.ParserException;
 import utils.FileTool;
 import utils.Tool;
 
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created by ZhouXiang on 2016/10/31.
@@ -26,13 +25,17 @@ public class AiWuJiWu {
                             "id12449","id12450"
                            };
     public static void main(String[] args){
-        for(int i=0;i<regions_aiwujiwu.length;i++){
+        /*for(int i=0;i<regions_aiwujiwu.length;i++){
             getResoldApartmentInfo_aiwujiwu(regions_aiwujiwu[i]);
             String str="已经抓取完"+i+":"+regions_aiwujiwu[i];
             FileTool.Dump(str,"D:\\test\\aiwujiwu\\finishlog_id.txt","utf-8");
-        }
+        }*/
+
+        duplicateRemoval("D:\\test\\aiwujiwu\\小区id.txt");
+        getDealInfo();
 
     }
+    //获取爱屋及乌的小区的id
     public static void getResoldApartmentInfo_aiwujiwu(String region){
 
         for(int page=1;page<=100;page++){
@@ -107,6 +110,105 @@ public class AiWuJiWu {
 
             }
         }
+
+    }
+
+    public static Map<String,String> id_name=new HashMap<>();
+    public static Map<String,String> name_id=new HashMap<>();
+    public static Set<String> estateIds=new HashSet<>();
+    //处理小区id，排重
+    public static void duplicateRemoval(String file){
+        Vector<String> ids=FileTool.Load(file,"utf-8");
+
+        //System.out.println(ids.size());
+        for(int i=0;i<ids.size();i++){
+            JSONObject obj=JSONObject.fromObject(ids.elementAt(i));
+            String estateId=obj.getString("estateId").replace("/","");
+            //System.out.println(estateId);
+            String name=obj.getString("name");
+
+            estateIds.add(estateId);
+            id_name.put(estateId,name);
+            name_id.put(name,estateId);
+
+        }
+        //System.out.println(estateIds.size());
+        //System.out.println(id_name.size());
+        //System.out.println(name_id.size());
+    }
+
+    public static void getDealInfo(){
+        Iterator<String> it=estateIds.iterator();
+        String url="https://www.iwjw.com/ehs.action";
+        int houseType;
+
+        int size=20;
+        JSONArray trades;
+        String estateId;
+
+        List<String> ids=new ArrayList<>();
+        while (it.hasNext()){
+            estateId=it.next();
+            ids.add(estateId);
+        }
+
+        for(int i=0;i<=ids.size();i++){//第一层循环以id为循环
+            estateId=ids.get(i);
+            int page=1;
+
+            String parameter="estateId="+estateId+"&houseType="+2+"&size="+size+"&page="+page;//+"&page="+page+"&size="+size
+            String s=HttpRequest.sendGet(url,parameter);
+            System.out.println(s);
+            FileTool.Dump(s,"D:\\test\\aiwujiwu\\test.txt","utf-8");
+
+            JSONObject obj=JSONObject.fromObject(s);
+            JSONObject data=obj.getJSONObject("data");
+            int pages=data.getInt("total");
+
+            if(data.containsKey("trades")){
+                trades=data.getJSONArray("trades");
+                System.out.println(trades.size());
+                FileTool.Dump(""+trades.size(),"D:\\test\\aiwujiwu\\test.txt","utf-8");
+
+            }
+
+            while(pages>20){//第三层循环是以页数为循环
+                page++;
+                parameter="estateId="+estateId+"&houseType="+2+"&size="+size+"&page="+page;
+                s=HttpRequest.sendGet(url,parameter);
+
+                obj=JSONObject.fromObject(s);
+                data=obj.getJSONObject("data");
+                if(data.containsKey("trades")){
+                    trades=data.getJSONArray("trades");
+                    System.out.println(trades.size());
+                    FileTool.Dump(""+trades.size(),"D:\\test\\aiwujiwu\\test.txt","utf-8");
+                }
+                pages=pages-size;
+
+                try {
+                    Thread.sleep(1000 * ((int) (Math
+                            .max(1, Math.random() * 3))));
+                } catch (final InterruptedException e1) {
+                    e1.printStackTrace();
+                } catch (NullPointerException e1) {
+
+                    e1.printStackTrace();
+                }
+            }
+
+            /*try {
+                Thread.sleep(500000 * ((int) (Math
+                        .max(1, Math.random() * 3))));
+            } catch (final InterruptedException e1) {
+                e1.printStackTrace();
+            } catch (NullPointerException e1) {
+
+                e1.printStackTrace();
+            }*/
+        }
+
+
 
     }
 }
