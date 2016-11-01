@@ -159,56 +159,60 @@ public class AiWuJiWu {
             String parameter="estateId="+estateId+"&houseType="+2+"&size="+size+"&page="+page;//+"&page="+page+"&size="+size
             String s=HttpRequest.sendGet(url,parameter);
             System.out.println(s);
-            FileTool.Dump(s,"D:\\test\\aiwujiwu\\test.txt","utf-8");
 
             JSONObject obj=JSONObject.fromObject(s);
             JSONObject data=obj.getJSONObject("data");
             int pages=data.getInt("total");
 
-            if(data.containsKey("trades")){
-                trades=data.getJSONArray("trades");
-                System.out.println(trades.size());
-                FileTool.Dump(""+trades.size(),"D:\\test\\aiwujiwu\\test.txt","utf-8");
+            List<JSONObject> deals=new ArrayList<>();
+            JSONObject result=new JSONObject();
+            if(pages>20){
+                while(pages>0){//第三层循环是以页数为循环
 
-            }
+                    parameter="estateId="+estateId+"&houseType="+2+"&size="+size+"&page="+page;
+                    s=HttpRequest.sendGet(url,parameter);
 
-            while(pages>20){//第三层循环是以页数为循环
-                page++;
-                parameter="estateId="+estateId+"&houseType="+2+"&size="+size+"&page="+page;
-                s=HttpRequest.sendGet(url,parameter);
+                    obj=JSONObject.fromObject(s);
+                    data=obj.getJSONObject("data");
+                    if(data.containsKey("trades")){
+                        trades=data.getJSONArray("trades");
+                        System.out.println(trades.size());
+                        for(int t=0;t<trades.size();t++){
 
-                obj=JSONObject.fromObject(s);
-                data=obj.getJSONObject("data");
+                            deals.add((JSONObject) trades.get(t));
+                        }
+                    }
+                    page++;
+                    pages=pages-size;
+
+                    try {
+                        Thread.sleep(1000 * ((int) (Math
+                                .max(1, Math.random() * 3))));
+                    } catch (final InterruptedException e1) {
+                        e1.printStackTrace();
+                    } catch (NullPointerException e1) {
+
+                        e1.printStackTrace();
+                    }
+                }
+
+                /*if(pages<20&&pages>0){
+
+                }else if(pages>0){
+
+                }*/
+                result.put(estateId,deals);
+                System.out.println("deals:"+deals.size());
+                FileTool.Dump(result.toString(),"D:\\test\\aiwujiwu\\成交记录.txt","utf-8");
+            }else {
                 if(data.containsKey("trades")){
                     trades=data.getJSONArray("trades");
                     System.out.println(trades.size());
-                    FileTool.Dump(""+trades.size(),"D:\\test\\aiwujiwu\\test.txt","utf-8");
-                }
-                pages=pages-size;
-
-                try {
-                    Thread.sleep(1000 * ((int) (Math
-                            .max(1, Math.random() * 3))));
-                } catch (final InterruptedException e1) {
-                    e1.printStackTrace();
-                } catch (NullPointerException e1) {
-
-                    e1.printStackTrace();
+                    result.put(estateId,trades);
+                    System.out.println("trades:"+trades.size());
+                    FileTool.Dump(result.toString(),"D:\\test\\aiwujiwu\\成交记录.txt","utf-8");
                 }
             }
-
-            /*try {
-                Thread.sleep(500000 * ((int) (Math
-                        .max(1, Math.random() * 3))));
-            } catch (final InterruptedException e1) {
-                e1.printStackTrace();
-            } catch (NullPointerException e1) {
-
-                e1.printStackTrace();
-            }*/
         }
-
-
-
     }
 }
