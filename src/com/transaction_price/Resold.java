@@ -28,8 +28,8 @@ import utils.Tool;
 public class Resold {
     private static String BJ_RESOLDS = "RESOLD";
     public static String LOG = "D:\\test\\woaiwojia\\";
-    public static String FOLDER1="D:\\test\\fang\\子区域\\"+"房天下二手房成交数据.txt";
-    public static String FOLDER2="D:\\test\\fang\\子区域\\"+"房天下二手房成交数据_zhoubian.txt";
+    public static String FOLDER1="D:\\test\\fang\\子区域\\"+"房天下二手房成交数据1102.txt";
+    public static String FOLDER2="D:\\test\\fang\\子区域\\"+"房天下二手房成交数据1102_zhoubian.txt";
     public static String regions_5i5j[] = {
             "/anzhen/","/aolinpikegongyuan/","/beishatan/","/beiyuan/","/baiziwan/","/changying/",
             "/cbd/","/chaoqing/","/chaoyangbeilu/","/chaoyanggongyuan/","/chaoyangmen/","/dashanzi/",
@@ -62,7 +62,7 @@ public class Resold {
         Vector<String> regions=FileTool.Load("D:\\test\\fang\\子区域\\fang.txt","utf-8");
 
         JSONObject obj=JSONObject.fromObject(regions.elementAt(0));
-        System.out.println(obj.size());
+        System.out.println("一共有"+obj.size()+"个子区域");
         Iterator<String> it=obj.values().iterator();
         String url="";
         int i=0;
@@ -285,7 +285,7 @@ public class Resold {
     public static JSONObject obj=new JSONObject();
     //抓取房天下二手房成交数据
     public static void getResoldApartmentInfo_fang(String region){
-
+        int page_count=0;
         Vector<String> log = null;
          synchronized(BJ_RESOLDS) {
             log = FileTool.Load(LOG + File.separator + region + "_resold.log", "UTF-8");
@@ -317,6 +317,8 @@ public class Resold {
 
         while (urls.size() > 0)
         {
+            int current_page=(++page_count);
+            System.out.println("访问该区域的第"+current_page+"页数据");
             // 解析页面
             url = urls.get(0);
 
@@ -349,6 +351,7 @@ public class Resold {
 
                 if (nodes != null)
                 {
+                    int  purl_count=0;
                     for (int n = 0; n < nodes.size(); n ++)
                     {
                         TagNode tn = (TagNode)nodes.elementAt(n);
@@ -358,6 +361,7 @@ public class Resold {
                         String purl = tn.getAttribute("href");
                         if (purl.startsWith("/chengjiao"))
                         {
+                            System.out.println("访问该"+current_page+"页下的第"+(++purl_count)+"条数据");
                             parser.reset();
                             NodeFilter filter1 =new HasAttributeFilter("class", "time");
                             NodeList nodes1 = parser.extractAllNodesThatMatch(filter1);
@@ -407,7 +411,7 @@ public class Resold {
                                             FileTool.Dump(poi,FOLDER2, "UTF-8");
                                         else
                                             FileTool.Dump(poi,FOLDER1, "UTF-8");
-                                        System.out.println(poi);
+                                        //System.out.println(poi);
                                     }
                                 }
                             }
@@ -459,15 +463,7 @@ public class Resold {
             }
         }
 
-        synchronized(BJ_RESOLDS)
-        {
-            File f = new File(LOG + File.separator + region + "_resold.log");
-            f.delete();
-            if (newest != null)
-            {
-                FileTool.Dump(sdf.format(newest), LOG + File.separator + region + "_resold.log", "UTF-8");
-            }
-        }
+        System.out.println(region+"区域访问的网页数目："+visited.size());
     }
     public static void parseResold_fang(String url){
         String content = Tool.fetchURL(url);
