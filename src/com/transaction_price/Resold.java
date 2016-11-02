@@ -62,6 +62,7 @@ public class Resold {
         Vector<String> regions=FileTool.Load("D:\\test\\fang\\子区域\\fang.txt","utf-8");
 
         JSONObject obj=JSONObject.fromObject(regions.elementAt(0));
+        System.out.println(obj.size());
         Iterator<String> it=obj.values().iterator();
         String url="";
         int i=0;
