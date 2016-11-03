@@ -22,6 +22,8 @@ import utils.FileTool;
 import utils.HTMLTool;
 import utils.Tool;
 
+import static com.transaction_price.util.tidyData;
+
 /**
  * Created by ZhouXiang on 2016/10/30.
  */
@@ -307,6 +309,7 @@ public class Resold {
         }
 
         String url = RESOLDAPARTMENT_URL_fang + region;
+        //String url ="http://esf.fang.com/chengjiao-a01-b040/i32/";
         Vector<String> urls = new Vector<String>();
 
         Set<String> visited = new TreeSet<String>();
@@ -338,21 +341,25 @@ public class Resold {
                 //System.out.println(content);
                 parser.setEncoding("gb18030");
 
-
-                HasParentFilter parentFilter = new HasParentFilter(new AndFilter(new TagNameFilter("p"), new HasAttributeFilter("class", "title")));
-                NodeFilter filter = new AndFilter(new TagNameFilter("a"), new AndFilter(new AndFilter(parentFilter, new HasAttributeFilter("title")), new HasAttributeFilter("href")));
-
+                HasParentFilter parentFilter = new HasParentFilter(new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "houseList")));
+                NodeFilter filter = new AndFilter(new TagNameFilter("dl"), new AndFilter(parentFilter, new HasAttributeFilter("class","list rel")));
                 NodeList nodes = parser.extractAllNodesThatMatch(filter);
+                int houseList_size=nodes.size();
 
+                parser.reset();
+                parentFilter = new HasParentFilter(new AndFilter(new TagNameFilter("p"), new HasAttributeFilter("class", "title")));
+                filter = new AndFilter(new TagNameFilter("a"), new AndFilter(new AndFilter(parentFilter, new HasAttributeFilter("title")), new HasAttributeFilter("href")));
+                nodes = parser.extractAllNodesThatMatch(filter);
                 int urlnodes_size=nodes.size();
-                //System.out.println(urlnodes_size);
-                int timenodes_size;
-                int sourcenose_size;
 
-                if (nodes != null)
+
+
+                if (urlnodes_size != 0)
                 {
                     int  purl_count=0;
-                    for (int n = 0; n < nodes.size(); n ++)
+
+                    //先处理那些有链接的数据
+                    for (int n = 0; n < urlnodes_size; n ++)
                     {
                         TagNode tn = (TagNode)nodes.elementAt(n);
                         String title=tn.toPlainTextString().replace("\r\n","").replace("\n","").replace("\b","").replace("\t","").trim();
@@ -361,38 +368,35 @@ public class Resold {
                         String purl = tn.getAttribute("href");
                         if (purl.startsWith("/chengjiao"))
                         {
-                            System.out.println("访问该"+current_page+"页下的第"+(++purl_count)+"条数据");
+                            ++purl_count;//每获取一条自增1
+                            System.out.println("访问该"+current_page+"页下的第"+purl_count+"条数据");
                             parser.reset();
                             NodeFilter filter1 =new HasAttributeFilter("class", "time");
                             NodeList nodes1 = parser.extractAllNodesThatMatch(filter1);
-                            timenodes_size=nodes1.size();
+
                             if(nodes1.size()!=0){
                                 for (int nn = 0; nn < nodes1.size(); nn ++)
                                 {
-                                    if(timenodes_size==urlnodes_size){
-                                        if(nn==n){
-                                            TagNode tnn = (TagNode)nodes1.elementAt(nn);
-                                            String str=tnn.toPlainTextString().replace(" ", "").replace("\r\n","").replace("\n","").replace("\b","").replace("\t","").trim();
-                                            obj.put("time",str);
-                                            break;
-                                        }
+                                    if(nn==n){
+                                        TagNode tnn = (TagNode)nodes1.elementAt(nn);
+                                        String str=tnn.toPlainTextString().replace(" ", "").replace("\r\n","").replace("\n","").replace("\b","").replace("\t","").trim();
+                                        obj.put("time",str);
+                                        break;
                                     }
                                 }
                             }
                             parser.reset();
                             filter1 =new HasAttributeFilter("class", "tag mt5");
                             nodes1 = parser.extractAllNodesThatMatch(filter1);
-                            sourcenose_size=nodes1.size();
+
                             if(nodes1.size()!=0){
                                 for (int nnn = 0; nnn < nodes1.size(); nnn ++)
                                 {
-                                    if(sourcenose_size==urlnodes_size){
-                                        if(nnn==n){
-                                            TagNode tnn = (TagNode)nodes1.elementAt(nnn);
-                                            String str=tnn.toPlainTextString().replace(" ", "").replace("\r\n","").replace("\n","").replace("\b","").replace("\t","").trim();
-                                            obj.put("dealweb",str);
-                                            break;
-                                        }
+                                    if(nnn==n){
+                                        TagNode tnn = (TagNode)nodes1.elementAt(nnn);
+                                        String str=tnn.toPlainTextString().replace(" ", "").replace("\r\n","").replace("\n","").replace("\b","").replace("\t","").trim();
+                                        obj.put("dealweb",str);
+                                        break;
                                     }
                                 }
                             }
@@ -425,6 +429,140 @@ public class Resold {
                             }
                         }
                     }
+
+
+                    //接下来处理那些只有信息没有链接的数据
+                    if(urlnodes_size<houseList_size){
+                        parser.reset();
+                        NodeFilter filter1 =new AndFilter(new TagNameFilter("dd"),new HasAttributeFilter("class", "info rel floatr"));
+                        NodeList nodes1 = parser.extractAllNodesThatMatch(filter1);
+                        int title_size=nodes1.size();
+
+                        if(title_size>0){
+                            for(int t=0;t<title_size;t++){
+                                if(t==(purl_count)){
+
+                                    TagNode tn=(TagNode)nodes1.elementAt(t);
+                                    NodeList children=tn.getChildren ();
+                                    //System.out.println(children.size());
+
+                                    if(children.size()!=0){
+
+                                        JSONObject obj=new JSONObject();
+                                        for(int c=0;c<children.size();c++){
+                                            try{
+                                                TagNode c_tn=(TagNode)children.elementAt(c);
+                                                String attribute=c_tn.getAttribute("class");
+
+                                                if(attribute.equals("title")){
+                                                    String str=tidyData(c_tn.toPlainTextString());
+                                                    //System.out.println(str);
+                                                    String[] infos=str.split(" ");
+                                                    obj.put("community",infos[0]);
+                                                    obj.put("house_type",infos[1]);
+                                                    obj.put("area",infos[2].replace("平米",""));
+                                                }else if(attribute.equals("mt18")){
+                                                    String str=tidyData(c_tn.toPlainTextString()).replace(" ","");
+                                                    //System.out.println(str);
+                                                    String[] infos=str.split("\\|");
+                                                    obj.put("direction",infos[0]);
+                                                    obj.put("floor",infos[1]);
+                                                }else if(attribute.equals("mt15")){
+                                                    String str=tidyData(c_tn.toPlainTextString().replace(" ",""));
+                                                    //System.out.println(str);
+                                                    obj.put("location",str);
+                                                }else if(attribute.equals("area alignR")){
+                                                    String str=tidyData(c_tn.toPlainTextString().replace(" ",""));
+                                                    //System.out.println(str);
+                                                    obj.put("time",str);
+                                                }else if(attribute.equals("moreInfo")){
+                                                    String str=tidyData(c_tn.toPlainTextString().replace(" ","").replace("/�O",""));
+                                                    //System.out.println(str);
+                                                    String[] infos=str.split("万");
+                                                    obj.put("price",infos[0]);
+                                                    obj.put("unit_price",infos[1].replace("元",""));
+                                                }
+
+                                            }catch(ClassCastException e){
+                                                e.getMessage();
+                                            }
+                                        }
+
+                                        FileTool.Dump(obj.toString(),"D:\\test\\fang\\子区域\\房天下二手房成交数据1102_市场信息.txt","utf-8");
+
+                                    }
+                                    ++purl_count;
+                                    System.out.println("访问"+current_page+"页下的第"+purl_count+"条数据");
+
+                                }
+                            }
+                        }
+                    }
+                }else{
+
+                    parser.reset();
+                    NodeFilter filter1 =new AndFilter(new TagNameFilter("dd"),new HasAttributeFilter("class", "info rel floatr"));
+                    NodeList nodes1 = parser.extractAllNodesThatMatch(filter1);
+                    int title_size=nodes1.size();
+
+                    int purl_count=0;
+                    if(title_size>0){
+                        for(int t=0;t<title_size;t++){
+
+                                TagNode tn=(TagNode)nodes1.elementAt(t);
+                                NodeList children=tn.getChildren ();
+                                //System.out.println(children.size());
+
+                                if(children.size()!=0){
+
+                                    JSONObject obj=new JSONObject();
+                                    for(int c=0;c<children.size();c++){
+                                        try{
+                                            TagNode c_tn=(TagNode)children.elementAt(c);
+                                            String attribute=c_tn.getAttribute("class");
+
+                                            if(attribute.equals("title")){
+                                                String str=tidyData(c_tn.toPlainTextString());
+                                                //System.out.println(str);
+                                                String[] infos=str.split(" ");
+                                                obj.put("community",infos[0]);
+                                                obj.put("house_type",infos[1]);
+                                                obj.put("area",infos[2].replace("平米",""));
+                                            }else if(attribute.equals("mt18")){
+                                                String str=tidyData(c_tn.toPlainTextString()).replace(" ","");
+                                                //System.out.println(str);
+                                                String[] infos=str.split("\\|");
+                                                obj.put("direction",infos[0]);
+                                                obj.put("floor",infos[1]);
+                                            }else if(attribute.equals("mt15")){
+                                                String str=tidyData(c_tn.toPlainTextString().replace(" ",""));
+                                                //System.out.println(str);
+                                                obj.put("location",str);
+                                            }else if(attribute.equals("area alignR")){
+                                                String str=tidyData(c_tn.toPlainTextString().replace(" ",""));
+                                                //System.out.println(str);
+                                                obj.put("time",str);
+                                            }else if(attribute.equals("moreInfo")){
+                                                String str=tidyData(c_tn.toPlainTextString().replace(" ","").replace("/�O",""));
+                                                //System.out.println(str);
+                                                String[] infos=str.split("万");
+                                                obj.put("price",infos[0]);
+                                                obj.put("unit_price",infos[1].replace("元",""));
+                                            }
+
+                                        }catch(ClassCastException e){
+                                            e.getMessage();
+                                        }
+                                    }
+
+                                    FileTool.Dump(obj.toString(),"D:\\test\\fang\\子区域\\房天下二手房成交数据1102_市场信息.txt","utf-8");
+
+                                }
+                                ++purl_count;
+                                System.out.println("访问"+current_page+"页下的第"+purl_count+"条数据");
+                        }
+                    }
+
                 }
 
                 parser.reset();

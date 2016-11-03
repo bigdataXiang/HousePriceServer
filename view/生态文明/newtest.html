@@ -32,6 +32,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script src="./vis/dist/vis.js"></script>
+    <link href="./vis/dist/vis.css" rel="stylesheet" type="text/css" />
+    <script src="./vis/examples/googleAnalytics.js"></script>
+
     <style>.legend i{
       height: 18px;
       width:18px;
@@ -89,10 +94,37 @@
             vertical-align:middle;
             line-height:200px;
         }
+
+        .orange {
+            color: #fef4e9;
+            border: solid 1px #da7c0c;
+            background: #f78d1d;
+            background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
+            background: -moz-linear-gradient(top, #faa51a, #f47a20);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#faa51a', endColorstr='#f47a20');
+        }
+        .rosy {
+            color: #fae7e9;
+            border: solid 1px #b73948;
+            background: #da5867;
+            background: -webkit-gradient(linear, left top, left bottom, from(#f16c7c), to(#bf404f));
+            background: -moz-linear-gradient(top, #f16c7c, #bf404f);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f16c7c', endColorstr='#bf404f');
+        }
+        .button {
+            width:100px;
+            height: 30px;
+            align-content: center;
+            align-self: center;
+            align-items: center;
+            font-size : 1em;
+            font-weight:bold;
+        }
     </style>
 
 </head>
 <body>
+<div id="visualization"></div>
 
 <div class="navbar navbar-default">
     <div class="navbar-inner">
@@ -133,6 +165,12 @@
                     <li>
                         <a href="#grid50" role="tab">
                             <span class="glyphicon glyphicon-th-large"></span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#timeline" role="tab">
+                            <span class="glyphicon glyphicon-film"></span>
                         </a>
                     </li>
                 </ul>
@@ -598,6 +636,18 @@
                     </form>
 
 
+
+                </div>
+
+                <div class="sidebar-pane" id="timeline">
+                    <h1 class="sidebar-header">时间轴
+                        <span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
+                    </h1>
+                    </br>
+                    <button id="woaiwojia" class="orange button" onclick="woaiwojia()">我爱我家</button>
+                    </br>
+                    </br>
+                    <button id="fang" class="rosy button" onclick="fang()">房天下</button>
 
                 </div>
 
@@ -3012,6 +3062,67 @@
             };
             config_pie.series[0].data.push(json);
         }
+    }
+
+
+    //时间轴
+    var container = document.getElementById('visualization');
+    var items = new vis.DataSet([
+        {id: 1, content: '2015年10月', start: '2015-10-01', end: '2015-10-31'},
+        {id: 2, content: '2015年11月', start: '2015-11-01', end: '2015-11-30'},
+        {id: 3, content: '2015年12月', start: '2015-12-01', end: '2015-12-30'},
+        {id: 4, content: '2016年1月', start: '2016-01-01', end: '2016-01-31'},
+        {id: 5, content: '2016年2月', start: '2016-02-01', end: '2016-02-28'},
+        {id: 6, content: '2016年3月', start: '2016-03-01', end: '2016-03-31'},
+        {id: 7, content: '2016年4月', start: '2016-04-01', end: '2016-04-30'},
+        {id: 8, content: '2016年5月', start: '2016-05-01', end: '2016-05-31'}
+    ]);
+    var options = {
+    };
+    var timeline;
+
+    function woaiwojia_post() {
+        var item=items.get(timeline.getSelection()[0]);
+        var content=item.content;
+        console.log("woaiwojia");
+        return content;
+    }
+
+    function fang_post() {
+        var item=items.get(timeline.getSelection()[0]);
+        var content=item.content;
+        console.log("fang");
+        return content;
+    }
+
+
+
+    function woaiwojia() {
+        $("#visualization").html("");
+        timeline = new vis.Timeline(container, items, options);
+        timeline.on('select',woaiwojia_post);
+
+    }
+
+    function fang() {
+        $("#visualization").html("");
+        timeline = new vis.Timeline(container, items, options);
+        timeline.on('select',fang_post);
+    }
+
+
+    /**
+     * Move the timeline a given percentage to left or right
+     * @param {Number} percentage   For example 0.1 (left) or -0.1 (right)
+     */
+    function move (percentage) {
+        var range = timeline.getWindow();
+        var interval = range.end - range.start;
+
+        timeline.setWindow({
+            start: range.start.valueOf() - interval * percentage,
+            end:   range.end.valueOf()   - interval * percentage
+        });
     }
 </script>
 </body>

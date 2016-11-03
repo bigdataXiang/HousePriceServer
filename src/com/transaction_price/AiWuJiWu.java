@@ -149,7 +149,7 @@ public class AiWuJiWu {
             ids.add(estateId);
         }
 
-        for(int i=1714;i<=ids.size();i++){//第一层循环以id为循环
+        for(int i=2063;i<=ids.size();i++){//第一层循环以id为循环
             String monotor="开始第"+i+"个id抓取";
             FileTool.Dump(monotor,"D:\\test\\aiwujiwu\\抓取进程记录.txt","utf-8");
             estateId=ids.get(i);
