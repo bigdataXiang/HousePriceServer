@@ -1,5 +1,7 @@
 package com.transaction_price;
 
+import com.mongodb.DBCollection;
+import com.svail.db.db;
 import net.sf.json.JSONObject;
 import utils.FileTool;
 
@@ -26,16 +28,26 @@ public class Main extends Resold{
             FileTool.Dump(str,"D:\\test\\lianjia\\finishlog.txt","utf-8");
         }*/
 
-        //DealPriceFitting.communityResearch("阳光新干线");
+        //将所有小区的信息混合到Deals_community表中，方便查询检索
+        Vector<String> pois=FileTool.Load("D:\\小论文\\dealdata\\小区名\\小区集合.txt","utf-8");
+        for(int i=1260;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            DealPriceFitting.communityResearch(poi);
+            System.out.println(i);
+        }
+
+
+
+
+
+
         //DealPriceFitting.queryCommunityTransaction("阳光新干线");
 
-        Vector<String> pois=FileTool.Load("D:\\小论文\\dealdata\\小区名\\阳光新干线\\阳光新干线.txt","utf-8");
+        /*Vector<String> pois=FileTool.Load("D:\\小论文\\dealdata\\小区名\\阳光新干线\\阳光新干线.txt","utf-8");
         for(int i=0;i<pois.size();i++){
             String poi=pois.elementAt(i);
             JSONObject obj=JSONObject.fromObject(poi);
             DealPriceFitting.queryListingInformation(obj,i);
-        }
-
-
+        }*/
     }
 }
