@@ -1,6 +1,9 @@
 package com.transaction_price;
 
+import net.sf.json.JSONObject;
 import utils.FileTool;
+
+import java.util.Vector;
 
 /**
  * Created by ZhouXiang on 2016/10/31.
@@ -17,10 +20,20 @@ public class Main extends Resold{
     };
     public static void main(String[] args){
 
-        for(int i=0;i<regions_lianjia.length;i++){
+        /*for(int i=0;i<regions_lianjia.length;i++){
             getResoldApartmentInfo_lianjia(regions_lianjia[i]);
             String str="已经抓取完"+i+":"+regions_lianjia[i];
             FileTool.Dump(str,"D:\\test\\lianjia\\finishlog.txt","utf-8");
+        }*/
+
+        //DealPriceFitting.communityResearch("阳光新干线");
+        //DealPriceFitting.queryCommunityTransaction("阳光新干线");
+
+        Vector<String> pois=FileTool.Load("D:\\小论文\\dealdata\\小区名\\阳光新干线\\阳光新干线.txt","utf-8");
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            JSONObject obj=JSONObject.fromObject(poi);
+            DealPriceFitting.queryListingInformation(obj,i);
         }
 
 
