@@ -28,26 +28,21 @@ public class Main extends Resold{
             FileTool.Dump(str,"D:\\test\\lianjia\\finishlog.txt","utf-8");
         }*/
 
-        //将所有小区的信息混合到Deals_community表中，方便查询检索
+
+/*//将所有小区的信息混合到Deals_community表中，方便查询检索
         Vector<String> pois=FileTool.Load("D:\\小论文\\dealdata\\小区名\\小区集合.txt","utf-8");
         for(int i=1260;i<pois.size();i++){
             String poi=pois.elementAt(i);
             DealPriceFitting.communityResearch(poi);
             System.out.println(i);
-        }
-
-
-
-
-
-
-        //DealPriceFitting.queryCommunityTransaction("阳光新干线");
-
-        /*Vector<String> pois=FileTool.Load("D:\\小论文\\dealdata\\小区名\\阳光新干线\\阳光新干线.txt","utf-8");
-        for(int i=0;i<pois.size();i++){
-            String poi=pois.elementAt(i);
-            JSONObject obj=JSONObject.fromObject(poi);
-            DealPriceFitting.queryListingInformation(obj,i);
         }*/
+
+        //将所有小区的成交数据与挂牌数据联合起来
+        Vector<String> pois=FileTool.Load("D:\\小论文\\dealdata\\小区名\\小区集合.txt","utf-8");
+        for(int i=92;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            DealPriceFitting.queryCommunityTransaction(poi);
+            System.out.println("数据联合："+i);
+        }
     }
 }

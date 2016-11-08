@@ -216,6 +216,7 @@ public class DealPriceFitting {
         while (cursor.hasNext()){
             BasicDBObject doc=(BasicDBObject)cursor.next();
             doc.remove("_id");
+            queryListingInformation(doc);
         }
     }
 
@@ -223,15 +224,38 @@ public class DealPriceFitting {
     public static DBCollection coll_BasicDataMeetDeal= db.getDB().getCollection("Deals_BasicDataMeetDeal");
     //根据成交记录找出挂牌信息
     public static void queryListingInformation(BasicDBObject obj){
-        String community=obj.getString("community");
-        int bedroomSum=Integer.parseInt(obj.getString("bedroomSum"));
-        int livingRoomSum=Integer.parseInt(obj.getString("livingRoomSum"));
-        int year=Integer.parseInt(obj.getString("year"));
-        int month=Integer.parseInt(obj.getString("month"));
-        int day=Integer.parseInt(obj.getString("day"));
-        double price=obj.getDouble("price");
-        int spaceArea=Integer.parseInt(obj.getString("spaceArea"));
-
+        String community="";
+        if(obj.containsField("community")){
+            community=obj.getString("community");
+        }
+        int bedroomSum=0;
+        if(obj.containsField("bedroomSum")){
+            bedroomSum=Integer.parseInt(obj.getString("bedroomSum"));
+        }
+        int livingRoomSum=0;
+        if(obj.containsField("livingRoomSum")){
+            livingRoomSum=Integer.parseInt(obj.getString("livingRoomSum"));
+        }
+        int year=0;
+        if(obj.containsField("year")){
+            year=Integer.parseInt(obj.getString("year"));
+        }
+        int month=0;
+        if(obj.containsField("month")){
+            month=Integer.parseInt(obj.getString("month"));
+        }
+        int day=0;
+        if(obj.containsField("day")){
+            day=Integer.parseInt(obj.getString("day"));
+        }
+        double price;
+        if(obj.containsField("price")){
+            price=obj.getDouble("price");
+        }
+        int spaceArea=0;
+        if(obj.containsField("spaceArea")){
+            spaceArea=obj.getInt("spaceArea");
+        }
         String direction="";
         if(obj.containsField("direction")){
             direction=obj.getString("direction");
@@ -243,10 +267,18 @@ public class DealPriceFitting {
 
 
         BasicDBObject document=new BasicDBObject();
-        document.put("community",community);
-        document.put("rooms",bedroomSum);
-        document.put("halls",livingRoomSum);
-        document.put("area",spaceArea);
+        if(community.length()!=0){
+            document.put("community",community);
+        }
+        if(bedroomSum!=0){
+            document.put("rooms",bedroomSum);
+        }
+        if(livingRoomSum!=0){
+            document.put("halls",livingRoomSum);
+        }
+        if(spaceArea!=0){
+            document.put("area",spaceArea);
+        }
         if(direction.length()!=0){
             document.put("direction",direction);
         }
@@ -259,7 +291,7 @@ public class DealPriceFitting {
         int year_doc;
         int month_doc;
         int day_doc;
-        List<BasicDBObject> basicDatas=new ArrayList<>();
+        List<String> basicDatas=new ArrayList<>();
         while (cursor.hasNext()){
             BasicDBObject doc=(BasicDBObject)cursor.next();
             if(doc.containsField("year")&&doc.containsField("month")&&doc.containsField("day")){
@@ -271,8 +303,13 @@ public class DealPriceFitting {
                     doc=getDocument_BasicData(doc);
                     DBCursor rls =coll_BasicDataMeetDeal.find(doc);
                     if(rls == null || rls.size() == 0){
+                        //System.out.println(doc);
                         coll_BasicDataMeetDeal.insert(doc);
-                        basicDatas.add(doc);
+                        doc.remove("_id");
+                        basicDatas.add(doc.toString());
+                        //_id
+                        //System.out.println(doc);
+
                     }else{
                         System.out.println("exist!");
                     }
@@ -284,9 +321,12 @@ public class DealPriceFitting {
         }
 
         JSONObject result=new JSONObject();
-        result.put("dealdata",obj);
-        result.put("basicdata",basicDatas);
-        FileTool.Dump(result.toString(),"D:\\小论文\\dealdata\\小区名\\成交数据_挂牌数据\\成交数据_挂牌数据.txt","utf-8");
+        if(basicDatas.size()!=0){
+            result.put("dealdata",obj);
+            result.put("basicdata",basicDatas);
+            FileTool.Dump(result.toString(),"D:\\小论文\\dealdata\\小区名\\成交数据_挂牌数据\\成交数据_挂牌数据.txt","utf-8");
+        }
+
     }
 
     //获取BasicData_Resold_100数据库中某些数据的特定字段
