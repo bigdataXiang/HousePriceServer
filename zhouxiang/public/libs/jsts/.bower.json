@@ -1,0 +1,10 @@
+{
+  "name": "jsts",
+  "_cacheHeaders": {
+    "Content-Type": "text/html; charset=utf-8"
+  },
+  "main": "index",
+  "_source": "https://github.com/bjornharrtell/jsts",
+  "_target": "*",
+  "_originalSource": "https://github.com/bjornharrtell/jsts"
+}

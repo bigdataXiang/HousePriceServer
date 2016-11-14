@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>房地产价格时空分析</title>
+	<link rel="stylesheet" href="./public/libs/leaflet/dist/leaflet.css"/>
+	<link href="./public/libs/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="./public/libs/sidebar-v2/css/leaflet-sidebar.css" />
+	<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
+	<link rel="stylesheet" href="./public/libs/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="./public/css/main.css">
+	<link rel="stylesheet" type="text/css" href="./public/css/ui.css">
+</head>
+<body>
+<div class="navbar navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+		<a class="navbar-brand" href="#">
+        <i class="fa fa-home" aria-hidden="true"></i>
+        北京房地产时空大数据分析
+        </a>
+		</div>
+	<div class="collapse navbar-collapse">
+		<p class="navbar-text navbar-right">
+			<a href="http://www.igsnrr.ac.cn/" class="navbar-link">中国科学院地理科学与资源研究所</a>
+		</p>
+	</div>
+	</div>
+</div>
+<!-- 	<div class="navbar navbar-default">
+		<div class="navbar-inner">
+			<h1 style="text-align:center;">北京房地产时空大数据分析</h1>
+			<div class="container">
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						<li class="active">中国科学院地理科学与资源研究所</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div> -->
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div id="sidebar" class="sidebar collapsed">
+				<!-- Nav tabs -->
+				<div class="sidebar-tabs">
+					<ul role="tablist">
+						<li>
+							<a href="#home" role="tab">
+								<span class="glyphicon glyphicon-align-center"></span>
+							</a>
+						</li>
+						<li>
+							<a href="#profile" role="tab">
+								<span class="glyphicon glyphicon-align-justify"></span>
+							</a>
+						</li>
+						<li>
+							<a href="#messages" role="tab">
+								<span class="glyphicon glyphicon-map-marker"></span>
+							</a>
+						</li>
+						<li>
+							<a href="#grid50" role="tab">
+								<span class="glyphicon glyphicon-th-large"></span>
+							</a>
+						</li>
+					</ul>
+					<ul role="tablist">
+						<li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+					</ul>
+				</div>
+				<!-- Tab panes -->
+				<div class="sidebar-content">
+					<div class="sidebar-pane" id="home">
+						<h1 class="sidebar-header">
+							原始数据
+							<span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
+						</h1>
+						<!--下拉列表-->
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="source" class="col-sm-4 control-label">数据来源</label>
+								<select id="source" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>我爱我家</option>
+									<option>房天下</option>
+									<option>安居客</option>
+									<option>链家</option>
+									<option>全部</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="type" class="col-sm-4 control-label">房源类型</label>
+								<select id="type" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>新房</option>
+									<option>二手房</option>
+									<option>租房</option>
+									<option>求租</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="gridValue" class="col-sm-4 control-label">网格颜色意义</label>
+								<select id="gridValue" style='width:200px;'>
+									<option>请选择</option>
+									<option>房价加速度</option>
+									<option>房价</option>
+									<option>投资价格</option>
+								</select>
+							</div>
+						</form>
+						<!--标签栏-->
+						<ul class="nav nav-tabs" role="tablist">
+							<li role="presentation" class="active"><a href="#price" role="tab" data-toggle="tab">房价</a></li>
+							<li role="presentation"><a href="#acceleration" role="tab" data-toggle="tab">房价加速度</a></li>
+							<li role="presentation"><a href="#invest" role="tab" data-toggle="tab">投资价格</a></li>
+						</ul>
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="price">
+								<form class="form-horizontal" role="form">
+									<div class="form-group">
+										<label for="gridTime" class="col-sm-4 control-label">网格房价时间</label>
+										<select id="gridTime" style='width:200px;'>
+											<option>请选择</option>
+											<option id="201507">2015年07月</option>
+											<option id="201508">2015年08月</option>
+											<option id="201509">2015年09月</option>
+											<option id="201510">2015年10月</option>
+											<option id="201511">2015年11月</option>
+											<option id="201512">2015年12月</option>
+											<option id="201601">2016年01月</option>
+											<option id="201602">2016年02月</option>
+											<option id="201603">2016年03月</option>
+											<option id="201604">2016年04月</option>
+											<option id="201605">2016年05月</option>
+											<option id="201606">2016年06月</option>
+										</select>
+									</div>
+								</form>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="acceleration">
+								<form class="form-horizontal" role="form">
+									<div class="form-group">
+										<label for="startTime" class="col-sm-4 control-label">加速度起始时间</label>
+										<select id="startTime" style='width:200px;'>
+											<option>请选择</option>
+											<option>2015年07月</option>
+											<option>2015年08月</option>
+											<option>2015年09月</option>
+											<option>2015年10月</option>
+											<option>2015年11月</option>
+											<option>2015年12月</option>
+											<option>2016年01月</option>
+											<option>2016年02月</option>
+											<option>2016年03月</option>
+											<option>2016年04月</option>
+											<option>2016年05月</option>
+											<option>2016年06月</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="endTime" class="col-sm-4 control-label">加速度终止时间</label>
+										<select id="endTime" style='width:200px;'>
+											<option>请选择</option>
+											<option>2015年07月</option>
+											<option>2015年08月</option>
+											<option>2015年09月</option>
+											<option>2015年10月</option>
+											<option>2015年11月</option>
+											<option>2015年12月</option>
+											<option>2016年01月</option>
+											<option>2016年02月</option>
+											<option>2016年03月</option>
+											<option>2016年04月</option>
+											<option>2016年05月</option>
+											<option>2016年06月</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="computation" class="col-sm-4 control-label">加速度计算方式</label>
+										<select id="computation" style='width:200px;'>
+											<option>请选择</option>
+											<option>最值计算法</option>
+											<option>起止时间计算法</option>
+										</select>
+									</div>
+								</form>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="invest">
+								<form class="form-horizontal" role="form">
+									<div class="form-group">
+										<label for="gridTime_invest" class="col-sm-4 control-label">投资时间</label>
+										<select id="gridTime_invest" style='width:200px;'>
+											<option>请选择</option>
+											<option>2015年07月</option>
+											<option>2015年08月</option>
+											<option>2015年09月</option>
+											<option>2015年10月</option>
+											<option>2015年11月</option>
+											<option>2015年12月</option>
+											<option>2016年01月</option>
+											<option>2016年02月</option>
+											<option>2016年03月</option>
+											<option>2016年04月</option>
+											<option>2016年05月</option>
+											<option>2016年06月</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="computation_invest" class="col-sm-4 control-label">投资额计算方法</label>
+										<select id="computation_invest" style='width:200px;'>
+											<option>请选择</option>
+											<option>总价加权</option>
+											<option>均价加权</option>
+										</select>
+									</div>
+								</form>
+							</div>
+						</div>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="finish" class="col-sm-4 control-label">是否完成选择</label>
+								<select id="finish" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>是</option>
+									<option>否</option>
+								</select>
+							</div>
+						</form>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="delect" class="col-sm-4 control-label">是否取消当前选择</label>
+								<select id="delect" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>是</option>
+									<option>否</option>
+								</select>
+							</div>
+						</form>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="investment" class="col-sm-4 control-label">投资门槛计算方式</label>
+								<select id="investment" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>总价加权</option>
+									<option>均价加权</option>
+								</select>
+							</div>
+						</form>
+					</div>
+					<div class="sidebar-pane" id="profile">
+						<h1 class="sidebar-header">
+							插值数据
+							<span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
+						</h1>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="chazhi" class="col-sm-4 control-label">是否显示插值数据</label>
+								<select id="chazhi" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>否</option>
+									<option>是</option>
+								</select>
+							</div>
+						</form>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="contourline" class="col-sm-4 control-label">是否显示等值线</label>
+								<select id="contourline" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>否</option>
+									<option>是</option>
+								</select>
+							</div>
+						</form>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="contourvalue" class="col-sm-4 control-label">选择等值线范围</label>
+								<select id="contourvalue" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>2万以下</option>
+									<option>2万——3万</option>
+									<option>3万——4万</option>
+									<option>4万——5万</option>
+									<option>5万——6万</option>
+									<option>6万——7万</option>
+									<option>7万——8万</option>
+									<option>8万——9万</option>
+									<option>9万——10万</option>
+									<option>10万——11万</option>
+									<option>11万——12万</option>
+									<option>全部</option>
+								</select>
+							</div>
+						</form>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="contourvalue_hq" class="col-sm-4 control-label">选择等值线范围(hq)</label>
+								<select id="contourvalue_hq" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>2万以下</option>
+									<option>2万——3万</option>
+									<option>3万——4万</option>
+									<option>4万——5万</option>
+									<option>5万——6万</option>
+									<option>6万——7万</option>
+									<option>7万——8万</option>
+									<option>8万——9万</option>
+									<option>9万——10万</option>
+									<option>10万——11万</option>
+									<option>11万——12万</option>
+									<option>全部</option>
+								</select>
+							</div>
+						</form>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="polygon" class="col-sm-4 control-label">是否显示等值面</label>
+								<select id="polygon" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>否</option>
+									<option>是</option>
+								</select>
+							</div>
+						</form>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="polyvalue" class="col-sm-4 control-label">选择等值面范围(hq)</label>
+								<select id="polyvalue" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>2万以下</option>
+									<option>2万——3万</option>
+									<option>3万——4万</option>
+									<option>4万——5万</option>
+									<option>5万——6万</option>
+									<option>6万——7万</option>
+									<option>7万——8万</option>
+									<option>8万——9万</option>
+									<option>9万——10万</option>
+									<option>10万——11万</option>
+									<option>11万——12万</option>
+									<option>全部</option>
+								</select>
+							</div>
+						</form>
+					</div>
+					<div class="sidebar-pane" id="messages">
+						<h1 class="sidebar-header">学区
+							<span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
+						</h1>
+						<form>
+							小学类型:
+							<select id="schoolType"  style='width:110px;'>
+								<option>无</option>
+								<option>市重点小学</option>
+								<option>区重点小学</option>
+								<option>普通小学</option>
+							</select>
+						</form>
+					</div>
+					<div class="sidebar-pane" id="grid50">
+						<h1 class="sidebar-header">50m网格插值
+							<span class="sidebar-close"><i class="fa fa-caret-right"></i></span>
+						</h1>
+						<!--下拉列表-->
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="source_50" class="col-sm-4 control-label">数据来源</label>
+								<select id="source_50" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>我爱我家</option>
+									<option>房天下</option>
+									<option>安居客</option>
+									<option>链家</option>
+									<option>全部</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="type_50" class="col-sm-4 control-label">房源类型</label>
+								<select id="type_50" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>新房</option>
+									<option>二手房</option>
+									<option>租房</option>
+									<option>求租</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="gridValue_50" class="col-sm-4 control-label">网格颜色意义</label>
+								<select id="gridValue_50" style='width:200px;'>
+									<option>请选择</option>
+									<option>房价加速度</option>
+									<option>房价</option>
+								</select>
+							</div>
+						</form>
+						<!--标签栏-->
+						<ul class="nav nav-tabs" role="tablist">
+							<li role="presentation" class="active"><a href="#price_50" role="tab" data-toggle="tab">房价</a></li>
+							<li role="presentation"><a href="#acceleration_50" role="tab" data-toggle="tab">房价加速度</a></li>
+						</ul>
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="price_50">
+								<form class="form-horizontal" role="form">
+									<div class="form-group">
+										<label for="gridTime_50" class="col-sm-4 control-label">网格房价时间</label>
+										<select id="gridTime_50" style='width:200px;'>
+											<option>请选择</option>
+											<option >2015年07月</option>
+											<option >2015年08月</option>
+											<option >2015年09月</option>
+											<option >2015年10月</option>
+											<option >2015年11月</option>
+											<option >2015年12月</option>
+											<option >2016年01月</option>
+											<option >2016年02月</option>
+											<option >2016年03月</option>
+											<option >2016年04月</option>
+											<option >2016年05月</option>
+											<option >2016年06月</option>
+										</select>
+									</div>
+								</form>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="acceleration_50">
+								<form class="form-horizontal" role="form">
+									<div class="form-group">
+										<label for="startTime_50" class="col-sm-4 control-label">加速度起始时间</label>
+										<select id="startTime_50" style='width:200px;'>
+											<option>请选择</option>
+											<option>2015年07月</option>
+											<option>2015年08月</option>
+											<option>2015年09月</option>
+											<option>2015年10月</option>
+											<option>2015年11月</option>
+											<option>2015年12月</option>
+											<option>2016年01月</option>
+											<option>2016年02月</option>
+											<option>2016年03月</option>
+											<option>2016年04月</option>
+											<option>2016年05月</option>
+											<option>2016年06月</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="endTime_50" class="col-sm-4 control-label">加速度终止时间</label>
+										<select id="endTime_50" style='width:200px;'>
+											<option>请选择</option>
+											<option>2015年07月</option>
+											<option>2015年08月</option>
+											<option>2015年09月</option>
+											<option>2015年10月</option>
+											<option>2015年11月</option>
+											<option>2015年12月</option>
+											<option>2016年01月</option>
+											<option>2016年02月</option>
+											<option>2016年03月</option>
+											<option>2016年04月</option>
+											<option>2016年05月</option>
+											<option>2016年06月</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="computation_50" class="col-sm-4 control-label">加速度计算方式</label>
+										<select id="computation_50" style='width:200px;'>
+											<option>请选择</option>
+											<option>最值计算法</option>
+											<option>起止时间计算法</option>
+										</select>
+									</div>
+								</form>
+							</div>
+						</div>
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="finish_50" class="col-sm-4 control-label">是否完成选择</label>
+								<select id="finish_50" class ="form-control" style='width:200px;'>
+									<option>请选择</option>
+									<option>是</option>
+									<option>否</option>
+								</select>
+							</div>
+						</form>
+						<!--测试时间延时框-->
+						<form class="form-horizontal" role="form">
+							<input type="button" value="动态房价展示" onClick = "timedMsg()">
+							<!--<p>点击上面的按钮。5 秒后会显示一个消息框。</p>-->
+						</form>
+						<form class="form-horizontal" role="form">
+							<input type="button" value="动态房价循环展示" onClick = "loopTimedMsg()">
+							<button onclick="window.clearInterval(loopTimedMsg())">停止循环展示</button>
+						</form>
+					</div>
+					<div class="sidebar-pane" id="settings">
+						<h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-right"></i></span></h1>
+					</div>
+				</div>
+			</div>
+			<div id="map" class="sidebar-map"></div>
+		</div>
+	</div>
+	<!--价格曲线模态框-->
+	<div id="myModal" style="margin: 3%;height: 90%; width: 90%"  class="modal fade bs-example-modal-sm" role="dialog" aria-labelledby="mySmallModalLabel">
+		<div class="modal-dialog modal-sm" style="width: 85%;height: 85%;width: 85%;height: 90%;">
+			<!--上一行是调节表格后面的白色模板的-->
+			<div class="modal-content" style="width: 90%;height: 90%;width: 90%;height: 90%">
+				<canvas id="myChart" style="width: 90%;height: 90%;width: 90%;height: 90%"></canvas>
+				<div class="modal-footer" style="padding: 0px;border-top: 0px">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--特征统计模态框-->
+	<div id="infoModal"  style="margin: 3%;height: 90%; width: 90%;" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+		<div class="modal-dialog  modal-lg"　style="margin: 3%;height: 90%; width: 90%">
+			<div class="modal-content" style="margin: 3%;height: 90%; width: 90%">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+						&times;
+					</button>
+					<h4 class="modal-title" id="myModalLabel">
+						特征统计
+					</h4>
+					<!--表并列排列-->
+					<table width="100%" align="center" style="border-color:rgba(0,0,0,0)">
+						<tr style="border-color:rgba(0,0,0,0);background-color:rgba(0,0,0,0)">
+							<td width="25%" style="float: left;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+								<table class="table-bordered hovertable" id="house_type">
+									<caption>户型</caption>
+									<tr>
+										<th align="center">类型</th>
+										<th align="center">数目</th>
+									</tr>
+									<tr id="house_type_1" onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#C6E2FF';">
+										<td align="center">500</td>
+										<td align="center">500</td>
+									</tr>
+								</table>
+							</td>
+							<td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+								<table class="table-bordered hovertable" id="flooron"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+									<caption>所在楼层</caption>
+									<tr>
+										<th align="center">类型</th>
+										<th align="center">数目</th>
+									</tr>
+									<tr id="flooron_1" onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#C6E2FF';">
+										<td align="center">500</td>
+										<td align="center">500</td>
+									</tr>
+								</table>
+							</td>
+							<td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+								<table class="table-bordered hovertable" id="floors"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+									<caption>总楼层</caption>
+									<tr>
+										<th align="center">类型</th>
+										<th align="center">数目</th>
+									</tr>
+									<tr id="floors_1" onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#C6E2FF';">
+										<td align="center">500</td>
+										<td align="center">500</td>
+									</tr>
+								</table>
+							</td>
+							<td width="25%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+								<table class="table-bordered hovertable" id="direction"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+									<caption>朝向</caption>
+									<tr>
+										<th align="center">类型</th>
+										<th align="center">数目</th>
+									</tr>
+									<tr id="direction_1" onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#C6E2FF';">
+										<td align="center">500</td>
+										<td align="center">500</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr style="border-color:rgba(0,0,0,0);background-color:rgba(0,0,0,0)">
+							<td width="40%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+								<table class="table-bordered hovertable" id="unitprice"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+									<caption>单价(万元/㎡)</caption>
+									<tr>
+										<th align="center">类型</th>
+										<th align="center">数目</th>
+									</tr>
+									<tr id="unitprice_1" onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#C6E2FF';">
+										<td align="center">500</td>
+										<td align="center">500</td>
+									</tr>
+								</table>
+							</td>
+							<td width="30%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+								<table class="table-bordered hovertable" id="area"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+									<caption>面积(㎡)</caption>
+									<tr>
+										<th align="center">类型</th>
+										<th align="center">数目</th>
+									</tr>
+									<tr id="area_1" onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#C6E2FF';">
+										<td align="center">500</td>
+										<td align="center">500</td>
+									</tr>
+								</table>
+							</td>
+							<td width="30%" style="float: right;margin: 0px;padding: 0px;border-color:rgba(0,0,0,0)">
+								<table class="table-bordered hovertable" id="totalprice"><!--table-hover:这是bootstrap中的方法，也可以实现鼠标所在位置高亮-->
+									<caption>总价(万元)</caption>
+									<tr>
+										<th align="center">类型</th>
+										<th align="center">数目</th>
+									</tr>
+									<tr id="totalprice_1" onmouseover="this.style.backgroundColor='#ffff66';" onmouseout="this.style.backgroundColor='#C6E2FF';">
+										<td align="center">500</td>
+										<td align="center">500</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
+		</div>
+	</div>
+
+		<script type="text/javascript" src="./public/libs/jquery/dist/jquery.min.js"></script>
+		<script type="text/javascript" src="./public/libs/bootstrap/dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="./public/libs/leaflet/dist/leaflet.js"></script>
+		<script type="text/javascript" src="./public/libs/sidebar-v2/js/leaflet-sidebar.min.js"></script>
+		<script type="text/javascript" src="./public/libs/leaflet-dvf/dist/leaflet-dvf.min.js"></script>
+		<script type="text/javascript" src='./public/libs/leaflet/dist/leaflet.ChineseTmsProviders.js'></script>
+		<script src="./public/libs/chart.js/dist/Chart.bundle.min.js"></script>
+		<script type="text/javascript" src="./public/js/index.js"></script>
+		<script type="text/javascript" src="./public/js/dynamic.js"></script>
+		<script type="text/javascript" src="./public/js/param.js"></script>
+		<script type="text/javascript" src="./public/js/grid.js"></script>
+		<script type="text/javascript" src="./public/js/plot.js"></script>
+		<script type="text/javascript" src="./public/js/table.js"></script>
+	</body>
+	</html>

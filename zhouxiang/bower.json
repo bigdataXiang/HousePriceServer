@@ -1,0 +1,24 @@
+{
+  "name": "北京房地产时空大数据分析",
+  "authors": [
+    "xiang zhou"
+  ],
+  "description": "北京房地产时空大数据分析",
+  "main": "index.html",
+  "keywords": [
+    "house",
+    "price"
+  ],
+  "license": "MIT",
+  "homepage": "none",
+  "dependencies": {
+    "chart.js": "chartjs#^2.3.0",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.1",
+    "leaflet": "^1.0.1",
+    "leaflet-dvf": "^0.3.0",
+    "sidebar-v2": "https://github.com/Turbo87/sidebar-v2.git#^0.3.0",
+    "font-awesome": "^4.7.0"
+  },
+  "private": true
+}

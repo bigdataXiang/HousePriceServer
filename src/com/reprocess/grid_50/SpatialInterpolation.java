@@ -12,6 +12,7 @@ import utils.UtilFile;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static com.reprocess.grid_100.util.RowColCalculation.Code_RowCol;
 import static com.reprocess.grid_100.util.RowColCalculation.codeMapping50toN50;
 
 /**
@@ -70,13 +71,15 @@ public class SpatialInterpolation extends NiMatrix{
         step_5(spatial);
 
         step_6();
+
+
+      //  step_7(); 打印对比真实值与插值
+
+        step_8();
+
         neighborInterpolation();
 
-      //  step_7();
-
-      //  step_8();
-
-      //  step_9();
+      //  step_9(); 将最终结果存于数据库中
     }
 
     /**step_1:先生成整个北京区域内的每个网格的时序数据，存放刚到jsonArray_map中,使得全局变量jsonArray_map有值*/
@@ -1335,7 +1338,7 @@ public class SpatialInterpolation extends NiMatrix{
             int count=0;
             for (Map.Entry<Integer, JSONObject> entry : full_value_grids.entrySet()) {
                 code=entry.getKey();
-                int[] rowcol=RowColCalculation.Code_RowCol(code,N);
+                int[] rowcol= Code_RowCol(code,N);
                 row=rowcol[0];
                 col=rowcol[1];
                 obj=entry.getValue();
@@ -1370,7 +1373,7 @@ public class SpatialInterpolation extends NiMatrix{
             count=0;
             for (Map.Entry<Integer, JSONObject> entry : interpolation_value_grids.entrySet()) {
                 code=entry.getKey();
-                int[] rowcol=RowColCalculation.Code_RowCol(code,N);
+                int[] rowcol= Code_RowCol(code,N);
                 row=rowcol[0];
                 col=rowcol[1];
                 obj=entry.getValue();
@@ -1406,7 +1409,7 @@ public class SpatialInterpolation extends NiMatrix{
             for (Map.Entry<Integer, JSONObject> entry : jsonArray_map.entrySet()) {
                  code= entry.getKey();
                 if(!(full_value_grids.containsKey(code))&&!(interpolation_value_grids.containsKey(code))){
-                    int[] rowcol=RowColCalculation.Code_RowCol(code,N);
+                    int[] rowcol= Code_RowCol(code,N);
                     row=rowcol[0];
                     col=rowcol[1];
                     if(jsonArray_map.containsKey(code)){
@@ -1448,8 +1451,8 @@ public class SpatialInterpolation extends NiMatrix{
             e.printStackTrace();
         }
     }
-    /**21、邻近插值*/
-    public static void neighborInterpolation(){
+    /**21、不能用线性插值的数据：从sparse_data、failed_interpolation_codes和pearson_is_0中找到插值不成功的原始网格，并且将原始数据写于本地文件*/
+    public static void reinterpolation(){
         //sparse_data:稀疏数据
         int code;
         JSONObject obj;
@@ -1472,5 +1475,81 @@ public class SpatialInterpolation extends NiMatrix{
             obj=jsonArray_map.get(code);
             //FileTool.Dump(code+","+obj,"D:\\小论文\\插值完善\\pearson_is_0.txt","utf-8");
         }
+    }
+    /**22、将21中生成的本地文件用于邻近插值测试*/
+    public static void neighborInterpolation(){
+        Vector<String> pois=FileTool.Load("D:\\小论文\\插值完善\\failed_interpolation_codes.txt","utf-8");
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            int code=Integer.parseInt(poi.substring(0,poi.indexOf(",")));
+            String timeserise=poi.substring(poi.indexOf(",")+",".length());
+            JSONObject obj=JSONObject.fromObject(timeserise);
+            String str=findNeighborCode(code);
+            str+=","+obj;
+            FileTool.Dump(str,"D:\\小论文\\插值完善\\failed_interpolation_codes_插值结果.txt","utf-8");
+
+        }
+        pois=FileTool.Load("D:\\小论文\\插值完善\\pearson_is_0.txt","utf-8");
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            int code=Integer.parseInt(poi.substring(0,poi.indexOf(",")));
+            String timeserise=poi.substring(poi.indexOf(",")+",".length());
+            JSONObject obj=JSONObject.fromObject(timeserise);
+            String str=findNeighborCode(code);
+            str+=","+obj;
+            FileTool.Dump(str,"D:\\小论文\\插值完善\\pearson_is_0_插值结果.txt","utf-8");
+
+        }
+        pois=FileTool.Load("D:\\小论文\\插值完善\\sparse_data.txt","utf-8");
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            int code=Integer.parseInt(poi.substring(0,poi.indexOf(",")));
+            String timeserise=poi.substring(poi.indexOf(",")+",".length());
+            JSONObject obj=JSONObject.fromObject(timeserise);
+            String str=findNeighborCode(code);
+            str+=","+obj;
+            FileTool.Dump(str,"D:\\小论文\\插值完善\\sparse_data_插值结果.txt","utf-8");
+
+        }
+    }
+
+    /**23、找出某个code中的邻近的插值满格的code，并用该code的值作为插值网格*/
+    public static String findNeighborCode(int code){
+        int[] rowcol=Code_RowCol(code,1);
+        int row=rowcol[0];
+        int col=rowcol[1];
+        List<JSONObject> neighbor_codes=new ArrayList<>();
+
+        //设置一个深度，该深度表示需要插值的网格的周围deep个网格的数据的遍历，
+        //如果找到有数据的网格，则跳出深度循环
+        int deep;
+        for(deep=1;deep<20;deep++){
+
+            for(int r=row-deep;r<=row+deep;r++){
+                for(int c=col-deep;c<=col+deep;c++){
+                    int neighbor_code=(r-1)*4000+c;
+                    if(neighbor_code!=code){
+                        //检查周围有没有本身数据满格的网格或者通过插值数据满格的网格
+                        if(interpolation_value_grids.containsKey(neighbor_code)){
+                            JSONObject obj=interpolation_value_grids.get(neighbor_code);
+                            neighbor_codes.add(obj);
+                        }
+
+                        if(full_value_grids.containsKey(neighbor_code)){
+                            JSONObject obj=full_value_grids.get(neighbor_code);
+                            neighbor_codes.add(obj);
+                        }
+                    }
+                }
+            }
+
+            if(neighbor_codes.size()!=0){
+                break;
+            }
+
+        }
+        String str=deep+","+code+","+neighbor_codes;
+
+        return str;
     }
 }

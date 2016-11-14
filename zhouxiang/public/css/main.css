@@ -1,0 +1,53 @@
+
+body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+.legend i{
+  height: 18px;
+  width:18px;
+  float: left;
+  margin-right: 8px;
+}</style>
+
+/*表格table的样式设计模板*/
+<style type="text/css">
+    table{
+        font-family: verdana,arial,sans-serif;
+        font-size:11px;
+        color:#333333;
+        border-width: 10px;
+        border-color: #377199;
+        border-collapse: collapse;
+        border-style: solid;
+    }
+    /*设置表格标题的样式*/
+    table caption{
+        text-align:center;
+        font-family : 楷体;
+        font-size : 1.5em;
+        color:#4B0082;
+    }
+    /*设置表的字段属性*/
+    table th{
+        background-color:#FFE4B5;
+        border-width: 10px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #a9c6c9;
+        font-size : 2em;
+        font-family : 楷体;
+    }
+    table tr{
+        background-color:#C6E2FF;/*#d4e3e5*/
+    }
+    /*设置单元格的属性*/
+    table td{
+        border-width: 10px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #a9c6c9;
+        font-size : 2em;
+    }
+.sidebar{
+    right: 0px;
+}
