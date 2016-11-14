@@ -50,8 +50,8 @@ public class SpatialInterpolation extends NiMatrix{
     public static void main(String[] args){
 
 
-        //getInterpolationResult();
-        System.out.println(step_10());
+        getInterpolationResult();
+        //System.out.println(step_10());
 
     }
 
@@ -73,9 +73,9 @@ public class SpatialInterpolation extends NiMatrix{
 
         step_7();
 
-        step_8();
+      //  step_8();
 
-        step_9();
+      //  step_9();
     }
 
     /**step_1:先生成整个北京区域内的每个网格的时序数据，存放刚到jsonArray_map中,使得全局变量jsonArray_map有值*/
@@ -112,6 +112,7 @@ public class SpatialInterpolation extends NiMatrix{
             //(2)初始化数据集dataset
             initDataSet(""+code,date_price,dataset);
         }
+        System.out.println("所有不足八个月的数据lack_value_grids的网格数目有"+lack_value_grids.size());
         return lack_value_grids;
     }
     /**step_3:计算有缺失数据的网格与全部网格的相关系数 r ,并且返回相关性最强的20个*/
@@ -198,21 +199,22 @@ public class SpatialInterpolation extends NiMatrix{
 
             if(mae>1){
                 failed_interpolation_codes.add(code);
+
+                //FileTool.Dump(code,"D:\\小论文\\插值完善\\mae大于1.txt","utf-8");
+                //String str=code+","+mse+","+rmse+","+mae;
+                //FileTool.Dump(str,"D:\\小论文\\插值完善\\插值误差.txt","utf-8");
             }else {
                 qualified_interpolation_codes.add(code);
-                FileTool.Dump(code,"D:\\中期考核\\grid50\\mae大于1.txt","utf-8");
-
-                String str=code+","+mse+","+rmse+","+mae;
-                FileTool.Dump(str,"D:\\中期考核\\grid50\\插值误差.txt","utf-8");
             }
             /*String str=code+","+mse+","+rmse+","+mae;
             FileTool.Dump(str,"D:\\中期考核\\grid50\\插值误差.txt","utf-8");
-*/
+            */
         }
 
-        System.out.println("插值失败的网格有："+qualified_interpolation_codes.size());
+        System.out.println("mae>1："+failed_interpolation_codes.size());
+        System.out.println("mae<1："+qualified_interpolation_codes.size());
     }
-    /**step_7:比较mse的值较大的code的真实值和插值，并且将其打印出来*/
+    /**step_7:比较mse、mae的值较大的code的真实值和插值，并且将其打印出来*/
     //FileTool.Dump
     public static void step_7(){
         int size=failed_interpolation_codes.size();
@@ -238,10 +240,10 @@ public class SpatialInterpolation extends NiMatrix{
      * 三种是排除以上两种情况的数据，存储其本身的真实值
      * */
     public static void step_9(){
-        toMongoDB("GridData_Resold_50_Interpolation",1,"woaiwojia");
+        toMongoDB("GridData_Resold_50_Interpolation_1114",1,"woaiwojia");
     }
 
-    /**计算空间插值的权重A*/
+    /**step_10:计算空间插值的权重A*/
     public static JSONObject step_10(){
 
         /**1、初始化数据集*/
@@ -828,7 +830,8 @@ public class SpatialInterpolation extends NiMatrix{
         }
         return  r;
     }
-    /**6、计算lackdata_code与全区域的其他网格的皮尔逊系数 r ，并且返回10个相关系数最高的值，有些code之间的相关系数高是因为本身数据量少，故要做二次筛选 */
+    /**6、计算lackdata_code与全区域的其他网格的皮尔逊系数 r ，并且返回10个相关系数最高的值，有些code之间的相关系数高是因为本身数据量少，故要做二次筛选
+     * 此方法还将网格与其他网格的相关系数为0的code存于pearson_is_0中*/
     public static JSONObject findRelatedCode(JSONArray lackvalue_grids){
 
         double r=0;
@@ -1264,7 +1267,7 @@ public class SpatialInterpolation extends NiMatrix{
                         interpolation_price=interpolation_value_map.get(date);
                         String str=code+","+date+":"+real_price+" , "+interpolation_price;
                         //System.out.println(str);
-                        FileTool.Dump(str,"D:\\中期考核\\grid50\\插值与真实值的对比.txt","utf-8");
+                        //FileTool.Dump(str,"D:\\小论文\\插值完善\\mse的值较大的code的真实值和插值对比.txt","utf-8");
                     }
                 }
             }
@@ -1348,8 +1351,14 @@ public class SpatialInterpolation extends NiMatrix{
                     document.put("year",year);
                     document.put("price",price);
                     document.put("source",source);
-                    coll.insert(document);
-                    count++;
+
+                    DBCursor rls =coll.find(document);
+                    if(rls == null || rls.size() == 0){
+                        coll.insert(document);
+                        count++;
+                    }else{
+                        System.out.println("exist!");
+                    }
                 }
             }
             System.out.println("导入原本就满格的数据"+count+"条");
@@ -1377,8 +1386,14 @@ public class SpatialInterpolation extends NiMatrix{
                     document.put("year",year);
                     document.put("price",price);
                     document.put("source",source);
-                    coll.insert(document);
-                    count++;
+
+                    DBCursor rls =coll.find(document);
+                    if(rls == null || rls.size() == 0){
+                        coll.insert(document);
+                        count++;
+                    }else{
+                        System.out.println("exist!");
+                    }
                 }
             }
             System.out.println("导入插值后满格的数据"+count+"条");
@@ -1408,8 +1423,14 @@ public class SpatialInterpolation extends NiMatrix{
                             document.put("year",year);
                             document.put("price",price);
                             document.put("source",source);
-                            coll.insert(document);
-                            count++;
+
+                            DBCursor rls =coll.find(document);
+                            if(rls == null || rls.size() == 0){
+                                coll.insert(document);
+                                count++;
+                            }else{
+                                System.out.println("exist!");
+                            }
                         }
                     }
                 }

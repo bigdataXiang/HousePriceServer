@@ -15,7 +15,9 @@ public class DealPriceFitting {
     public static void main(String[] args){
         //getCommunitySet();
         //matchCommunity();
-        dataDuplicateRemoval();
+        //dataDuplicateRemoval();
+        System.out.println("begin:");
+        findHangoutDeals("D:\\小论文\\dealdata\\小区名\\成交数据_挂牌数据\\成交数据_挂牌数据.txt");
     }
     public static Set<String> communitySet=new HashSet<>();
 
@@ -431,20 +433,33 @@ public class DealPriceFitting {
     public static void findHangoutDeals(String file){
         Vector<String> pois=FileTool.Load(file,"utf-8");
         for(int i=0;i<pois.size();i++){
+
             String poi=pois.elementAt(i);
             JSONObject obj=JSONObject.fromObject(poi);
             JSONObject dealdata=obj.getJSONObject("dealdata");
             JSONArray basicdata=obj.getJSONArray("basicdata");
             String result="";
+            int total=0;
 
-            int dealprice=dealdata.getInt("price");
-            result+=dealprice+";";
-            for(int j=0;j<basicdata.size();j++){
-                JSONObject bd=(JSONObject)basicdata.get(j);
-                int basicprice=bd.getInt("price");
-                result+=basicprice+",";
+            if(dealdata.containsKey("price")){
+                int dealprice=dealdata.getInt("price");
+                result+=dealprice+";";
+                for(int j=0;j<basicdata.size();j++){
+                    JSONObject bd=(JSONObject)basicdata.get(j);
+                    int basicprice=bd.getInt("price");
+                    total+=basicprice;
+                }
+
+                double avenrage=(double)total/basicdata.size();
+
+                double ratio=0;
+                ratio=Math.abs(dealprice-avenrage)/dealprice;
+                if(ratio<0.3&&dealprice<avenrage){
+                    result+=avenrage;
+                    FileTool.Dump(result,"D:\\小论文\\dealdata\\小区名\\成交数据_挂牌数据\\成交_挂牌.txt","utf-8");
+                    System.out.println(i);
+                }
             }
-            FileTool.Dump(result,"D:\\小论文\\dealdata\\小区名\\成交数据_挂牌数据\\成交_挂牌.txt","utf-8");
         }
     }
 
