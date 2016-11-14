@@ -2,6 +2,7 @@ package com.transaction_price;
 
 import com.mongodb.*;
 import com.svail.db.db;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import utils.FileTool;
 
@@ -424,6 +425,26 @@ public class DealPriceFitting {
             }else{
                 System.out.println("exist!");
             }
+        }
+    }
+
+    public static void findHangoutDeals(String file){
+        Vector<String> pois=FileTool.Load(file,"utf-8");
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            JSONObject obj=JSONObject.fromObject(poi);
+            JSONObject dealdata=obj.getJSONObject("dealdata");
+            JSONArray basicdata=obj.getJSONArray("basicdata");
+            String result="";
+
+            int dealprice=dealdata.getInt("price");
+            result+=dealprice+";";
+            for(int j=0;j<basicdata.size();j++){
+                JSONObject bd=(JSONObject)basicdata.get(j);
+                int basicprice=bd.getInt("price");
+                result+=basicprice+",";
+            }
+            FileTool.Dump(result,"D:\\小论文\\dealdata\\小区名\\成交数据_挂牌数据\\成交_挂牌.txt","utf-8");
         }
     }
 

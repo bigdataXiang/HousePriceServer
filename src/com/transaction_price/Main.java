@@ -38,11 +38,13 @@ public class Main extends Resold{
         }*/
 
         //将所有小区的成交数据与挂牌数据联合起来
-        Vector<String> pois=FileTool.Load("D:\\小论文\\dealdata\\小区名\\小区集合.txt","utf-8");
-        for(int i=92;i<pois.size();i++){
+        /*Vector<String> pois=FileTool.Load("D:\\小论文\\dealdata\\小区名\\小区集合.txt","utf-8");
+        for(int i=7666;i<pois.size();i++){
             String poi=pois.elementAt(i);
             DealPriceFitting.queryCommunityTransaction(poi);
             System.out.println("数据联合："+i);
-        }
+        }*/
+
+        DealPriceFitting.findHangoutDeals("D:\\小论文\\dealdata\\小区名\\成交数据_挂牌数据\\成交数据_挂牌数据.txt");
     }
 }
