@@ -70,8 +70,9 @@ public class SpatialInterpolation extends NiMatrix{
         step_5(spatial);
 
         step_6();
+        neighborInterpolation();
 
-        step_7();
+      //  step_7();
 
       //  step_8();
 
@@ -224,6 +225,8 @@ public class SpatialInterpolation extends NiMatrix{
             compareFailedCode(code);
         }
     }
+
+
     /**step_8:将插值结果符合(即mse小于0.25、或者mae小于1)的网格进行插值操作*/
     public static void step_8(){
         int size=qualified_interpolation_codes.size();
@@ -1443,6 +1446,31 @@ public class SpatialInterpolation extends NiMatrix{
             // TODO Auto-generated catch block
             System.out.println("发生异常的原因为 :"+e.getMessage());
             e.printStackTrace();
+        }
+    }
+    /**21、邻近插值*/
+    public static void neighborInterpolation(){
+        //sparse_data:稀疏数据
+        int code;
+        JSONObject obj;
+        for(Map.Entry<Integer, JSONObject>entry: sparse_data.entrySet()){
+            code=entry.getKey();
+            obj=entry.getValue();
+            //FileTool.Dump(code+","+obj,"D:\\小论文\\插值完善\\sparse_data.txt","utf-8");
+        }
+
+        //failed_interpolation_codes：mae>1的网格
+        for(int i=0;i<failed_interpolation_codes.size();i++){
+            code=failed_interpolation_codes.getInt(i);
+            obj=jsonArray_map.get(code);
+            //FileTool.Dump(code+","+obj,"D:\\小论文\\插值完善\\failed_interpolation_codes.txt","utf-8");
+        }
+
+        //pearson_is_0_size:与其他网格相关系数为0网格
+        for(Map.Entry<String,String>entry:pearson_is_0.entrySet()){
+            code=Integer.parseInt(entry.getKey());
+            obj=jsonArray_map.get(code);
+            //FileTool.Dump(code+","+obj,"D:\\小论文\\插值完善\\pearson_is_0.txt","utf-8");
         }
     }
 }
