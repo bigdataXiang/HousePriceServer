@@ -1552,4 +1552,6 @@ public class SpatialInterpolation extends NiMatrix{
 
         return str;
     }
+
+    /**24、利用22方法中的结果"_插值结果.txt"作为插值的源数据*/
 }
