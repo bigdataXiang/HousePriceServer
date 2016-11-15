@@ -51,8 +51,9 @@ public class SpatialInterpolation extends NiMatrix{
     public static void main(String[] args){
 
 
-        getInterpolationResult();
+         //getInterpolationResult();
         //System.out.println(step_10());
+        getInterpolation();
 
     }
 
@@ -1485,7 +1486,7 @@ public class SpatialInterpolation extends NiMatrix{
             String timeserise=poi.substring(poi.indexOf(",")+",".length());
             JSONObject obj=JSONObject.fromObject(timeserise);
             String str=findNeighborCode(code);
-            str+=","+obj;
+            str+=";"+obj;
             FileTool.Dump(str,"D:\\小论文\\插值完善\\failed_interpolation_codes_插值结果.txt","utf-8");
 
         }
@@ -1496,7 +1497,7 @@ public class SpatialInterpolation extends NiMatrix{
             String timeserise=poi.substring(poi.indexOf(",")+",".length());
             JSONObject obj=JSONObject.fromObject(timeserise);
             String str=findNeighborCode(code);
-            str+=","+obj;
+            str+=";"+obj;
             FileTool.Dump(str,"D:\\小论文\\插值完善\\pearson_is_0_插值结果.txt","utf-8");
 
         }
@@ -1507,7 +1508,7 @@ public class SpatialInterpolation extends NiMatrix{
             String timeserise=poi.substring(poi.indexOf(",")+",".length());
             JSONObject obj=JSONObject.fromObject(timeserise);
             String str=findNeighborCode(code);
-            str+=","+obj;
+            str+=";"+obj;
             FileTool.Dump(str,"D:\\小论文\\插值完善\\sparse_data_插值结果.txt","utf-8");
 
         }
@@ -1548,14 +1549,91 @@ public class SpatialInterpolation extends NiMatrix{
             }
 
         }
-        String str=deep+","+code+","+neighbor_codes;
+        String str=deep+";"+code+";"+neighbor_codes;
 
         return str;
     }
 
     /**24、利用22方法中的结果"_插值结果.txt"作为插值的源数据*/
     public static void getInterpolation(){
-        Vector<String> pois=FileTool.Load("D:\\小论文\\插值完善\\","");
+        List<Integer> failedcode=new ArrayList<>();
+        String[] dates={"2015-10","2015-11","2015-12","2016-1","2016-2","2016-3","2016-4","2016-5"};
+
+        Vector<String> pois=FileTool.Load("D:\\小论文\\插值完善\\sparse_data_插值结果.txt","utf-8");
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            String[] array=poi.split(";");
+            int code=Integer.parseInt(array[1]);
+            JSONArray neighbor=JSONArray.fromObject(array[2]);
+            double total_10=0;
+            double total_11=0;
+            double total_12=0;
+            double total_1=0;
+            double total_2=0;
+            double total_3=0;
+            double total_4=0;
+            double total_5=0;
+
+            int size=neighbor.size();
+            if(size!=0){
+                for(int j=0;j<size;j++){
+                    JSONObject obj=(JSONObject)neighbor.get(j);
+                    total_10+=obj.getDouble(dates[0]);
+                    total_11+=obj.getDouble(dates[1]);
+                    total_12+=obj.getDouble(dates[2]);
+                    total_1+=obj.getDouble(dates[3]);
+                    total_2+=obj.getDouble(dates[4]);
+                    total_3+=obj.getDouble(dates[5]);
+                    total_4+=obj.getDouble(dates[6]);
+                    total_5+=obj.getDouble(dates[7]);
+                }
+
+                double avenrage_10=total_10/size;
+                double avenrage_11=total_11/size;
+                double avenrage_12=total_12/size;
+                double avenrage_1=total_1/size;
+                double avenrage_2=total_2/size;
+                double avenrage_3=total_3/size;
+                double avenrage_4=total_4/size;
+                double avenrage_5=total_5/size;
+
+                JSONObject interpolation_result=new JSONObject();
+                interpolation_result.put(dates[0],avenrage_10);
+                interpolation_result.put(dates[1],avenrage_11);
+                interpolation_result.put(dates[2],avenrage_12);
+                interpolation_result.put(dates[3],avenrage_1);
+                interpolation_result.put(dates[4],avenrage_2);
+                interpolation_result.put(dates[5],avenrage_3);
+                interpolation_result.put(dates[6],avenrage_4);
+                interpolation_result.put(dates[7],avenrage_5);
+
+                FileTool.Dump(code+","+interpolation_result,"D:\\小论文\\插值完善\\sparse_data_插值结果_融合.txt","utf-8");
+
+            }else {
+                failedcode.add(code);
+                FileTool.Dump(code+","+interpolation_result,"D:\\小论文\\插值完善\\sparse_data_插值结果_failedcode.txt","utf-8");
+            }
+
+        }
+
+    }
+
+    public static void reNeighborInterpolation(){
+        Vector<String> failed_interpolation=FileTool.Load("D:\\小论文\\插值完善\\failed_interpolation_codes_插值结果_融合.txt","utf-8");
+        Vector<String> pearson_is_0=FileTool.Load("D:\\小论文\\插值完善\\pearson_is_0_插值结果_融合.txt","utf-8");
+        Vector<String> sparse_data=FileTool.Load("D:\\小论文\\插值完善\\sparse_data_插值结果_融合.txt.txt","utf-8");
+
+        Map<String,JSONObject> map=new HashMap<>();
+
+        for(int i=0;i<failed_interpolation.size();i++){
+            String poi=failed_interpolation.elementAt(i);
+            int code=Integer.parseInt(poi.substring(0,poi.indexOf(",")));
+            String timeserise=poi.substring(poi.indexOf(",")+",".length());
+            JSONObject obj=JSONObject.fromObject(timeserise);
+            String str="";
+            str+=";"+obj;
+            FileTool.Dump(str,"D:\\小论文\\插值完善\\failed_interpolation_codes_插值结果.txt","utf-8");
+        }
 
     }
 }

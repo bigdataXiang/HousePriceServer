@@ -9,7 +9,8 @@ public class Main {
     public static void main(String[] args)  throws Exception{
 
          //nianhao();
-        zaicipaichong();
+        //zaicipaichong();
+        numgame();
 
     }
     public static void nianhao(){
@@ -71,6 +72,26 @@ public class Main {
             }else{
                 FileTool.Dump(1+","+chaodai+","+nianhao+","+niandai,"D:\\自然语言处理\\语料\\年代整理\\新建文件夹\\朝代映射_去修饰_标记未重复.txt","utf-8");
             }
+        }
+    }
+
+    public static void numgame(){
+        Vector<String> pois=FileTool.Load("D:\\自然语言处理\\numgame\\处理结果.txt","utf-8");
+        Map<Integer,String> map=new HashMap<>();
+        for(int i=0;i<pois.size();i++){
+            System.out.println(i);
+            String poi=pois.elementAt(i);
+            String[] array=poi.split(",");
+            String nun=array[0];
+            String hanyu="";
+            if(array.length==4){
+                hanyu=array[1]+array[2]+array[3];
+            }else if(array.length==3){
+                hanyu=array[1]+array[2];
+            }
+
+            String str="\""+hanyu+"\""+","+"\""+nun+"\"";
+            FileTool.Dump(str,"D:\\自然语言处理\\numgame\\result.txt","utf-8");
         }
     }
 }
