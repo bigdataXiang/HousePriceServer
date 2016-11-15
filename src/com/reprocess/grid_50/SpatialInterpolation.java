@@ -1554,4 +1554,8 @@ public class SpatialInterpolation extends NiMatrix{
     }
 
     /**24、利用22方法中的结果"_插值结果.txt"作为插值的源数据*/
+    public static void getInterpolation(){
+        Vector<String> pois=FileTool.Load("D:\\小论文\\插值完善\\","");
+
+    }
 }
