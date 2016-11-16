@@ -51,9 +51,10 @@ public class SpatialInterpolation extends NiMatrix{
     public static void main(String[] args){
 
 
-         //getInterpolationResult();
+        //getInterpolationResult();
         //System.out.println(step_10());
         getInterpolation();
+        //reNeighborInterpolation();
 
     }
 
@@ -78,7 +79,8 @@ public class SpatialInterpolation extends NiMatrix{
 
         step_8();
 
-        neighborInterpolation();
+        dumpInterpolationResult();
+
 
       //  step_9(); 将最终结果存于数据库中
     }
@@ -1553,13 +1555,46 @@ public class SpatialInterpolation extends NiMatrix{
 
         return str;
     }
+    public static String findNeighborCode(int code,Map<String,JSONObject> map){
+        int[] rowcol=Code_RowCol(code,1);
+        int row=rowcol[0];
+        int col=rowcol[1];
+        List<JSONObject> neighbor_codes=new ArrayList<>();
+
+        //设置一个深度，该深度表示需要插值的网格的周围deep个网格的数据的遍历，
+        //如果找到有数据的网格，则跳出深度循环
+        int deep;
+        for(deep=1;deep<40;deep++){
+
+            for(int r=row-deep;r<=row+deep;r++){
+                for(int c=col-deep;c<=col+deep;c++){
+                    int neighbor_code=(r-1)*4000+c;
+                    if(neighbor_code!=code){
+                        //检查周围有没有本身数据满格的网格或者通过插值数据满格的网格
+                        if(map.containsKey(""+neighbor_code)){
+                            JSONObject obj=map.get(""+neighbor_code);
+                            neighbor_codes.add(obj);
+                        }
+                    }
+                }
+            }
+
+            if(neighbor_codes.size()!=0){
+                break;
+            }
+
+        }
+        String str=deep+";"+code+";"+neighbor_codes;
+
+        return str;
+    }
 
     /**24、利用22方法中的结果"_插值结果.txt"作为插值的源数据*/
     public static void getInterpolation(){
         List<Integer> failedcode=new ArrayList<>();
         String[] dates={"2015-10","2015-11","2015-12","2016-1","2016-2","2016-3","2016-4","2016-5"};
 
-        Vector<String> pois=FileTool.Load("D:\\小论文\\插值完善\\sparse_data_插值结果.txt","utf-8");
+        Vector<String> pois=FileTool.Load("D:\\小论文\\插值完善\\所有的插值结果\\All_failedcode_插值结果.txt","utf-8");
         for(int i=0;i<pois.size();i++){
             String poi=pois.elementAt(i);
             String[] array=poi.split(";");
@@ -1607,33 +1642,111 @@ public class SpatialInterpolation extends NiMatrix{
                 interpolation_result.put(dates[6],avenrage_4);
                 interpolation_result.put(dates[7],avenrage_5);
 
-                FileTool.Dump(code+","+interpolation_result,"D:\\小论文\\插值完善\\sparse_data_插值结果_融合.txt","utf-8");
+                FileTool.Dump(code+","+interpolation_result,"D:\\小论文\\插值完善\\所有的插值结果\\All_failedcode_插值结果_融合.txt","utf-8");
 
             }else {
                 failedcode.add(code);
-                FileTool.Dump(code+","+interpolation_result,"D:\\小论文\\插值完善\\sparse_data_插值结果_failedcode.txt","utf-8");
+                FileTool.Dump(code+","+interpolation_result,"D:\\小论文\\插值完善\\所有的插值结果\\All_failedcode_插值结果_failedcode.txt","utf-8");
             }
 
         }
 
     }
 
+    /**25、对于周边20*50m范围内一个邻接数据都没有的，再次用第一次和第二次的插值结果实现插值*/
     public static void reNeighborInterpolation(){
         Vector<String> failed_interpolation=FileTool.Load("D:\\小论文\\插值完善\\failed_interpolation_codes_插值结果_融合.txt","utf-8");
         Vector<String> pearson_is_0=FileTool.Load("D:\\小论文\\插值完善\\pearson_is_0_插值结果_融合.txt","utf-8");
-        Vector<String> sparse_data=FileTool.Load("D:\\小论文\\插值完善\\sparse_data_插值结果_融合.txt.txt","utf-8");
+        Vector<String> sparse_data=FileTool.Load("D:\\小论文\\插值完善\\sparse_data_插值结果_融合.txt","utf-8");
+        Vector<String> full_value_grids=FileTool.Load("D:\\小论文\\插值完善\\full_value_grids.txt","utf-8");
+        Vector<String> interpolation_value_grids=FileTool.Load("D:\\小论文\\插值完善\\interpolation_value_grids.txt","utf-8");
+
 
         Map<String,JSONObject> map=new HashMap<>();
-
         for(int i=0;i<failed_interpolation.size();i++){
             String poi=failed_interpolation.elementAt(i);
-            int code=Integer.parseInt(poi.substring(0,poi.indexOf(",")));
+            String code=poi.substring(0,poi.indexOf(","));
             String timeserise=poi.substring(poi.indexOf(",")+",".length());
             JSONObject obj=JSONObject.fromObject(timeserise);
-            String str="";
-            str+=";"+obj;
-            FileTool.Dump(str,"D:\\小论文\\插值完善\\failed_interpolation_codes_插值结果.txt","utf-8");
+            map.put(code,obj);
         }
 
+        for(int i=0;i<pearson_is_0.size();i++){
+            String poi=pearson_is_0.elementAt(i);
+            String code=poi.substring(0,poi.indexOf(","));
+            String timeserise=poi.substring(poi.indexOf(",")+",".length());
+            JSONObject obj=JSONObject.fromObject(timeserise);
+            map.put(code,obj);
+        }
+
+        for(int i=0;i<sparse_data.size();i++){
+            String poi=sparse_data.elementAt(i);
+            String code=poi.substring(0,poi.indexOf(","));
+            String timeserise=poi.substring(poi.indexOf(",")+",".length());
+            JSONObject obj=JSONObject.fromObject(timeserise);
+            map.put(code,obj);
+        }
+
+        for(int i=0;i<full_value_grids.size();i++){
+            String poi=full_value_grids.elementAt(i);
+            String code=poi.substring(0,poi.indexOf(";"));
+            String timeserise=poi.substring(poi.indexOf(";")+";".length());
+            JSONObject obj=JSONObject.fromObject(timeserise);
+            map.put(code,obj);
+        }
+
+        for(int i=0;i<interpolation_value_grids.size();i++){
+            String poi=interpolation_value_grids.elementAt(i);
+            String code=poi.substring(0,poi.indexOf(";"));
+            String timeserise=poi.substring(poi.indexOf(";")+";".length());
+            JSONObject obj=JSONObject.fromObject(timeserise);
+            map.put(code,obj);
+        }
+
+
+        failed_interpolation=FileTool.Load("D:\\小论文\\插值完善\\failed_interpolation_codes_插值结果_failedcode.txt","utf-8");
+        pearson_is_0=FileTool.Load("D:\\小论文\\插值完善\\pearson_is_0_插值结果_failedcode.txt","utf-8");
+        sparse_data=FileTool.Load("D:\\小论文\\插值完善\\sparse_data_插值结果_failedcode.txt","utf-8");
+        List<String> failedcodes=new ArrayList<>();
+        for(int i=0;i<failed_interpolation.size();i++) {
+            String poi = failed_interpolation.elementAt(i);
+            failedcodes.add(poi);
+        }
+        for(int i=0;i<pearson_is_0.size();i++) {
+            String poi = pearson_is_0.elementAt(i);
+            failedcodes.add(poi);
+        }
+        for(int i=0;i<sparse_data.size();i++) {
+            String poi = sparse_data.elementAt(i);
+            failedcodes.add(poi);
+        }
+
+
+        for(int i=0;i<failedcodes.size();i++){
+            int code=Integer.parseInt(failedcodes.get(i).replace(",{}",""));
+            String str=findNeighborCode(code,map);
+            FileTool.Dump(str,"D:\\小论文\\插值完善\\All_failedcode_插值结果.txt","utf-8");
+        }
+
+
+    }
+
+    /**26、将full_value_grids和interpolation_value_grids的数据写下来*/
+    public static void dumpInterpolationResult(){
+        int code;
+        JSONObject date_price;
+        for (Map.Entry<Integer, JSONObject> entry : full_value_grids.entrySet()) {
+            code = entry.getKey();
+            date_price = entry.getValue();
+
+            FileTool.Dump(code+";"+date_price,"D:\\小论文\\插值完善\\full_value_grids.txt","utf-8");
+        }
+
+        for (Map.Entry<Integer, JSONObject> entry : interpolation_value_grids.entrySet()) {
+            code = entry.getKey();
+            date_price = entry.getValue();
+
+            FileTool.Dump(code+";"+date_price,"D:\\小论文\\插值完善\\interpolation_value_grids.txt","utf-8");
+        }
     }
 }
