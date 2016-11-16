@@ -1,5 +1,6 @@
 package com.reprocess.grid_50;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import utils.FileTool;
 
@@ -14,7 +15,8 @@ public class ContourLine {
     public static void main(String[] args){
         // priceMatrix("2015-10");
         //System.out.println(getAnglesCoor(5861597));
-        priceBlock("D:\\小论文\\等值线\\1_价格区块标记\\ContourLine-2015-10-区块.txt",5);
+         //priceBlock("D:\\小论文\\等值线\\1_价格区块标记\\ContourLine-2015-10-区块.txt",8);
+        toArray("D:\\小论文\\等值线\\2_提取等值线\\坐标串_8.txt",8);
     }
 
     /**step_1:根据"D:\小论文\插值完善\所有的插值结果\"中六个文件生成每个月的价格矩阵的*/
@@ -156,9 +158,20 @@ public class ContourLine {
 
         }
     }
+    /**step_3:生成等值线坐标串，此算法是python写的，详见“D:\小论文\等值线\3_生成等值线坐标串”中的jsonprocess.py*/
 
-    /**step_3:生成等值线坐标串，此算法是python写的*/
-//!!
+    /**step_4:将step_3中生成的文件“坐标串_4.txt”全部写到一个数组里面去，并存放在
+     * 静态文件中进行展示*/
+    public static void toArray(String file,int value){
+        Vector<String> pois=FileTool.Load(file,"utf-8");
+        JSONArray array=new JSONArray();
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            array.add(poi);
+        }
+        FileTool.Dump(array.toString(),"D:\\小论文\\等值线\\3_生成等值线坐标串\\坐标串_"+value+".txt","utf-8");
+    }
+
 
 
 
