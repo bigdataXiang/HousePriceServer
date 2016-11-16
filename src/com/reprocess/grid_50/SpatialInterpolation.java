@@ -53,8 +53,9 @@ public class SpatialInterpolation extends NiMatrix{
 
         //getInterpolationResult();
         //System.out.println(step_10());
-        getInterpolation();
+        //getInterpolation();
         //reNeighborInterpolation();
+        pointToSurface();
 
     }
 
@@ -291,6 +292,11 @@ public class SpatialInterpolation extends NiMatrix{
         }
 
         return A;
+    }
+
+    /**step_11:以点代面，将所有没有值的格网进行填充，建立搜索深度*/
+    public static void step_11(){
+
     }
 
 
@@ -1749,4 +1755,72 @@ public class SpatialInterpolation extends NiMatrix{
             FileTool.Dump(code+";"+date_price,"D:\\小论文\\插值完善\\interpolation_value_grids.txt","utf-8");
         }
     }
+
+
+    /**27、将所有格网里的没有值的格网用“以点代面的”插值方法对格网进行插值计算
+     * 建立搜索深度deep=40*/
+    public static void pointToSurface(){
+
+        String path="D:\\小论文\\插值完善\\所有的插值结果\\";
+        String file=path+"All_failedcode_插值结果_融合.txt";
+        Map<String,JSONObject> code_price=new HashMap<>();
+        listAssignment(file,code_price);
+        System.out.println(code_price.size());
+
+        file=path+"failed_interpolation_codes_插值结果_融合.txt";
+        listAssignment(file,code_price);
+        System.out.println(code_price.size());
+
+        file=path+"full_value_grids.txt";
+        listAssignment(file,code_price);
+        System.out.println(code_price.size());
+
+        file=path+"interpolation_value_grids.txt";
+        listAssignment(file,code_price);
+        System.out.println(code_price.size());
+
+        file=path+"pearson_is_0_插值结果_融合.txt";
+        listAssignment(file,code_price);
+        System.out.println(code_price.size());
+
+        file=path+"sparse_data_插值结果_融合.txt";
+        listAssignment(file,code_price);
+        System.out.println(code_price.size());
+
+        for(int row=500;row<=2000;row++){
+            System.out.println(row);
+            for(int col=180;col<=2200;col++){
+                int code=(row-1)*4000+col;
+                if(code_price.containsKey(code)){
+                    //如果code_price中含有该code则不需要插值
+                }else{
+                    //进行深度遍历插值
+                    String str=findNeighborCode(code,code_price);
+                    String[] array=str.split(";");
+                    JSONArray temp=JSONArray.fromObject(array[2]);
+                    if(temp.size()!=0){
+                        FileTool.Dump(str,"D:\\小论文\\插值完善\\"+"以点代面_插值结果.txt","utf-8");
+                    }else {
+                        FileTool.Dump(""+code,"D:\\小论文\\插值完善\\"+"以点代面_插值结果_failedcode.txt","utf-8");
+                    }
+
+                }
+            }
+        }
+    }
+
+    /**将文件中时序价格数据存到map中*/
+    public static void listAssignment(String file,Map<String,JSONObject> code_price){
+        Vector<String> pois= FileTool.Load(file,"utf-8");
+        for(int i=0;i<pois.size();i++){
+            String poi=pois.elementAt(i);
+            String code=poi.substring(0,poi.indexOf(","));
+            String timeserise=poi.substring(poi.indexOf(",")+",".length());
+            JSONObject obj=JSONObject.fromObject(timeserise);
+
+            code_price.put(code,obj);
+        }
+    }
+
+
 }

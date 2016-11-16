@@ -172,11 +172,6 @@ public class ContourLine {
         FileTool.Dump(array.toString(),"D:\\小论文\\等值线\\3_生成等值线坐标串\\坐标串_"+value+".txt","utf-8");
     }
 
-
-
-
-
-
     /**提取文件中指定月份的价格和code数据*/
     public static void listAssignment(String file,Map<Integer,Double> code_price,String month){
         Vector<String> pois= FileTool.Load(file,"utf-8");
