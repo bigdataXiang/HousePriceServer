@@ -12,7 +12,9 @@ import java.util.*;
 public class ContourLine {
 
     public static void main(String[] args){
-       // priceMatrix("2015-10");
+        // priceMatrix("2015-10");
+        //System.out.println(getAnglesCoor(5861597));
+        priceBlock("D:\\小论文\\等值线\\1_价格区块标记\\ContourLine-2015-10-区块.txt",5);
     }
 
     /**step_1:根据"D:\小论文\插值完善\所有的插值结果\"中六个文件生成每个月的价格矩阵的*/
@@ -74,8 +76,93 @@ public class ContourLine {
         }
     }
     /**step_2:根据step_1中的结果提取特定价格阈值的等值线*/
+    public static void priceBlock(String file,int gridvalue){
+        //将step1中的结果赋值到一个二维矩阵中去
+        Vector<String> pois=FileTool.Load(file,"utf-8");
+        int[][] price_matrix=new int[4000][4000];
 
-    /**step_3:*/
+        //code_index
+        //key:网格编码
+        //value:编码为gridvalue的网格的区块标签,即是第几个gridvalue块
+        Map<Integer,Integer> code_index=new HashMap<>();
+
+        for(int i=0;i<pois.size();i++){
+            String[] array=pois.elementAt(i).split(",");
+
+            for(int j=0;j<array.length;j++){
+
+                if(!array[j].equals("-1")){
+                    double temp=Double.parseDouble(array[j]);
+                    price_matrix[i][j]=(int)temp;
+                    if(price_matrix[i][j]!=-1){
+                        int value=price_matrix[i][j]/100000;
+                        int index=price_matrix[i][j]%100000;
+                        if(value==gridvalue){
+                            int row=4000-i;
+                            int col=j+1;
+                            int code=(row-1)*4000+col;
+                            code_index.put(code,index);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        //通过遍历code_index统计价格为gridvalue的格网数目和区块数目
+        Iterator<Integer> iterator=code_index.keySet().iterator();
+        TreeSet ts=new TreeSet();
+        List<Integer> codeis=new ArrayList<>();
+        while (iterator.hasNext()){
+            int key=iterator.next();
+            int value=code_index.get(key);
+            if(value!=0){
+                ts.add(value);
+                codeis.add(value);
+            }
+        }
+        System.out.println("等值线"+gridvalue+"总共有"+ts.size()+"个区块");
+        System.out.println("等值线"+gridvalue+"总共有"+codeis.size()+"个网格");
+
+        Iterator<Integer> it_ts=ts.iterator();
+        int tag;
+        int gridnum;
+        int count;
+        int total=0;
+        while(it_ts.hasNext())
+        {
+            tag=it_ts.next();
+            //index_block包含的都是区块标签为tag的网格
+            //key:网格编码
+            //value:网格对应的区块标签,特殊情况，key=0时表示的是具有该区块标签的网格的个数
+            Map<Integer,Integer> index_block=getIndexBlocks(code_index,tag);
+            gridnum=index_block.get(0);
+            JSONObject corners;
+            int grid_code;
+
+            Iterator<Integer> it=index_block.keySet().iterator();
+            count=0;
+            JSONObject result=new JSONObject();
+            while (it.hasNext()){
+                grid_code=it.next();
+                if(grid_code!=0){
+                    count++;
+                    corners=getAnglesCoor(grid_code);
+                    result.put(grid_code,corners);
+                }
+            }
+            total+=gridnum;
+            FileTool.Dump(result.toString(),"D:\\小论文\\等值线\\2_提取等值线\\等值线_"+gridvalue+".txt","utf-8");
+
+        }
+    }
+
+    /**step_3:生成等值线坐标串，此算法是python写的*/
+
+
+
+
+
 
     /**提取文件中指定月份的价格和code数据*/
     public static void listAssignment(String file,Map<Integer,Double> code_price,String month){
@@ -91,5 +178,59 @@ public class ContourLine {
         }
     }
 
+    /**根据格网code值计算该格网的四个角的经纬度,针对50m*50m的格网*/
+    public static JSONObject getAnglesCoor(int code){
+        int cols=4000;
+        int row=code/cols+1;
+        int col=code%cols;
+
+        double width_50=5.892999999998593E-4;//每50m的经度差
+        double length_50=4.501999999998674E-4;//每50m的纬度差
+
+        double lng=115.417284;
+        double lat=39.438283;
+
+        JSONObject obj=new JSONObject();
+
+        double[] southwest=new double[2];
+        southwest[0]=lng+(col-1)*width_50;
+        southwest[1]=lat+(row-1)*length_50;
+        obj.put("southwest",southwest);
+
+        double[] southeast=new double[2];
+        southeast[0]=lng+(col)*width_50;
+        southeast[1]=lat+(row-1)*length_50;
+        obj.put("southeast",southeast);
+
+        double[] northeast=new double[2];
+        northeast[0]=lng+(col)*width_50;
+        northeast[1]=lat+(row)*length_50;
+        obj.put("northeast",northeast);
+
+        double[] northwest=new double[2];
+        northwest[0]=lng+(col-1)*width_50;
+        northwest[1]=lat+(row)*length_50;
+        obj.put("northwest",northwest);
+
+        return obj;
+    }
+
+    /**找出code_index中value为指定标签的的格网code，并且存到block中，这个
+     * block中的格网应该是连在一起的*/
+    public static Map<Integer,Integer> getIndexBlocks(Map<Integer,Integer> code_index,int index){
+        Iterator iterator=code_index.keySet().iterator();
+        Map<Integer,Integer> block=new HashMap<>();//存储了所有标签为index的网格
+        int count=0;
+        while (iterator.hasNext()){
+            int key=(int)iterator.next();
+            int value=code_index.get(key);
+            if(value==index){
+                block.put(key,value);
+                count++;
+            }
+        }
+        block.put(0,count);//标记这个区块一共有多少个格网。
+        return block;
+    }
 
 }
