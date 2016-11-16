@@ -57,4 +57,10 @@
 + mae>1，failed_interpolation_codes.size()：248
 + pearson_is_0_size:499
 以上这几类数据均采用邻近插值法
+
+```
+通过邻近插值，一共得到了7371个网格的全时序的数据，而总共的网格数是7746个，
+还剩75个格网没有插值结果。这75个格网的code存储在“D:\小论文\插值完善\所有的插值
+结果\失败的插值备份\\All_failedcode_插值结果_failedcode.txt”中
+```
   
