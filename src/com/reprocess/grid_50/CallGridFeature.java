@@ -212,9 +212,60 @@ public class CallGridFeature {
         return str;
     }
 
-    /**计算网格内房子的首付情况*/
-    public static void calculationDownPayment(double price){
+    /**计算网格内房子的首付情况:只考虑普通住宅情况*/
+    //二套房首付比率50%(去年四成的执行率低)
+    //首套首付比率30%（2016年9月30日之前），二套房首付比率35%（2016年9月30日之后）
+    //契税：首套1%，二套3%
+    //评估价和网签价相当，大概在成交价的80%到90%之间，这里按照80%来计算
+    public static double calculationDownPayment(double area,String type,int year,int month,double price){
+        double deedTax=deedTaxCalculation(area,type,year, month);
+        double serviceCharge=0.027;
+        double netSigned=0.8;
+        double loan=loanCalculation(type,year,month);
 
+        double totalPrice=price*(1+deedTax+serviceCharge)-netSigned*price*loan;
+        return totalPrice;
     }
-    
+
+    /**分情况讨论2016，930新政之前和之后的契税问题*/
+    public static double deedTaxCalculation(double area,String type,int year,int month){
+        double deedTax=0;
+        if(type.equals("first")){
+            if(year==2016&&month>=10){
+                if(area<=90){
+                    deedTax=0.01;
+                }else {
+                    deedTax=0.015;
+                }
+            }else{
+                if(area<=90){
+                    deedTax=0.01;
+                }else if(area>90&&area<=144){
+                    deedTax=0.015;
+                }else {
+                    deedTax=0.03;
+                }
+            }
+
+        }else if(type.equals("second")){
+            deedTax=0.03;
+        }
+        return deedTax;
+    }
+
+    /**分情况讨论2016，930新政之后的首付比率问题*/
+    public static double loanCalculation(String type,int year,int month){
+        double loan=0;
+        if(type.equals("first")){
+            if(year==2016&&month>=10){
+                loan=1-0.35;
+            }else {
+                loan=1-0.3;
+            }
+        }else if(type.equals("second")){
+            loan=1-0.5;
+        }
+        return loan;
+    }
+
 }
