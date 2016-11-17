@@ -4,6 +4,10 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import utils.FileTool;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -13,10 +17,10 @@ import java.util.*;
 public class ContourLine {
 
     public static void main(String[] args){
-        // priceMatrix("2015-10");
+         priceMatrix("2015-10");
         //System.out.println(getAnglesCoor(5861597));
          //priceBlock("D:\\小论文\\等值线\\1_价格区块标记\\ContourLine-2015-10-区块.txt",8);
-        toArray("D:\\小论文\\等值线\\2_提取等值线\\坐标串_8.txt",8);
+        //toArray("D:\\小论文\\等值线\\2_提取等值线\\坐标串_8.txt",8);
     }
 
     /**step_1:根据"D:\小论文\插值完善\所有的插值结果\"中六个文件生成每个月的价格矩阵的*/
@@ -46,6 +50,24 @@ public class ContourLine {
         file=path+"sparse_data_插值结果_融合.txt";
         listAssignment(file,code_price,month);
         System.out.println(code_price.size());
+
+        file=path+"以点代面_插值结果_融合.txt";
+        try{
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            for (String line = br.readLine(); line != null; line = br.readLine()) {
+                String poi=line;
+                String code=poi.substring(0,poi.indexOf(","));
+                String timeserise=poi.substring(poi.indexOf(",")+",".length());
+                JSONObject obj=JSONObject.fromObject(timeserise);
+
+                double price=obj.getDouble(month);
+                code_price.put(Integer.parseInt(code),price);
+            }
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+    System.out.println(code_price.size());
 
         //将200km*200km范围内的格网看作是4000*4000的二维数组，从上至下对二维数组进行赋值
         //这里要考虑到编码系统里的行列号与数组里面的行列号的差别

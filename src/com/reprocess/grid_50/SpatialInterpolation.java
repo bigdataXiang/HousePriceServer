@@ -60,7 +60,6 @@ public class SpatialInterpolation extends NiMatrix{
         //getInterpolation();
         //reNeighborInterpolation();
         //pointToSurface();
-        getInterpolation();
 
     }
 
@@ -1670,65 +1669,9 @@ public class SpatialInterpolation extends NiMatrix{
 
         Vector<String> pois=FileTool.Load("D:\\小论文\\插值完善\\以点代面_插值结果.txt","utf-8");
 
-       /* for(int i=0;i<pois.size();i++){
-            String poi=pois.elementAt(i);
-            String[] array=poi.split(";");
-            int code=Integer.parseInt(array[1]);
-            JSONArray neighbor=JSONArray.fromObject(array[2]);
-            double total_10=0;
-            double total_11=0;
-            double total_12=0;
-            double total_1=0;
-            double total_2=0;
-            double total_3=0;
-            double total_4=0;
-            double total_5=0;
-
-            int size=neighbor.size();
-            if(size!=0){
-                for(int j=0;j<size;j++){
-                    JSONObject obj=(JSONObject)neighbor.get(j);
-                    total_10+=obj.getDouble(dates[0]);
-                    total_11+=obj.getDouble(dates[1]);
-                    total_12+=obj.getDouble(dates[2]);
-                    total_1+=obj.getDouble(dates[3]);
-                    total_2+=obj.getDouble(dates[4]);
-                    total_3+=obj.getDouble(dates[5]);
-                    total_4+=obj.getDouble(dates[6]);
-                    total_5+=obj.getDouble(dates[7]);
-                }
-
-                double avenrage_10=total_10/size;
-                double avenrage_11=total_11/size;
-                double avenrage_12=total_12/size;
-                double avenrage_1=total_1/size;
-                double avenrage_2=total_2/size;
-                double avenrage_3=total_3/size;
-                double avenrage_4=total_4/size;
-                double avenrage_5=total_5/size;
-
-                JSONObject interpolation_result=new JSONObject();
-                interpolation_result.put(dates[0],avenrage_10);
-                interpolation_result.put(dates[1],avenrage_11);
-                interpolation_result.put(dates[2],avenrage_12);
-                interpolation_result.put(dates[3],avenrage_1);
-                interpolation_result.put(dates[4],avenrage_2);
-                interpolation_result.put(dates[5],avenrage_3);
-                interpolation_result.put(dates[6],avenrage_4);
-                interpolation_result.put(dates[7],avenrage_5);
-
-                FileTool.Dump(code+","+interpolation_result,"D:\\小论文\\插值完善\\以点代面_插值结果_融合.txt","utf-8");
-
-            }else {
-                failedcode.add(code);
-                FileTool.Dump(code+","+interpolation_result,"D:\\小论文\\插值完善\\以点代面_插值结果_failedcode.txt","utf-8");
-            }
-
-        }*/
-
     }
 
-    /**25、对于周边20*50m范围内一个邻接数据都没有的，再次用第一次和第二次的插值结果实现插值*/
+    /**25、对于周边50*50m范围内一个邻接数据都没有的，再次用第一次和第二次的插值结果实现插值*/
     public static void reNeighborInterpolation(){
         Vector<String> failed_interpolation=FileTool.Load("D:\\小论文\\插值完善\\failed_interpolation_codes_插值结果_融合.txt","utf-8");
         Vector<String> pearson_is_0=FileTool.Load("D:\\小论文\\插值完善\\pearson_is_0_插值结果_融合.txt","utf-8");
