@@ -16,6 +16,7 @@ import static com.reprocess.grid_50.GridFeatureStatistics.setAttributeMap;
  * Created by ZhouXiang on 2016/10/27.
  */
 public class CallGridFeature {
+
     public static void main(String[] args){
         JSONObject condition= new JSONObject();
         condition.put("row",65);
