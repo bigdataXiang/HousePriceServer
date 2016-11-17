@@ -94,6 +94,14 @@ public class CallGridFeature {
         String poi="";
         int count=0;
 
+        document = new BasicDBObject();
+        document.put("code",code_50);
+        document.put("row",i);
+        document.put("col",j);
+        document.put("year",year);
+        document.put("month",month);
+        document.put("source",source);
+
         for(int i=row_50;i<=row_50+N;i++) {
             for (int j = col_50; j <= col_50 + N; j++) {
                 code_50=j+4000*(i-1);
@@ -107,7 +115,9 @@ public class CallGridFeature {
 
                 List array=coll_export.find(document).toArray();
                 if(array.size()!=0){
-                    poi=array.get(0).toString();
+                    System.out.println(array.size());
+                    poi=array.get(0).toString();//array.size()的值为1
+                    System.out.println(poi);
                     JSONObject obj=JSONObject.fromObject(poi);
                     obj.remove("_id");
 
@@ -150,7 +160,8 @@ public class CallGridFeature {
         }
     }
 
-    //2.大网格内的属性汇总
+    //2.大网格内的属性汇总，返回结果如下：
+    //{"house_type":"4室2厅3卫,3;","direction":"南北,3;","floors":"3,3;","flooron":"下部,3;","area":"373.0,3;","price":"1800.0,3;","unitprice":"4.8257375,3;"}
     public static String GridAttributeSummary(){
         JSONObject obj=new JSONObject();
 
@@ -196,6 +207,7 @@ public class CallGridFeature {
         }
     }
 
+    /**遍历map,统计map中的各个特征的值*/
     public static String ergodicMap(Map<String,Integer> map){
         List<JSONObject> list=new ArrayList<>();
         String str="";
@@ -204,10 +216,6 @@ public class CallGridFeature {
             String type=entry.getKey();
             int num=entry.getValue();
             str+=type+","+num+";";
-
-            /*JSONObject obj=new JSONObject();
-            obj.put(type,num);
-            list.add(obj);*/
         }
         return str;
     }
