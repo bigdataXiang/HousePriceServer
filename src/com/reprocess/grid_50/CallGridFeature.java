@@ -95,68 +95,80 @@ public class CallGridFeature {
         int count=0;
 
         document = new BasicDBObject();
-        document.put("code",code_50);
-        document.put("row",i);
-        document.put("col",j);
-        document.put("year",year);
-        document.put("month",month);
+
+        BasicDBObject cond=new BasicDBObject();
+        cond.put("$gte",row_50);
+        cond.put("$lte",row_50+N);
+        document.put("row",cond);
+
+        cond=new BasicDBObject();
+        cond.put("$gte",col_50);
+        cond.put("$lte",col_50 + N);
+        document.put("col",cond);
+
+        //document.put("year",year);
+        //document.put("month",month);
         document.put("source",source);
 
-        for(int i=row_50;i<=row_50+N;i++) {
-            for (int j = col_50; j <= col_50 + N; j++) {
-                code_50=j+4000*(i-1);
-                document = new BasicDBObject();
-                document.put("code",code_50);
-                document.put("row",i);
-                document.put("col",j);
-                document.put("year",year);
-                document.put("month",month);
-                document.put("source",source);
+        List array=coll_export.find(document).toArray();
+        for(int i=0;i<array.size();i++){
 
-                List array=coll_export.find(document).toArray();
-                if(array.size()!=0){
-                    System.out.println(array.size());
-                    poi=array.get(0).toString();//array.size()的值为1
-                    System.out.println(poi);
-                    JSONObject obj=JSONObject.fromObject(poi);
-                    obj.remove("_id");
+            poi=array.get(i).toString();//array.size()的值为1
+            JSONObject obj=JSONObject.fromObject(poi);
+            obj.remove("_id");
+            String y=obj.getString("year");
+            String m=obj.getString("month");
 
-                    if(obj.containsKey("houseType")){
-                        String house_type=obj.getString("houseType");
-                        setMap(house_type,houseType_map);
-                    }
 
-                    if(obj.containsKey("direction")){
-                        String direction=obj.getString("direction");
-                        setMap(direction,direction_map);
-                    }
-
-                    if(obj.containsKey("floors")){
-                        String floors=obj.getString("floors");
-                        setMap(floors,floors_map);
-                    }
-
-                    if(obj.containsKey("flooron")){
-                        String flooron=obj.getString("flooron");
-                        setMap(flooron,flooron_map);
-                    }
-
-                    if(obj.containsKey("area")){
-                        String area=obj.getString("area");
-                        setMap(area,area_map);
-                    }
-
-                    if(obj.containsKey("price")){
-                        String price=obj.getString("price");
-                        setMap(price,price_map);
-                    }
-
-                    if(obj.containsKey("unitprice")){
-                        String unitprice=obj.getString("unitprice");
-                        setMap(unitprice,unitprice_map);
-                    }
+            if(obj.containsKey("houseType")){
+                if(y.equals(year)&&m.equals(month)){
+                    String house_type=obj.getString("houseType");
+                    setMap(house_type,houseType_map);
                 }
             }
+
+            if(obj.containsKey("direction")){
+                if(y.equals(year)&&m.equals(month)){
+                    String direction=obj.getString("direction");
+                    setMap(direction,direction_map);
+                }
+            }
+
+            if(obj.containsKey("floors")){
+                if(y.equals(year)&&m.equals(month)){
+                    String floors=obj.getString("floors");
+                    setMap(floors,floors_map);
+                }
+            }
+
+            if(obj.containsKey("flooron")){
+                if(y.equals(year)&&m.equals(month)){
+                    String flooron=obj.getString("flooron");
+                    setMap(flooron,flooron_map);
+                }
+            }
+
+            if(obj.containsKey("area")){
+                if(y.equals(year)&&m.equals(month)){
+                    String area=obj.getString("area");
+                    setMap(area,area_map);
+                }
+            }
+
+            if(obj.containsKey("price")){
+                if(y.equals(year)&&m.equals(month)){
+                    String price=obj.getString("price");
+                    setMap(price,price_map);
+                }
+            }
+
+            if(obj.containsKey("unitprice")){
+                if(y.equals(year)&&m.equals(month)){
+                    String unitprice=obj.getString("unitprice");
+                    setMap(unitprice,unitprice_map);
+                }
+            }
+
         }
     }
 
