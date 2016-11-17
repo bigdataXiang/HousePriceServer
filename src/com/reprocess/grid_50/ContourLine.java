@@ -17,9 +17,9 @@ import java.util.*;
 public class ContourLine {
 
     public static void main(String[] args){
-         priceMatrix("2015-10");
+         //priceMatrix("2015-10");
         //System.out.println(getAnglesCoor(5861597));
-         //priceBlock("D:\\小论文\\等值线\\1_价格区块标记\\ContourLine-2015-10-区块.txt",8);
+        //priceBlock("D:\\小论文\\等值线\\1_价格区块标记\\ContourLine-2015-10-区块.txt",8);
         //toArray("D:\\小论文\\等值线\\2_提取等值线\\坐标串_8.txt",8);
     }
 
@@ -99,7 +99,9 @@ public class ContourLine {
             array_row++;
         }
     }
-    /**step_2:根据step_1中的结果提取特定价格阈值的等值线*/
+    /**step_2:根据汉青的pb.py程序生成ContourLine-2015-10-区块.txt文件*/
+
+    /**step_3:根据step_1中的结果提取特定价格阈值的等值线*/
     public static void priceBlock(String file,int gridvalue){
         //将step1中的结果赋值到一个二维矩阵中去
         Vector<String> pois=FileTool.Load(file,"utf-8");
@@ -180,9 +182,9 @@ public class ContourLine {
 
         }
     }
-    /**step_3:生成等值线坐标串，此算法是python写的，详见“D:\小论文\等值线\3_生成等值线坐标串”中的jsonprocess.py*/
+    /**step_4:生成等值线坐标串，此算法是python写的，详见“D:\小论文\等值线\3_生成等值线坐标串”中的jsonprocess.py*/
 
-    /**step_4:将step_3中生成的文件“坐标串_4.txt”全部写到一个数组里面去，并存放在
+    /**step_5:将step_3中生成的文件“坐标串_4.txt”全部写到一个数组里面去，并存放在
      * 静态文件中进行展示*/
     public static void toArray(String file,int value){
         Vector<String> pois=FileTool.Load(file,"utf-8");
