@@ -7,6 +7,7 @@ import com.svail.bean.Response;
 import com.svail.db.db;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import utils.UtilFile;
 
 import java.util.*;
 
@@ -59,7 +60,16 @@ public class CallGridFeature {
         obj.put("price_weight",object);
 
 
-        obj.put("unitprice_weight",anverW);
+        object=new JSONObject();
+        object.put("total",anverW);
+        type="first";
+        first=downPayments(area,anverW,type,2015,11);
+        object.put("first",first);
+        type="second";
+        second=downPayments(area,anverW,type,2015,11);
+        object.put("second",second);
+        obj.put("unitprice_weight",object);
+
         System.out.println(obj);
     }
     public Response get(String body){
@@ -369,6 +379,7 @@ public class CallGridFeature {
 
             obj.put(date,result);
         }
+        obj=timeSort(obj);
         return obj;
     }
 
@@ -412,7 +423,7 @@ public class CallGridFeature {
         double deedTax=deedTaxCalculation(area,type,year, month);
         double serviceCharge=0.027;
         double netSigned=0.8;
-        double loan=loanCalculation(type,year,month);
+        double loan=loanCalculation(type,year,month,area);
 
         double totalPrice=price*(1+deedTax+serviceCharge)-netSigned*price*loan;
         return totalPrice;
@@ -483,4 +494,29 @@ public class CallGridFeature {
         return loan;
     }
 
+    /**对房源数据{"2015-11":3600,"2015-10":1800}按照日期进行排序*/
+    public static JSONObject timeSort(JSONObject obj){
+        List<JSONObject> time_price=new ArrayList<>();
+        Iterator<String> it=obj.keySet().iterator();
+
+        while(it.hasNext()){
+
+            String date=it.next();
+            double price=obj.getDouble(date);
+            JSONObject r=new JSONObject();
+            r.put("date",date);
+            r.put("price",price);
+            time_price.add(r);
+        }
+        Collections.sort(time_price, new UtilFile.TimeComparator());
+
+        JSONObject result=new JSONObject();
+        for(int i=0;i<time_price.size();i++){
+            JSONObject r=time_price.get(i);
+            String date=r.getString("date");
+            double price=r.getDouble("price");
+            result.put(date,price);
+        }
+        return result;
+    }
 }
