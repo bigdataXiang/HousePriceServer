@@ -47,7 +47,18 @@ public class CallGridFeature {
         System.out.println(anverW);
 
         JSONObject obj=new JSONObject();
-        obj.put("price_weight",price);
+
+        JSONObject object=new JSONObject();
+        object.put("total",price);
+        String type="first";
+        JSONObject first=downPayments(area,price,type,2015,11);
+        object.put("first",first);
+        type="second";
+        JSONObject second=downPayments(area,price,type,2015,11);
+        object.put("second",second);
+        obj.put("price_weight",object);
+
+
         obj.put("unitprice_weight",anverW);
         System.out.println(obj);
     }
@@ -375,8 +386,24 @@ public class CallGridFeature {
         return obj;
     }
 
+    /**6、计算每个月对应的房贷首付*/
+    public static JSONObject downPayments(JSONObject area,JSONObject price,String type,int year,int month){
+        JSONObject obj=new JSONObject();
 
-    /**计算网格内房子的首付情况:只考虑普通住宅情况*/
+        Iterator<String> dates=price.keys();
+        while(dates.hasNext()) {
+            String date = dates.next();
+            double pr = price.getDouble(date);
+            double ar=area.getDouble(date);
+
+            double downpay=calculationDownPayment(ar,type,year,month,pr);
+            obj.put(date,downpay);
+        }
+
+        return obj;
+    }
+
+    /**计算网格内房子的首付情况:由于有部分住宅面积超过144平米，属于非普通住宅，故要把非普通住宅计算进来*/
     //二套房首付比率50%(去年四成的执行率低)
     //首套首付比率30%（2016年9月30日之前），二套房首付比率35%（2016年9月30日之后）
     //契税：首套1%，二套3%
