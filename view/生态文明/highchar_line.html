@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Highcharts Example</title>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+        ${demo.css}
+    </style>
+    <script type="text/javascript">
+        var config_line={
+            title: {
+                text: '',
+                x: -20 //center
+            },
+            subtitle: {
+                text: '',
+                x: -20
+            },
+            xAxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            },
+            yAxis: {
+                title: {
+                    text: '总价 (万元)'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: '万元'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: [{
+                name: '',
+                data: []
+            }, {
+                name: '',
+                data: []
+            }, {
+                name: '',
+                data: []
+            }]
+        };
+
+        function calldata() {
+
+            var json = {
+                "row": 60,
+                "col": 75,
+                "code": 11875,
+                "N": 20
+            };
+            $.post("/static/highchart_line/line", JSON.stringify(json), function (data) {
+
+                var information = JSON.parse(data);
+                //{"price_weight":{"2015-11":3600,"2015-10":1800},"unitprice_weight":{"2015-11":3468.4964784999997,"2015-10":1800.0000874999998}}
+                var price_weight=information.price_weight;
+                setConfigLine(price_weight,0);
+                $('#container').highcharts(config_line);
+
+            })
+
+        }
+
+        function setConfigLine(data,type){
+            config_line.title.text="首付统计图";
+            var count=0;
+            for(var key in data){
+                var date=key;
+                var price=data[key];
+                config_line.xAxis.categories[count]=date;
+                if(type==0){
+                    config_line.series[type].name='总价';
+                }else if(type==1){
+                    config_line.series[type].name='首套首付';
+                }else if(type==2){
+                    config_line.series[type].name='二套首付';
+                }
+                config_line.series[type].data[count]=price;
+                count++;
+            }
+        }
+    </script>
+</head>
+<body>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg" onclick="calldata()">Large modal</button>
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">特征统计</h4>
+            </div>
+            <div class="modal-body">
+                <div id="container" style="margin:0 auto;width:800px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

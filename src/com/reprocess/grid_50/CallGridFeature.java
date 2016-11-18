@@ -32,7 +32,8 @@ public class CallGridFeature {
         System.out.println(GridAttributeSummary());
 
         Map<String,Map<Double,Double>> price_featureStatistics=dataFusion(time_price);
-        System.out.println(ergodicDataFusionMap(price_featureStatistics));
+        JSONObject price=ergodicDataFusionMap(price_featureStatistics);
+        System.out.println(price);
 
         Map<String,Map<Double,Double>> area_featureStatistics=dataFusion(time_area);
         JSONObject unitprice=ergodicDataFusionMap(area_featureStatistics);
@@ -44,6 +45,11 @@ public class CallGridFeature {
 
         JSONObject anverW=averageWeighted(unitprice,area);
         System.out.println(anverW);
+
+        JSONObject obj=new JSONObject();
+        obj.put("price_weight",price);
+        obj.put("unitprice_weight",anverW);
+        System.out.println(obj);
     }
     public Response get(String body){
 
