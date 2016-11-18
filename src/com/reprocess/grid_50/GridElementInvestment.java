@@ -15,7 +15,7 @@ import utils.UtilFile;
 import java.util.*;
 
 /**
- * Created by ZhouXiang on 2016/10/27.
+ * 生成特征统计像元的程序.
  */
 public class GridElementInvestment {
     public static void main(String[] args){

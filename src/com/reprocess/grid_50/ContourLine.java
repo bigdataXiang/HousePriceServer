@@ -17,10 +17,10 @@ import java.util.*;
 public class ContourLine {
 
     public static void main(String[] args){
-         //priceMatrix("2015-10");
+         //priceMatrix("2015-11");
         //System.out.println(getAnglesCoor(5861597));
-        //priceBlock("D:\\小论文\\等值线\\1_价格区块标记\\ContourLine-2015-10-区块.txt",8);
-        //toArray("D:\\小论文\\等值线\\2_提取等值线\\坐标串_8.txt",8);
+        //priceBlock("D:\\小论文\\等值线\\1_价格区块标记\\ContourLine-2015-10-区块.txt",20);
+        //toArray("D:\\小论文\\等值线\\2_提取等值线\\坐标串_5.txt",5);
     }
 
     /**step_1:根据"D:\小论文\插值完善\所有的插值结果\"中六个文件生成每个月的价格矩阵的*/

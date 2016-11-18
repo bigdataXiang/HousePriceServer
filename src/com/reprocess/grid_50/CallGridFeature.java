@@ -23,13 +23,27 @@ public class CallGridFeature {
         condition.put("col",87);
         condition.put("code",12887);
         condition.put("year","2015");
-        condition.put("month","10");
+        condition.put("month","11");
         condition.put("source","woaiwojia");
         condition.put("N",20);
         condition.put("export_collName","GridData_Resold_Investment_50");
 
         callIntesetGridInfo(condition);
         System.out.println(GridAttributeSummary());
+
+        Map<String,Map<Double,Double>> price_featureStatistics=dataFusion(time_price);
+        System.out.println(ergodicDataFusionMap(price_featureStatistics));
+
+        Map<String,Map<Double,Double>> area_featureStatistics=dataFusion(time_area);
+        JSONObject unitprice=ergodicDataFusionMap(area_featureStatistics);
+        System.out.println(unitprice);
+
+        Map<String,Map<Double,Double>> unitprice_featureStatistics=dataFusion(time_unitprice);
+        JSONObject area=ergodicDataFusionMap(unitprice_featureStatistics);
+        System.out.println(area);
+
+        JSONObject anverW=averageWeighted(unitprice,area);
+        System.out.println(anverW);
     }
     public Response get(String body){
 
@@ -40,6 +54,11 @@ public class CallGridFeature {
         price_map=new HashMap<>();
         unitprice_map=new HashMap<>();
         flooron_map=new HashMap<>();
+
+        time_price=new HashMap<>();//用于存放每月对应的价格统计信息
+        time_area=new HashMap<>();//用于存放每月对应的面积统计信息
+        time_unitprice=new HashMap<>();//用于存放每月对应的均价统计信息
+
 
         ///gridinfo	{"row":63,"col":92,"code":12492,"N":20}
         JSONObject condition= JSONObject.fromObject(body);
@@ -72,6 +91,10 @@ public class CallGridFeature {
     public static Map<String,Integer> unitprice_map=new HashMap<>();
     public static Map<String,Integer> flooron_map=new HashMap<>();
 
+    public static Map<String,List<String>> time_price=new HashMap<>();//用于存放每月对应的价格统计信息
+    public static Map<String,List<String>> time_area=new HashMap<>();//用于存放每月对应的面积统计信息
+    public static Map<String,List<String>> time_unitprice=new HashMap<>();//用于存放每月对应的均价统计信息
+
     //1.将所有位于大网格范围内的小网格搜集起来
     public static void callIntesetGridInfo(JSONObject condition){
         int N=condition.getInt("N");
@@ -89,10 +112,8 @@ public class CallGridFeature {
 
         int row_50=(row-1)*N+1;
         int col_50=(col-1)*N+1;
-        int code_50;
 
         String poi="";
-        int count=0;
 
         document = new BasicDBObject();
 
@@ -110,6 +131,11 @@ public class CallGridFeature {
         //document.put("month",month);
         document.put("source",source);
 
+        List<String> vaule_time_price;
+        List<String> vaule_time_area;
+        List<String> vaule_time_unitprice;
+
+
         List array=coll_export.find(document).toArray();
         for(int i=0;i<array.size();i++){
 
@@ -118,6 +144,7 @@ public class CallGridFeature {
             obj.remove("_id");
             String y=obj.getString("year");
             String m=obj.getString("month");
+            String date=y+"-"+m;
 
 
             if(obj.containsKey("houseType")){
@@ -149,23 +176,57 @@ public class CallGridFeature {
             }
 
             if(obj.containsKey("area")){
+                String area=obj.getString("area");
+
                 if(y.equals(year)&&m.equals(month)){
-                    String area=obj.getString("area");
                     setMap(area,area_map);
+                }
+
+                if(time_area.containsKey(date)){
+                    vaule_time_area=time_area.get(date);
+                    vaule_time_area.add(area);
+                    time_area.put(date,vaule_time_area);
+
+                }else {
+                    vaule_time_area=new ArrayList<>();
+                    vaule_time_area.add(area);
+                    time_area.put(date,vaule_time_area);
                 }
             }
 
             if(obj.containsKey("price")){
+                String price=obj.getString("price");
                 if(y.equals(year)&&m.equals(month)){
-                    String price=obj.getString("price");
                     setMap(price,price_map);
+                }
+
+                if(time_price.containsKey(date)){
+                    vaule_time_price=time_price.get(date);
+                    vaule_time_price.add(price);
+                    time_price.put(date,vaule_time_price);
+
+                }else {
+                    vaule_time_price=new ArrayList<>();
+                    vaule_time_price.add(price);
+                    time_price.put(date,vaule_time_price);
                 }
             }
 
             if(obj.containsKey("unitprice")){
+                String unitprice=obj.getString("unitprice");
                 if(y.equals(year)&&m.equals(month)){
-                    String unitprice=obj.getString("unitprice");
                     setMap(unitprice,unitprice_map);
+                }
+
+                if(time_unitprice.containsKey(date)){
+                    vaule_time_unitprice=time_unitprice.get(date);
+                    vaule_time_unitprice.add(unitprice);
+                    time_unitprice.put(date,vaule_time_unitprice);
+
+                }else {
+                    vaule_time_unitprice=new ArrayList<>();
+                    vaule_time_unitprice.add(unitprice);
+                    time_unitprice.put(date,vaule_time_unitprice);
                 }
             }
 
@@ -202,6 +263,7 @@ public class CallGridFeature {
         return obj.toString();
     }
 
+    /**1、统计每个num_map中各个特征的总个数*/
     public static void setMap(String attribute,Map<String,Integer> num_map){
 
         String[] results=attribute.split(";");
@@ -219,7 +281,7 @@ public class CallGridFeature {
         }
     }
 
-    /**遍历map,统计map中的各个特征的值*/
+    /**2、遍历map,统计map中的各个特征的值*/
     public static String ergodicMap(Map<String,Integer> map){
         List<JSONObject> list=new ArrayList<>();
         String str="";
@@ -231,6 +293,82 @@ public class CallGridFeature {
         }
         return str;
     }
+
+
+    /**3、处理长时序的价格、均价和面积数据*/
+    public static Map<String,Map<Double,Double>> dataFusion(Map<String,List<String>> map){
+        Map<String,Map<Double,Double>> date_featureStatistics=new HashMap<>();
+        for(Map.Entry<String,List<String>>entry:map.entrySet()){
+            String date=entry.getKey();
+            List<String> value=entry.getValue();
+
+            Map<Double,Double> type_num=new HashMap<>();//每个月都有一个特征数量统计
+            for(int i=0;i<value.size();i++){
+                String[] poi=value.get(i).split(";");
+
+                for(int j=0;j<poi.length;j++){
+                    String[] typenum=poi[j].split(",");
+                    double type=Double.parseDouble(typenum[0]);
+                    double num=Double.parseDouble(typenum[1]);
+
+                    if(type_num.containsKey(type)){
+
+                        double temp=type_num.get(type);
+                        temp+=num;
+                        type_num.put(type,temp);
+
+                    }else {
+                        type_num.put(type,num);
+                    }
+                }
+            }
+
+            date_featureStatistics.put(date,type_num);
+        }
+        return date_featureStatistics;
+    }
+
+    /**4、遍历3中得出的统计结果，并且将其以json的格式打印出来*/
+    public static JSONObject ergodicDataFusionMap(Map<String,Map<Double,Double>> date_featureStatistics){
+        JSONObject obj=new JSONObject();
+        for(Map.Entry<String,Map<Double,Double>>entry:date_featureStatistics.entrySet()){
+            String date=entry.getKey();
+            Map<Double,Double> typenum=entry.getValue();
+
+            //统计所有的value的和
+            double totalValue=0;
+            for(Map.Entry<Double,Double>entry1:typenum.entrySet()){
+                totalValue+=entry1.getValue();
+            }
+
+            //计算每一个key的权重
+            double result=0;
+            for(Map.Entry<Double,Double>entry1:typenum.entrySet()){
+                double type=entry1.getKey();
+                double value=entry1.getValue();
+
+                result+=type*(value/totalValue);
+            }
+
+            obj.put(date,result);
+        }
+        return obj;
+    }
+
+    /**5、均价加权的计算方法*/
+    public static JSONObject averageWeighted(JSONObject unitprice,JSONObject area){
+        JSONObject obj=new JSONObject();
+        Iterator<String> dates=unitprice.keys();
+        while(dates.hasNext()){
+            String date=dates.next();
+            double price=unitprice.getDouble(date)*area.getDouble(date);
+
+            obj.put(date,price);
+        }
+
+        return obj;
+    }
+
 
     /**计算网格内房子的首付情况:只考虑普通住宅情况*/
     //二套房首付比率50%(去年四成的执行率低)
