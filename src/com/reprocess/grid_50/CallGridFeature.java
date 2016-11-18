@@ -422,6 +422,16 @@ public class CallGridFeature {
     public static double deedTaxCalculation(double area,String type,int year,int month){
         double deedTax=0;
         if(type.equals("first")){
+            /*首套住房：
+            2016.9.30之前：
+            90（含）平方米以下：普通1%，非普通3%
+                 90-144平方米：普通1.5%，非普通3%
+                 144平方米以上：3%
+            2016.9.30之后：
+            90（含）平方米以下：1%
+            90-144平方米：1.5%
+            144平方米以上：1.5%
+             */
             if(year==2016&&month>=10){
                 if(area<=90){
                     deedTax=0.01;
@@ -439,22 +449,36 @@ public class CallGridFeature {
             }
 
         }else if(type.equals("second")){
+            /*
+            新政前后都是一样的收费标准
+            第二套改善性住房：
+            90（含）平方米以下：3%
+            90（含）平方米以上：3%
+             */
             deedTax=0.03;
         }
         return deedTax;
     }
 
     /**分情况讨论2016，930新政之后的首付比率问题*/
-    public static double loanCalculation(String type,int year,int month){
+    public static double loanCalculation(String type,int year,int month,double area){
         double loan=0;
         if(type.equals("first")){
             if(year==2016&&month>=10){
-                loan=1-0.35;
+                if(area<144){
+                    loan=1-0.35;
+                }else{
+                    loan=1-0.4;
+                }
             }else {
                 loan=1-0.3;
             }
         }else if(type.equals("second")){
-            loan=1-0.5;
+            if(area<144){
+                loan=1-0.5;
+            }else{
+                loan=1-0.7;
+            }
         }
         return loan;
     }
