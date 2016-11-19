@@ -23,8 +23,7 @@
                 x: -20
             },
             xAxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                categories: []
             },
             yAxis: {
                 title: {
@@ -54,6 +53,15 @@
             }, {
                 name: '',
                 data: []
+            },{
+                name: '',
+                data: []
+            }, {
+                name: '',
+                data: []
+            }, {
+                name: '',
+                data: []
             }]
         };
 
@@ -68,29 +76,72 @@
             $.post("/static/highchart_line/line", JSON.stringify(json), function (data) {
 
                 var information = JSON.parse(data);
-                //{"price_weight":{"2015-11":3600,"2015-10":1800},"unitprice_weight":{"2015-11":3468.4964784999997,"2015-10":1800.0000874999998}}
+                var type;
+                var total;
+                var first;
+                var second;
+                var calculation_method;
+
+                //显示总价加权的曲线
+                calculation_method="z";
                 var price_weight=information.price_weight;
-                setConfigLine(price_weight,0);
+                type=0;
+                total=price_weight.total;
+                setConfigLine(total,type,calculation_method);
+                type++;
+                first=price_weight.first;
+                setConfigLine(first,type,calculation_method);
+                type++;
+                second=price_weight.second;
+                setConfigLine(second,type,calculation_method);
+
+                //显示均价加权的曲线
+                calculation_method="j";
+                var unitprice_weight=information.unitprice_weight;
+                type++;
+                total=unitprice_weight.total;
+                setConfigLine(total,type,calculation_method);
+                type++;
+                first=unitprice_weight.first;
+                setConfigLine(first,type,calculation_method);
+                type++;
+                second=unitprice_weight.second;
+                setConfigLine(second,type,calculation_method);
+
+
+
+                //数据集汇总并且可视化出来
                 $('#container').highcharts(config_line);
 
             })
 
         }
 
-        function setConfigLine(data,type){
+        function setConfigLine(data,type,calculation_method){
             config_line.title.text="首付统计图";
             var count=0;
             for(var key in data){
                 var date=key;
                 var price=data[key];
                 config_line.xAxis.categories[count]=date;
-                if(type==0){
-                    config_line.series[type].name='总价';
-                }else if(type==1){
-                    config_line.series[type].name='首套首付';
-                }else if(type==2){
-                    config_line.series[type].name='二套首付';
+                if(calculation_method=="z"){
+                    if(type==0){
+                        config_line.series[type].name='总价(总价加权)';
+                    }else if(type==1){
+                        config_line.series[type].name='首套首付(总价加权)';
+                    }else if(type==2){
+                        config_line.series[type].name='二套首付(总价加权)';
+                    }
+                }else if(calculation_method=="j"){
+                    if(type==3){
+                        config_line.series[type].name='总价(均价加权)';
+                    }else if(type==4){
+                        config_line.series[type].name='首套首付(均价加权)';
+                    }else if(type==5){
+                        config_line.series[type].name='二套首付(均价加权)';
+                    }
                 }
+
                 config_line.series[type].data[count]=price;
                 count++;
             }
