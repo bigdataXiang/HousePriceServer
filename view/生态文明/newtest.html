@@ -22,8 +22,11 @@
     <script type="text/javascript" src="/view/dist/leaflet-dvf.js"></script>
     <script type="text/javascript" src="/view/生态文明/sidebar-v2-master/js/jquery-sidebar.min.js"></script>
     <script type="text/javascript" src="/view/生态文明/sidebar-v2-master/js/leaflet-sidebar.min.js"></script>
+
+    <!--画首付曲线需要的引用-->
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
 
 
     <script type="text/javascript" src='/view/生态文明/lib/leaflet/leaflet.ChineseTmsProviders.js'></script>
@@ -37,11 +40,6 @@
     <script src="http://cdn.bootcss.com/vis/4.16.1/vis.js"></script>
     <script src="./vis/examples/googleAnalytics.js"></script>
 
-    <!--画首付曲线需要的引用-->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 
     <style>.legend i{
@@ -107,6 +105,9 @@
             width:500px;
             vertical-align:middle;
             line-height:200px;
+        }
+        .line{
+            background:rgba(0,0,0,0);
         }
 
         .orange {
@@ -701,7 +702,7 @@
             </div>
             <div class="modal-body">
 
-                <div id="container_download" class="line"></div>
+                <div id="container_download" class="line" style="margin:0 auto;width:750px;"></div>
                 <div id="container_houseType" class="pie"></div><!--width: 100%;height: 50%;width: 100%;height: 50%-->
                 <div id="container_direction" class="pie"></div>
                 <div id="container_floors" class="pie"></div>
@@ -2641,6 +2642,10 @@
                                     second=price_weight.second;
                                     setConfigLine(second,type,calculation_method);
 
+                                    /*
+                                    由于总价加权和均价加权的结果差不多，所以只显示总价加权的结果了
+
+                                     */
                                     //显示均价加权的曲线
                                     calculation_method="j";
                                     var unitprice_weight=curve_information.unitprice_weight;
@@ -2653,6 +2658,11 @@
                                     type++;
                                     second=unitprice_weight.second;
                                     setConfigLine(second,type,calculation_method);
+
+
+
+
+
                                     //数据集汇总并且可视化出来
                                     $('#container_download').highcharts(config_line);
 
