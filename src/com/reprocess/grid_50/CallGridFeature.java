@@ -52,10 +52,10 @@ public class CallGridFeature {
         JSONObject object=new JSONObject();
         object.put("total",price);
         String type="first";
-        JSONObject first=downPayments(area,price,type,2015,11);
+        JSONObject first=downPayments(area,price,type);
         object.put("first",first);
         type="second";
-        JSONObject second=downPayments(area,price,type,2015,11);
+        JSONObject second=downPayments(area,price,type);
         object.put("second",second);
         obj.put("price_weight",object);
 
@@ -63,10 +63,10 @@ public class CallGridFeature {
         object=new JSONObject();
         object.put("total",anverW);
         type="first";
-        first=downPayments(area,anverW,type,2015,11);
+        first=downPayments(area,anverW,type);
         object.put("first",first);
         type="second";
-        second=downPayments(area,anverW,type,2015,11);
+        second=downPayments(area,anverW,type);
         object.put("second",second);
         obj.put("unitprice_weight",object);
 
@@ -101,11 +101,53 @@ public class CallGridFeature {
         condition.put("export_collName","GridData_Resold_Investment_50");
 
         callIntesetGridInfo(condition);
-        String str=GridAttributeSummary();
-        System.out.println(str);
+        JSONObject result=GridAttributeSummary();
+
+        Map<String,Map<Double,Double>> price_featureStatistics=dataFusion(time_price);
+        JSONObject price=ergodicDataFusionMap(price_featureStatistics);
+        //System.out.println(price);
+
+        Map<String,Map<Double,Double>> area_featureStatistics=dataFusion(time_area);
+        JSONObject unitprice=ergodicDataFusionMap(area_featureStatistics);
+        //System.out.println(unitprice);
+
+        Map<String,Map<Double,Double>> unitprice_featureStatistics=dataFusion(time_unitprice);
+        JSONObject area=ergodicDataFusionMap(unitprice_featureStatistics);
+        //System.out.println(area);
+
+        JSONObject anverW=averageWeighted(unitprice,area);
+       // System.out.println(anverW);
+
+        JSONObject obj=new JSONObject();
+
+        JSONObject object=new JSONObject();
+        object.put("total",price);
+        String type="first";
+        JSONObject first=downPayments(area,price,type);
+        object.put("first",first);
+        type="second";
+        JSONObject second=downPayments(area,price,type);
+        object.put("second",second);
+        obj.put("price_weight",object);
+
+
+        object=new JSONObject();
+        object.put("total",anverW);
+        type="first";
+        first=downPayments(area,anverW,type);
+        object.put("first",first);
+        type="second";
+        second=downPayments(area,anverW,type);
+        object.put("second",second);
+        obj.put("unitprice_weight",object);
+
+        //将曲线的数据加到result中去
+        result.put("curve",obj);
+
+        System.out.println(result);
         Response r= new Response();
         r.setCode(200);
-        r.setContent(str);
+        r.setContent(result.toString());
         return r;
     }
 
@@ -262,7 +304,7 @@ public class CallGridFeature {
 
     //2.大网格内的属性汇总，返回结果如下：
     //{"house_type":"4室2厅3卫,3;","direction":"南北,3;","floors":"3,3;","flooron":"下部,3;","area":"373.0,3;","price":"1800.0,3;","unitprice":"4.8257375,3;"}
-    public static String GridAttributeSummary(){
+    public static JSONObject GridAttributeSummary(){
         JSONObject obj=new JSONObject();
 
         String house_type=ergodicMap(houseType_map);
@@ -287,7 +329,7 @@ public class CallGridFeature {
         //List<JSONObject> unitprice=ergodicMap(unitprice_map);
         obj.put("unitprice",unitprice);
 
-        return obj.toString();
+        return obj;
     }
 
     /**1、统计每个num_map中各个特征的总个数*/
@@ -398,14 +440,18 @@ public class CallGridFeature {
     }
 
     /**6、计算每个月对应的房贷首付*/
-    public static JSONObject downPayments(JSONObject area,JSONObject price,String type,int year,int month){
+    public static JSONObject downPayments(JSONObject area,JSONObject price,String type){
         JSONObject obj=new JSONObject();
 
+       // System.out.println(price);//{"2015-10":1800,"2015-11":3600}
         Iterator<String> dates=price.keys();
         while(dates.hasNext()) {
             String date = dates.next();
             double pr = price.getDouble(date);
             double ar=area.getDouble(date);
+            String[] d=date.split("-");
+            int year=Integer.parseInt(d[0]);
+            int month=Integer.parseInt(d[1]);
 
             double downpay=calculationDownPayment(ar,type,year,month,pr);
             obj.put(date,downpay);

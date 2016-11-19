@@ -37,6 +37,13 @@
     <script src="http://cdn.bootcss.com/vis/4.16.1/vis.js"></script>
     <script src="./vis/examples/googleAnalytics.js"></script>
 
+    <!--画首付曲线需要的引用-->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
     <style>.legend i{
       height: 18px;
       width:18px;
@@ -694,6 +701,7 @@
             </div>
             <div class="modal-body">
 
+                <div id="container_download" class="line"></div>
                 <div id="container_houseType" class="pie"></div><!--width: 100%;height: 50%;width: 100%;height: 50%-->
                 <div id="container_direction" class="pie"></div>
                 <div id="container_floors" class="pie"></div>
@@ -2614,6 +2622,40 @@
                                 $.post("/gridinfo", JSON.stringify(json), function (data) {
                                     var information = JSON.parse(data);
 
+                                    var curve_information=information.curve;
+                                    var type;
+                                    var total;
+                                    var first;
+                                    var second;
+                                    var calculation_method;
+                                    //显示总价加权的曲线
+                                    calculation_method="z";
+                                    var price_weight=curve_information.price_weight;
+                                    type=0;
+                                    total=price_weight.total;
+                                    setConfigLine(total,type,calculation_method);
+                                    type++;
+                                    first=price_weight.first;
+                                    setConfigLine(first,type,calculation_method);
+                                    type++;
+                                    second=price_weight.second;
+                                    setConfigLine(second,type,calculation_method);
+
+                                    //显示均价加权的曲线
+                                    calculation_method="j";
+                                    var unitprice_weight=curve_information.unitprice_weight;
+                                    type++;
+                                    total=unitprice_weight.total;
+                                    setConfigLine(total,type,calculation_method);
+                                    type++;
+                                    first=unitprice_weight.first;
+                                    setConfigLine(first,type,calculation_method);
+                                    type++;
+                                    second=unitprice_weight.second;
+                                    setConfigLine(second,type,calculation_method);
+                                    //数据集汇总并且可视化出来
+                                    $('#container_download').highcharts(config_line);
+
                                     config_pie.title.text="户型统计图";
                                     config_pie.series[0].data=[];
                                     var house_type=information.house_type;
@@ -2996,6 +3038,58 @@
             }]
         }]
     };
+
+    var config_line={
+        title: {
+            text: '',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: []
+        },
+        yAxis: {
+            title: {
+                text: '总价 (万元)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '万元'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '',
+            data: []
+        }, {
+            name: '',
+            data: []
+        }, {
+            name: '',
+            data: []
+        },{
+            name: '',
+            data: []
+        }, {
+            name: '',
+            data: []
+        }, {
+            name: '',
+            data: []
+        }]
+    };
     //增删表格的行数
     var id;
     function add(text1,text2,table_id){
@@ -3130,6 +3224,37 @@
             start: range.start.valueOf() - interval * percentage,
             end:   range.end.valueOf()   - interval * percentage
         });
+    }
+
+    //设置config_line的值
+    function setConfigLine(data,type,calculation_method){
+        config_line.title.text="首付统计图";
+        var count=0;
+        for(var key in data){
+            var date=key;
+            var price=data[key];
+            config_line.xAxis.categories[count]=date;
+            if(calculation_method=="z"){
+                if(type==0){
+                    config_line.series[type].name='总价(总价加权)';
+                }else if(type==1){
+                    config_line.series[type].name='首套首付(总价加权)';
+                }else if(type==2){
+                    config_line.series[type].name='二套首付(总价加权)';
+                }
+            }else if(calculation_method=="j"){
+                if(type==3){
+                    config_line.series[type].name='总价(均价加权)';
+                }else if(type==4){
+                    config_line.series[type].name='首套首付(均价加权)';
+                }else if(type==5){
+                    config_line.series[type].name='二套首付(均价加权)';
+                }
+            }
+
+            config_line.series[type].data[count]=price;
+            count++;
+        }
     }
 </script>
 </body>
