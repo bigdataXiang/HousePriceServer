@@ -25,8 +25,8 @@ public class CallGridFeature {
         condition.put("row",1062);
         condition.put("col",1720);
         condition.put("code",4245720);
-        condition.put("year","2016");
-        condition.put("month","05");
+        condition.put("year","2015");
+        condition.put("month","10");
         condition.put("source","woaiwojia");
         condition.put("N",1);
         condition.put("export_collName","GridData_Resold_FeatureStatistics_50");
@@ -75,6 +75,9 @@ public class CallGridFeature {
         //将曲线的数据加到result中去
         result.put("curve",obj);
 
+        JSONObject types=houseTypeListStatistic(houseType_list);
+        result.put("type",types);
+
         System.out.println(result);
     }
     public Response get(String body){
@@ -90,6 +93,8 @@ public class CallGridFeature {
         time_price=new HashMap<>();//用于存放每月对应的价格统计信息
         time_area=new HashMap<>();//用于存放每月对应的面积统计信息
         time_unitprice=new HashMap<>();//用于存放每月对应的均价统计信息
+
+        houseType_list=new HashMap<>();
 
 
         ///gridinfo	{"row":63,"col":92,"code":12492,"N":20}
@@ -169,6 +174,7 @@ public class CallGridFeature {
     public static Map<String,List<String>> time_area=new HashMap<>();//用于存放每月对应的面积统计信息
     public static Map<String,List<String>> time_unitprice=new HashMap<>();//用于存放每月对应的均价统计信息
 
+    public static Map<String,List<JSONObject>> houseType_list=new HashMap<>();//用于统计大格网中的户型特征
     //1.将所有位于大网格范围内的小网格搜集起来
     public static void callIntesetGridInfo(JSONObject condition){
         int N=condition.getInt("N");
@@ -307,6 +313,29 @@ public class CallGridFeature {
                 }
             }
 
+            //新增了"type"数据栏，该key对应的value是基本格网的户型统计信息
+            if(obj.containsKey("type")){
+                if(y.equals(year)&&m.equals(month)){
+                    JSONObject type=obj.getJSONObject("type");
+                    //System.out.println(type);
+
+                    Iterator<String> hy_it=type.keys();
+                    while (hy_it.hasNext()){
+                        String hy=hy_it.next();
+                        JSONObject hy_obj=type.getJSONObject(hy);
+
+                        if(houseType_list.containsKey(hy)){
+                            List<JSONObject> objs=houseType_list.get(hy);
+                            objs.add(hy_obj);
+                            houseType_list.put(hy,objs);
+                        }else {
+                            List<JSONObject> objs=new ArrayList<>();
+                            objs.add(hy_obj);
+                            houseType_list.put(hy,objs);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -316,6 +345,7 @@ public class CallGridFeature {
         JSONObject obj=new JSONObject();
 
         String house_type=ergodicMap(houseType_map);
+
         //List<JSONObject> house_type=ergodicMap(houseType_map);
         obj.put("house_type",house_type);
         String direction=ergodicMap(direction_map);
@@ -573,4 +603,67 @@ public class CallGridFeature {
         }
         return result;
     }
+
+    //统计houseType_list中的每个户型的特征
+    public static JSONObject houseTypeListStatistic(Map<String,List<JSONObject>> map){
+        String hy;
+        List<JSONObject> list;
+        JSONObject obj;
+
+        JSONObject result=new JSONObject();
+        JSONObject ratios=new JSONObject();
+        int total_size=0;
+        for(Map.Entry<String,List<JSONObject>>entry:map.entrySet()){
+            list=entry.getValue();
+            int size=list.size();
+            total_size+=size;
+        }
+        for(Map.Entry<String,List<JSONObject>>entry:houseType_list.entrySet()){
+            hy=entry.getKey();//户型类型
+            list=entry.getValue();
+            int size=list.size();
+
+            double ratio=(double)size/(double)total_size;
+            ratios.put(hy,ratio);
+        }
+
+        for(Map.Entry<String,List<JSONObject>>entry:houseType_list.entrySet()){
+            hy=entry.getKey();//户型类型
+            list=entry.getValue();
+
+            double total_price=0;
+            double total_unitprice=0;
+            double total_area=0;
+            for(int i=0;i<list.size();i++){
+                obj=list.get(i);
+                total_price+=obj.getDouble("price");
+                total_unitprice+=obj.getDouble("unitprice");
+                total_area+=obj.getDouble("area");
+            }
+
+            double aver_price=0;
+            double aver_unitprice=0;
+            double aver_area=0;
+            for(int i=0;i<list.size();i++){
+                obj=list.get(i);
+                double price=obj.getDouble("price");
+                aver_price+=price*(price/total_price);
+                double unitprice=obj.getDouble("unitprice");
+                aver_unitprice+=unitprice*(unitprice/total_unitprice);
+                double area=obj.getDouble("area");
+                aver_area+=area*(area/total_area);
+            }
+            double ratio=ratios.getDouble(hy);
+
+            JSONObject temp=new JSONObject();
+            temp.put("ratio",ratio);
+            temp.put("price",aver_price);
+            temp.put("unitprice",aver_unitprice);
+            temp.put("area",aver_area);
+
+            result.put(hy,temp);
+        }
+        return  result;
+    }
+
 }
