@@ -640,9 +640,9 @@ public class ContourGeneration {
             JSONObject obj;
             for(int i=0;i<objs.size();i++){
                 poi=objs.elementAt(i);
-                document=BasicDBObject.parse(poi);
-                System.out.println(document);
-                coll.insert(document);
+                //document=BasicDBObject.parse(poi);
+                //System.out.println(document);
+                //coll.insert(document);
             }
         } catch (MongoException e) {
             // TODO Auto-generated catch block

@@ -342,10 +342,14 @@ public class ExportToMongo {
      * @param source ： 数据的来源（fang、woaiwojia）
      */
     public static void ToMongoDB(String collName,String source){
-        Mongo m;
+        Mongo m=null;
         try {
             System.out.println("运行开始:");
-            m = new Mongo("192.168.6.9", 27017);
+            try {
+                m = new Mongo("192.168.6.9", 27017);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
             DB db = m.getDB("houseprice");
 
             DBCollection coll = db.getCollection(collName);//coll.drop();

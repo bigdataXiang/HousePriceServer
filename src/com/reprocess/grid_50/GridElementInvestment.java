@@ -58,6 +58,9 @@ public class GridElementInvestment {
         String collName_export=condition.getString("export_collName");
         DBCollection coll_export = db.getDB().getCollection(collName_export);
 
+        DBCollection coll_Basic50 = db.getDB().getCollection("BasicData_Resold_50");
+
+
         BasicDBObject document = new BasicDBObject();
         Iterator<String> it=condition.keys();
         while(it.hasNext()){
@@ -106,6 +109,18 @@ public class GridElementInvestment {
                 obj.put("row",row);
                 obj.put("col",col);
 
+                //十二月份的数据跑起来老是内存溢出，把十二月份的
+                //数据存储到BasicData_Resold_50中，方面后面的调用
+                cs.put("code",code);
+                cs.put("row",row);
+                cs.put("col",col);
+                DBCursor rls =coll_Basic50.find(cs);
+                if(rls == null || rls.size() == 0){
+                    coll_Basic50.insert(cs);
+                }else{
+                    System.out.println("该数据已经存在!");
+                }
+
 
                 codesSet.add(code);
 
@@ -116,6 +131,10 @@ public class GridElementInvestment {
 
                     //以code为key建立一个poi的索引表
                     //Map<Integer,Map<String,List<JSONObject>>> code_pois
+                    /*
+                    这一部分代码暂时不用了，因为12月份的数据太多，导致内存总是溢出
+                    所以要寻求新的办法了
+
                     if(code_pois.containsKey(code)){
                         Map<String,List<JSONObject>> hy_pois=code_pois.get(code);
 
@@ -141,7 +160,7 @@ public class GridElementInvestment {
                         hy_pois.put(house_type,pois);
                         code_pois.put(code,hy_pois);
 
-                    }
+                    }*/
                 }
 
                 if(obj.containsKey("direction")){
@@ -219,6 +238,11 @@ public class GridElementInvestment {
         int code;
         Object[] codeslist=codesSet.toArray();
 
+
+        String year=condition.getString("year");
+        String month=condition.getString("month");
+        String source=condition.getString("source");
+
         String collName_import=condition.getString("import_collName");
         DBCollection coll_import = db.getDB().getCollection(collName_import);
         BasicDBObject document;
@@ -293,6 +317,7 @@ public class GridElementInvestment {
             Map<String,Map<String,Integer>> hy_unitprice_map=new HashMap<>();
 
             int count=0;
+            Map<Integer,Map<String,List<JSONObject>>> code_pois=setCode_pois(year,month,source,code);
             if(code_pois.containsKey(code)){
 
                 Map<String,List<JSONObject>> hy_pois=code_pois.get(code);
@@ -561,5 +586,69 @@ public class GridElementInvestment {
             weightresult+=ratio*Double.parseDouble(attr);
         }
         return weightresult;
+    }
+
+    //单独建立一个函数setCode_pois来设置每个格网的数据
+    public static Map<Integer,Map<String,List<JSONObject>>> setCode_pois(String year,String month,String source,int code){
+        DBCollection coll_Basic50 = db.getDB().getCollection("BasicData_Resold_50");
+
+        Map<Integer,Map<String,List<JSONObject>>> code_pois=new HashMap<>();
+
+        BasicDBObject document = new BasicDBObject();
+        document.put("year",year);
+        document.put("month",month);
+        document.put("source",source);
+        document.put("code",code);
+
+
+
+        DBCursor cursor = coll_Basic50.find(document);
+        String poi;
+        JSONObject obj;
+        String house_type;
+        if(cursor.hasNext()) {
+            while (cursor.hasNext()) {
+                BasicDBObject cs = (BasicDBObject)cursor.next();
+                poi=cs.toString();
+                obj= JSONObject.fromObject(poi);
+
+
+                if(obj.containsKey("house_type")){
+                    house_type=obj.getString("house_type");
+
+                    //以code为key建立一个poi的索引表
+                    //Map<Integer,Map<String,List<JSONObject>>> code_pois
+
+                    if(code_pois.containsKey(code)){
+                        Map<String,List<JSONObject>> hy_pois=code_pois.get(code);
+
+                        if(hy_pois.containsKey(house_type)){
+
+                            List<JSONObject> pois=hy_pois.get(house_type);
+                            pois.add(obj);
+                            hy_pois.put(house_type,pois);
+                            code_pois.put(code,hy_pois);
+
+                        }else{
+
+                            List<JSONObject> pois=new ArrayList<>();
+                            pois.add(obj);
+                            hy_pois.put(house_type,pois);
+                            code_pois.put(code,hy_pois);
+                        }
+
+                    }else{
+                        Map<String,List<JSONObject>> hy_pois=new HashMap<>();
+                        List<JSONObject> pois=new ArrayList<>();
+                        pois.add(obj);
+                        hy_pois.put(house_type,pois);
+                        code_pois.put(code,hy_pois);
+
+                    }
+                }
+            }
+        }
+
+        return code_pois;
     }
 }

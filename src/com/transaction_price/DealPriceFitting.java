@@ -405,7 +405,7 @@ public class DealPriceFitting {
             String key=it.next();
             document.put(key,obj.get(key));
         }
-        Cursor cs=coll.find(document);
+        Cursor cs= (Cursor) coll.find(document);
         while (cs.hasNext()){
             System.out.println(cs.next());
         }
@@ -416,7 +416,7 @@ public class DealPriceFitting {
         DBCollection coll_BasicData = db.getDB().getCollection("BasicData_Resold_100");
         DBCollection coll_BasicData_DuplicateRemoval = db.getDB().getCollection("BasicData_Resold_100_DuplicateRemoval");
         BasicDBObject document;
-        Cursor cursor=coll_BasicData.find();
+        Cursor cursor= (Cursor) coll_BasicData.find();
         while (cursor.hasNext()){
             document=(BasicDBObject)cursor.next();
             document.remove("_id");
