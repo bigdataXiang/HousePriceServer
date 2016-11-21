@@ -4,25 +4,24 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.reprocess.grid_100.PoiCode;
-import com.reprocess.grid_100.util.Color;
 import com.reprocess.grid_100.util.NumJudge;
 import com.reprocess.grid_100.util.RowColCalculation;
 import com.svail.db.db;
 import net.sf.json.JSONObject;
-import utils.FileTool;
-import utils.UtilFile;
 
 import java.util.*;
 
 /**
  * 生成特征统计像元的程序.
+ *  -Xms258m -Xmx1024m -XX:PermSize=128m -XX:MaxPermSize=256m
+ *  -Xms1024m -Xmx2048m -XX:PermSize=1024m -XX:MaxPermSize=2018m
  */
 public class GridElementInvestment {
     public static void main(String[] args){
         JSONObject condition=new JSONObject();
         condition.put("N",1);
-        condition.put("year","2016");
-        condition.put("month","05");
+        condition.put("year","2015");
+        condition.put("month","12");
         condition.put("source","woaiwojia");
         condition.put("export_collName","BasicData_Resold_100");
         condition.put("import_collName","GridData_Resold_FeatureStatistics_50");
@@ -125,13 +124,14 @@ public class GridElementInvestment {
                             List<JSONObject> pois=hy_pois.get(house_type);
                             pois.add(obj);
                             hy_pois.put(house_type,pois);
+                            code_pois.put(code,hy_pois);
 
                         }else{
 
                             List<JSONObject> pois=new ArrayList<>();
                             pois.add(obj);
                             hy_pois.put(house_type,pois);
-
+                            code_pois.put(code,hy_pois);
                         }
 
                     }else{
@@ -139,6 +139,7 @@ public class GridElementInvestment {
                         List<JSONObject> pois=new ArrayList<>();
                         pois.add(obj);
                         hy_pois.put(house_type,pois);
+                        code_pois.put(code,hy_pois);
 
                     }
                 }
@@ -287,26 +288,112 @@ public class GridElementInvestment {
 
             //在这里加一个ratio的key，该ley里面存放的value能够确定主打户型的基本情况（面积、朝向、楼层等）
             //以code为key建立一个poi的索引表:Map<Integer,Map<String,List<JSONObject>>> code_pois
-            Map<String,List<JSONObject>> hy_pois=code_pois.get(code);
-            for(Map.Entry<String,List<JSONObject>> entry:hy_pois.entrySet()){
-                String houseType=entry.getKey();
-                List<JSONObject> pois=entry.getValue();
+            Map<String,Map<String,Integer>> hy_area_map=new HashMap<>();
+            Map<String,Map<String,Integer>> hy_price_map=new HashMap<>();
+            Map<String,Map<String,Integer>> hy_unitprice_map=new HashMap<>();
 
-                for(int m=0;m<pois.size();m++){
-                    JSONObject poi=pois.get(m);
+            int count=0;
+            if(code_pois.containsKey(code)){
 
-                    String area;
-                    String floors;
-                    String direction;
-                    String flooron;
-                    String price;
-                    String unit_price;
+                Map<String,List<JSONObject>> hy_pois=code_pois.get(code);
+                //统计每个户型所占的比率
+                JSONObject hy_ratio=new JSONObject();
 
+                int total_size=0;
+
+                for(Map.Entry<String,List<JSONObject>> entry:hy_pois.entrySet()){
+                    List<JSONObject> pois=entry.getValue();
+                    int size=pois.size();
+                    total_size+=size;
+                }
+
+
+                for(Map.Entry<String,List<JSONObject>> entry:hy_pois.entrySet()){
+                    String houseType=entry.getKey();
+                    List<JSONObject> pois=entry.getValue();
+                    int size=pois.size();
+                    double ratio=(double)size/(double)total_size;
+                    hy_ratio.put(houseType,ratio);
+                }
+
+                //先统计每一个户型都有那些价格、面积特征
+                for(Map.Entry<String,List<JSONObject>> entry:hy_pois.entrySet()){
+                    String houseType=entry.getKey();
+                    List<JSONObject> pois=entry.getValue();
+
+                    for(int m=0;m<pois.size();m++){
+                        JSONObject poi=pois.get(m);
+
+                        String area;
+                        String price;
+                        String unit_price;
+
+                        if(poi.containsKey("area")){
+                            area=poi.getString("area");
+                            boolean num= NumJudge.isNum(area);
+                            if(num){
+                                setAttributeMap(houseType,area,hy_area_map);
+                            }else {
+                                System.out.println(code+":"+area);
+                            }
+
+                        }
+
+                        if(poi.containsKey("price")){
+                            price=poi.getString("price");
+                            boolean num= NumJudge.isNum(price);
+                            if(num){
+                                setAttributeMap(houseType,price,hy_price_map);
+                            }else {
+                                System.out.println(code+":"+price);
+                            }
+                        }
+
+                        if(poi.containsKey("unit_price")){
+                            unit_price=poi.getString("unit_price");
+                            boolean num= NumJudge.isNum(unit_price);
+                            if(num){
+                                setAttributeMap(houseType,unit_price,hy_unitprice_map);
+                            }else {
+                                System.out.println(code+":"+unit_price);
+                            }
+                        }
+                    }
 
                 }
 
-            }
+                //对每一个户型的价格、面积特征进行汇总,并且以计算加权值
+                JSONObject hy_obj=new JSONObject();
+                for(Map.Entry<String,List<JSONObject>> entry:hy_pois.entrySet()) {
+                    String houseType = entry.getKey();
+                    JSONObject ht=new JSONObject();
 
+                    if(hy_area_map.containsKey(houseType)){
+                        Map<String,Integer> area_map=hy_area_map.get(houseType);
+                        getweightAttributeJson(area_map,"area",ht);
+                    }
+
+                    if(hy_price_map.containsKey(houseType)){
+                        Map<String,Integer> price_map=hy_price_map.get(houseType);
+                        getweightAttributeJson(price_map,"price",ht);
+                    }
+
+                    if(hy_unitprice_map.containsKey(houseType)){
+                        Map<String,Integer> unitprice_map=hy_unitprice_map.get(houseType);
+                        getweightAttributeJson(unitprice_map,"unitprice",ht);
+                    }
+
+                    double ratio=hy_ratio.getDouble(houseType);
+                    ht.put("ratio",ratio);
+
+                    hy_obj.put(houseType,ht);
+                }
+                document.put("type",hy_obj);
+
+            }else{
+                count++;
+            }
+            //System.out.println(count);
 
 
             if(index!=0){
@@ -364,7 +451,27 @@ public class GridElementInvestment {
             map.put(code,num_map);
         }
     }
+    public static void setAttributeMap(String hy,String attribute,Map<String,Map<String,Integer>> map){
+        if(map.containsKey(hy)){
 
+            Map<String,Integer> num_map=map.get(hy);
+            if(num_map.containsKey(attribute)){
+                int num=num_map.get(attribute);
+                num_map.put(attribute,++num);
+                map.put(hy,num_map);
+
+            }else {
+                num_map.put(attribute,1);
+                map.put(hy,num_map);
+            }
+
+        }else {
+            Map<String,Integer> num_map=new HashMap<>();
+            num_map.put(attribute,1);
+            map.put(hy,num_map);
+        }
+
+    }
 
     //验证所有的统计结果是否与总的数据的相符
     public static void stasticAttributeNum(Map<Integer,Map<String,Integer>> map){
@@ -406,6 +513,29 @@ public class GridElementInvestment {
             obj+=attr+","+num+";";
         }
         return obj;
+    }
+    //遍历每个户型下的子map，并且将子map的值进行加权，得到该户型的面积，价格和均价的加权值
+    public static void getweightAttributeJson (Map<String,Integer> attribute,String key,JSONObject ht){
+        String attr;
+        int num;
+
+        int totalnum=0;
+        for(Map.Entry<String,Integer> entry:attribute.entrySet()){
+
+            num=entry.getValue();
+            totalnum+=num;
+        }
+
+        double result=0;
+        for(Map.Entry<String,Integer> entry:attribute.entrySet()){
+            attr=entry.getKey();
+            double data=Double.parseDouble(attr);
+            num=entry.getValue();
+
+            result+=data*((double)num/totalnum);
+        }
+
+        ht.put(key,result);
     }
 
     public static double getInvestmentThreshold(Map<String,Integer> attribute){

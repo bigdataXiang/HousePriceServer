@@ -25,11 +25,11 @@ public class CallGridFeature {
         condition.put("row",1062);
         condition.put("col",1720);
         condition.put("code",4245720);
-        condition.put("year","2015");
-        condition.put("month","11");
+        condition.put("year","2016");
+        condition.put("month","05");
         condition.put("source","woaiwojia");
         condition.put("N",1);
-        condition.put("export_collName","GridData_Resold_Investment_50");
+        condition.put("export_collName","GridData_Resold_FeatureStatistics_50");
 
         callIntesetGridInfo(condition);
         JSONObject result=GridAttributeSummary();
