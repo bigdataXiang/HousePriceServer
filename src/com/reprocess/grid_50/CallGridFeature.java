@@ -20,32 +20,34 @@ public class CallGridFeature {
 
     public static void main(String[] args){
         JSONObject condition= new JSONObject();
-        condition.put("row",65);
-        condition.put("col",87);
-        condition.put("code",12887);
+
+        //{"row":1062,"col":1720,"code":4245720,"N":1,"gridTime":"2015年10月","source":"我爱我家"}
+        condition.put("row",1062);
+        condition.put("col",1720);
+        condition.put("code",4245720);
         condition.put("year","2015");
         condition.put("month","11");
         condition.put("source","woaiwojia");
-        condition.put("N",20);
+        condition.put("N",1);
         condition.put("export_collName","GridData_Resold_Investment_50");
 
         callIntesetGridInfo(condition);
-        System.out.println(GridAttributeSummary());
+        JSONObject result=GridAttributeSummary();
 
         Map<String,Map<Double,Double>> price_featureStatistics=dataFusion(time_price);
         JSONObject price=ergodicDataFusionMap(price_featureStatistics);
-        System.out.println(price);
+        //System.out.println(price);
 
         Map<String,Map<Double,Double>> area_featureStatistics=dataFusion(time_area);
         JSONObject unitprice=ergodicDataFusionMap(area_featureStatistics);
-        System.out.println(unitprice);
+        //System.out.println(unitprice);
 
         Map<String,Map<Double,Double>> unitprice_featureStatistics=dataFusion(time_unitprice);
         JSONObject area=ergodicDataFusionMap(unitprice_featureStatistics);
-        System.out.println(area);
+        //System.out.println(area);
 
         JSONObject anverW=averageWeighted(unitprice,area);
-        System.out.println(anverW);
+        //System.out.println(anverW);
 
         JSONObject obj=new JSONObject();
 
@@ -70,7 +72,10 @@ public class CallGridFeature {
         object.put("second",second);
         obj.put("unitprice_weight",object);
 
-        System.out.println(obj);
+        //将曲线的数据加到result中去
+        result.put("curve",obj);
+
+        System.out.println(result);
     }
     public Response get(String body){
 
@@ -211,6 +216,9 @@ public class CallGridFeature {
             poi=array.get(i).toString();//array.size()的值为1
             JSONObject obj=JSONObject.fromObject(poi);
             obj.remove("_id");
+
+            //System.out.println(obj);
+
             String y=obj.getString("year");
             String m=obj.getString("month");
             String date=y+"-"+m;

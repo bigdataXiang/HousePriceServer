@@ -25,7 +25,7 @@ public class GridElementInvestment {
         condition.put("month","05");
         condition.put("source","woaiwojia");
         condition.put("export_collName","BasicData_Resold_100");
-        condition.put("import_collName","GridData_Resold_Investment_50");
+        condition.put("import_collName","GridData_Resold_FeatureStatistics_50");
 
         getInvestment(condition);
     }
@@ -48,6 +48,7 @@ public class GridElementInvestment {
     public static Map<Integer,Map<String,Integer>> code_price_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_unitprice_map=new HashMap<>();
     public static Map<Integer,Map<String,Integer>> code_flooron_map=new HashMap<>();
+    public static Map<Integer,Map<String,List<JSONObject>>> code_pois=new HashMap<>();
     public static TreeSet<Integer> codesSet= new TreeSet<>();
     public static JSONObject total=new JSONObject();
 
@@ -106,12 +107,40 @@ public class GridElementInvestment {
                 obj.put("row",row);
                 obj.put("col",col);
 
+
                 codesSet.add(code);
 
 
                 if(obj.containsKey("house_type")){
                     house_type=obj.getString("house_type");
                     setAttributeMap(code,house_type,code_houseType_map);
+
+                    //以code为key建立一个poi的索引表
+                    //Map<Integer,Map<String,List<JSONObject>>> code_pois
+                    if(code_pois.containsKey(code)){
+                        Map<String,List<JSONObject>> hy_pois=code_pois.get(code);
+
+                        if(hy_pois.containsKey(house_type)){
+
+                            List<JSONObject> pois=hy_pois.get(house_type);
+                            pois.add(obj);
+                            hy_pois.put(house_type,pois);
+
+                        }else{
+
+                            List<JSONObject> pois=new ArrayList<>();
+                            pois.add(obj);
+                            hy_pois.put(house_type,pois);
+
+                        }
+
+                    }else{
+                        Map<String,List<JSONObject>> hy_pois=new HashMap<>();
+                        List<JSONObject> pois=new ArrayList<>();
+                        pois.add(obj);
+                        hy_pois.put(house_type,pois);
+
+                    }
                 }
 
                 if(obj.containsKey("direction")){
@@ -197,7 +226,7 @@ public class GridElementInvestment {
         for(int i=0;i<codeslist.length;i++){
 
             code=(int)codeslist[i];
-            obj=new JSONObject();
+            //obj=new JSONObject();
             document = new BasicDBObject();
             if(code_houseType_map.containsKey(code)){
                 index++;
@@ -256,6 +285,30 @@ public class GridElementInvestment {
                 document.put("unitprice",up);
             }
 
+            //在这里加一个ratio的key，该ley里面存放的value能够确定主打户型的基本情况（面积、朝向、楼层等）
+            //以code为key建立一个poi的索引表:Map<Integer,Map<String,List<JSONObject>>> code_pois
+            Map<String,List<JSONObject>> hy_pois=code_pois.get(code);
+            for(Map.Entry<String,List<JSONObject>> entry:hy_pois.entrySet()){
+                String houseType=entry.getKey();
+                List<JSONObject> pois=entry.getValue();
+
+                for(int m=0;m<pois.size();m++){
+                    JSONObject poi=pois.get(m);
+
+                    String area;
+                    String floors;
+                    String direction;
+                    String flooron;
+                    String price;
+                    String unit_price;
+
+
+                }
+
+            }
+
+
+
             if(index!=0){
                 document.put("code",code);
                 rc=RowColCalculation.Code_RowCol(code,1);
@@ -311,6 +364,7 @@ public class GridElementInvestment {
             map.put(code,num_map);
         }
     }
+
 
     //验证所有的统计结果是否与总的数据的相符
     public static void stasticAttributeNum(Map<Integer,Map<String,Integer>> map){
