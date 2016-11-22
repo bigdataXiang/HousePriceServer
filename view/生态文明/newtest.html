@@ -2623,6 +2623,8 @@
                                 $.post("/gridinfo", JSON.stringify(json), function (data) {
                                     var information = JSON.parse(data);
 
+                                    var type=information.type;
+
                                     var curve_information=information.curve;
                                     var type;
                                     var total;
@@ -3049,6 +3051,7 @@
         }]
     };
 
+    //是总价加权的曲线的数据结构
     var config_line={
         title: {
             text: '',
@@ -3100,6 +3103,43 @@
             data: []
         }]
     };
+
+    //按照不同月份不同户型分类的曲线的数据结构
+    var config_line_housetype={
+        title: {
+            text: '',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: []
+        },
+        yAxis: {
+            title: {
+                text: '总价 (万元)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '万元'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: []
+    };
+
+
     //增删表格的行数
     var id;
     function add(text1,text2,table_id){
@@ -3266,6 +3306,34 @@
             count++;
         }
     }
+
+    function setConfigLine_houseType(data,type){
+        config_line_housetype.title.text="不同户型首付统计图";
+        var count=0;
+        for(var key in data){
+            var date=key;
+            var houseTypes=data[date];
+            config_line.xAxis.categories[count]=date;
+
+            for(var ht in houseTypes){
+                var infos=houseTypes[ht];
+
+                var fs=infos.first;
+                var i30=fs.in30;
+                var json={
+                    name: ht+'首付30%',
+                    data: []
+                };
+                var i35=fs.in35;
+                var i40=fs.in40;
+                var i45=fs.in45;
+                var i50=fs.in50;
+
+            }
+            count++;
+        }
+    }
+
 </script>
 </body>
 </html>
