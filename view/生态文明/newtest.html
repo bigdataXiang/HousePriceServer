@@ -703,6 +703,7 @@
             <div class="modal-body">
 
                 <div id="container_download" class="line" style="margin:0 auto;width:750px;"></div>
+                <div id="container_download_houseType" class="line" style="margin:0 auto;width:750px;"></div>
                 <div id="container_houseType" class="pie"></div><!--width: 100%;height: 50%;width: 100%;height: 50%-->
                 <div id="container_direction" class="pie"></div>
                 <div id="container_floors" class="pie"></div>
@@ -2620,10 +2621,21 @@
                                     source:source
                                 };
 
-                                $.post("/gridinfo", JSON.stringify(json), function (data) {
+                                //用静态数据试一试：/static/highchart_line/line
+                                //原本的动态数据：/gridinfo
+                                $.post("/static/highchart_line/line", JSON.stringify(json), function (data) {
                                     var information = JSON.parse(data);
 
                                     var type=information.type;
+                                    var count=0;
+                                    for(var ht in type){
+                                        var data=type[ht];
+                                        count++;
+                                        if(count==1){
+                                            setConfigLine_houseType(data,ht);
+                                            $('#container_download_houseType').highcharts(config_line_housetype);
+                                        }
+                                    }
 
                                     var curve_information=information.curve;
                                     var type;
@@ -3136,7 +3148,27 @@
             verticalAlign: 'middle',
             borderWidth: 0
         },
-        series: []
+        series: [
+            /*{
+                name: '',
+                data: []
+            }, {
+                name: '',
+                data: []
+            }, {
+                name: '',
+                data: []
+            },{
+                name: '',
+                data: []
+            }, {
+                name: '',
+                data: []
+            }, {
+                name: '',
+                data: []
+            }*/
+        ]
     };
 
 
@@ -3308,30 +3340,79 @@
     }
 
     function setConfigLine_houseType(data,type){
-        config_line_housetype.title.text="不同户型首付统计图";
+        config_line_housetype.title.text="户型 : "+type;
+
         var count=0;
+
+        var i30_data=[];
+        var i35_data=[];
+        var i40_data=[];
+        var i45_data=[];
+        var i50_data=[];
         for(var key in data){
             var date=key;
-            var houseTypes=data[date];
-            config_line.xAxis.categories[count]=date;
+            var infos=data[date];
+            config_line_housetype.xAxis.categories[count]=date;//设置横轴时间
 
-            for(var ht in houseTypes){
-                var infos=houseTypes[ht];
-
-                var fs=infos.first;
-                var i30=fs.in30;
-                var json={
-                    name: ht+'首付30%',
-                    data: []
-                };
-                var i35=fs.in35;
-                var i40=fs.in40;
-                var i45=fs.in45;
-                var i50=fs.in50;
-
-            }
+            var fs=infos.first;
+            var i30=fs.in30;
+            //config_line_housetype.series[0].data[count]=i30;
+            i30_data.push(i30);
+            var i35=fs.in35;
+            //config_line_housetype.series[1].data[count]=i35;
+            i35_data.push(i35);
+            var i40=fs.in40;
+            //config_line_housetype.series[2].data[count]=i40;
+            i40_data.push(i40);
+            var i45=fs.in45;
+            //config_line_housetype.series[3].data[count]=i45;
+            i45_data.push(i45);
+            var i50=fs.in50;
+            //config_line_housetype.series[4].data[count]=i50;
+            i50_data.push(i50);
             count++;
         }
+
+        var json={
+            name: '首套首付30%',
+            data: i30_data
+        }
+        config_line_housetype.series.push(json);
+        var json={
+            name: '首套首付35%',
+            data: i35_data
+        }
+        config_line_housetype.series.push(json);
+        var json={
+            name: '首套首付40%',
+            data: i40_data
+        }
+        config_line_housetype.series.push(json);
+        var json={
+            name: '首套首付45%',
+            data: i45_data
+        }
+        config_line_housetype.series.push(json);
+        var json={
+            name: '首套首付50%',
+            data: i50_data
+        }
+        config_line_housetype.series.push(json);
+
+
+
+
+        /*config_line_housetype.series[0].name="首套首付30%";
+        config_line_housetype.series[1].name="首套首付35%";
+        config_line_housetype.series[2].name="首套首付40%";
+        config_line_housetype.series[3].name="首套首付45%";
+        config_line_housetype.series[4].name="首套首付50%";
+
+        config_line_housetype.series[0].data=i30_data;
+        config_line_housetype.series[1].data=i35_data;
+        config_line_housetype.series[2].data=i40_data;
+        config_line_housetype.series[3].data=i45_data;
+        config_line_housetype.series[4].data=i50_data;*/
     }
 
 </script>
