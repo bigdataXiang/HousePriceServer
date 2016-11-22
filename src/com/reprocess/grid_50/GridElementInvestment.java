@@ -58,8 +58,6 @@ public class GridElementInvestment {
         String collName_export=condition.getString("export_collName");
         DBCollection coll_export = db.getDB().getCollection(collName_export);
 
-        DBCollection coll_Basic50 = db.getDB().getCollection("BasicData_Resold_50");
-
 
         BasicDBObject document = new BasicDBObject();
         Iterator<String> it=condition.keys();
@@ -70,6 +68,7 @@ public class GridElementInvestment {
                 document.put(key,value);
             }
         }
+        String month=condition.getString("month");
 
         DBCursor cursor = coll_export.find(document);
 
@@ -118,10 +117,10 @@ public class GridElementInvestment {
 
                     //以code为key建立一个poi的索引表
                     //Map<Integer,Map<String,List<JSONObject>>> code_pois
-                    /*
-                    这一部分代码暂时不用了，因为12月份的数据太多，导致内存总是溢出
-                    所以要寻求新的办法了
+                    if(month.equals("12")){
 
+                    }else {
+                    //当月份为12时，这一部分代码暂时不用了，因为12月份的数据太多，导致内存总是溢出 要寻求新的办法
                     if(code_pois.containsKey(code)){
                         Map<String,List<JSONObject>> hy_pois=code_pois.get(code);
 
@@ -146,8 +145,8 @@ public class GridElementInvestment {
                         pois.add(obj);
                         hy_pois.put(house_type,pois);
                         code_pois.put(code,hy_pois);
-
-                    }*/
+                       }
+                    }
                 }
 
                 if(obj.containsKey("direction")){
@@ -304,10 +303,18 @@ public class GridElementInvestment {
             Map<String,Map<String,Integer>> hy_unitprice_map=new HashMap<>();
 
             int count=0;
-            Map<Integer,Map<String,List<JSONObject>>> code_pois=setCode_pois(year,month,source,code);
-            if(code_pois.containsKey(code)){
+            Map<Integer,Map<String,List<JSONObject>>> codepois=new HashMap<>();
 
-                Map<String,List<JSONObject>> hy_pois=code_pois.get(code);
+            //十二月份的数据比较多，所以用逐个统计的办法，防止堆溢出
+            if(month.equals("12")){
+                codepois=setCode_pois(year,month,source,code);
+            }else {
+                codepois=code_pois;
+            }
+
+            if(codepois.containsKey(code)){
+
+                Map<String,List<JSONObject>> hy_pois=codepois.get(code);
                 //统计每个户型所占的比率
                 JSONObject hy_ratio=new JSONObject();
 
@@ -436,7 +443,6 @@ public class GridElementInvestment {
                 }else{
                     System.out.println("该数据已经存在!");
                 }
-                //FileTool.Dump(document.toString(),"D:\\test\\栅格特征统计.txt","utf-8");
             }
         }
         System.out.println("一共导入"+documentcount+"条数据");

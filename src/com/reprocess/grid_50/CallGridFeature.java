@@ -33,8 +33,9 @@ public class CallGridFeature {
         condition.put("export_collName","GridData_Resold_Investment_50");
         condition.put("BasicPoi_50","BasicData_Resold_50");
 
-        callIntesetGridInfo(condition);
+        JSONObject types=callIntesetGridInfo(condition);
         JSONObject result=GridAttributeSummary();
+        result.put("type",types);
 
         Map<String,Map<Double,Double>> price_featureStatistics=dataFusion(time_price);
         JSONObject price=ergodicDataFusionMap(price_featureStatistics);
@@ -76,9 +77,6 @@ public class CallGridFeature {
 
         //将曲线的数据加到result中去
         result.put("curve",obj);
-
-        JSONObject types=houseTypeListStatistic(houseType_list);
-        result.put("type",types);
 
         System.out.println(result);
     }
@@ -178,7 +176,7 @@ public class CallGridFeature {
 
     public static Map<String,List<JSONObject>> houseType_list=new HashMap<>();//用于统计大格网中的户型特征
     //1.将所有位于大网格范围内的小网格搜集起来
-    public static void callIntesetGridInfo(JSONObject condition){
+    public static JSONObject callIntesetGridInfo(JSONObject condition){
         int N=condition.getInt("N");
         String source=condition.getString("source");
         String year=condition.getString("year");
@@ -216,6 +214,8 @@ public class CallGridFeature {
         List<String> vaule_time_price;
         List<String> vaule_time_area;
         List<String> vaule_time_unitprice;
+
+        JSONObject types=dataFromBasicPoi_50(row_50,row_50+N,col_50,col_50+N,source);
 
 
         List array=coll_export.find(document).toArray();
@@ -339,6 +339,8 @@ public class CallGridFeature {
                 }
             }
         }
+
+        return types;
     }
 
     //2.大网格内的属性汇总，返回结果如下：
@@ -669,7 +671,7 @@ public class CallGridFeature {
     }
 
     //从MongoDB中调用大格网下的所有子格网的poi数据
-    public static void dataFromBasicPoi_50(int rowmin,int rowmax,int colmin,int colmax,String source){
+    public static JSONObject dataFromBasicPoi_50(int rowmin,int rowmax,int colmin,int colmax,String source){
         DBCollection coll_Basic50 = db.getDB().getCollection("BasicData_Resold_50");
 
         BasicDBObject document = new BasicDBObject();
@@ -695,6 +697,10 @@ public class CallGridFeature {
         List<BasicDBObject> pois;
         BasicDBObject poi;
         String house_type;
+
+        String area;
+        String price;
+        String unit_price;
 
         //按照日期对poi进行分类，一个月为一类
         for(int i=0;i<array.size();i++){
@@ -722,12 +728,29 @@ public class CallGridFeature {
             }
         }
 
+        double area_aver=0;
+        double price_aver=0;
+        double unit_price_aver=0;
+
+        double area_total=0;
+        double price_total=0;
+        double unit_price_total=0;
+
+        int area_num=0;
+        int price_num=0;
+        int unit_price_num=0;
+
         //遍历map，逐个月对poi的特征进行统计
+        Map<String,Map<String,List<BasicDBObject>>> date_houseType_poilist=new HashMap<>();
+
+        JSONObject date_ht_data=new JSONObject();
         for(Map.Entry<String,List<BasicDBObject>>entry:date_poilist.entrySet()){
             date=entry.getKey();
             pois=entry.getValue();
 
             Map<String,List<BasicDBObject>> houseType_poilist=new HashMap<>();
+
+            //按照户型进行分类
             for(int i=0;i<pois.size();i++){
                 poi=pois.get(i);
 
@@ -735,13 +758,66 @@ public class CallGridFeature {
                     house_type=poi.getString("house_type");
 
                     if(houseType_poilist.containsKey(house_type)){
-
+                        pois=houseType_poilist.get(house_type);
+                        pois.add(poi);
+                        houseType_poilist.put(house_type,pois);
                     }else{
-
+                        pois=new ArrayList<>();
+                        pois.add(poi);
+                        houseType_poilist.put(house_type,pois);
                     }
                 }
             }
+
+            JSONObject ht_data=new JSONObject();
+            for(Map.Entry<String,List<BasicDBObject>>entry1:houseType_poilist.entrySet()){
+                house_type=entry1.getKey();
+                pois=entry1.getValue();
+
+                area_aver=0;
+                price_aver=0;
+                unit_price_aver=0;
+
+                area_total=0;
+                price_total=0;
+                unit_price_total=0;
+
+                area_num=0;
+                price_num=0;
+                unit_price_num=0;
+
+                JSONObject data=new JSONObject();
+                for(int i=0;i<pois.size();i++){
+                    poi=pois.get(i);
+
+                    if(poi.containsField("area")){
+                        area_total+=poi.getDouble("area");
+                        area_num++;
+                    }
+                    if(poi.containsField("price")){
+                        price_total+=poi.getDouble("price");
+                        price_num++;
+                    }
+                    if(poi.containsField("unit_price")){
+                        unit_price_total+=poi.getDouble("unit_price");
+                        unit_price_num++;
+                    }
+                }
+
+                area_aver=area_total/(double)area_num;
+                price_aver=price_total/(double)price_num;
+                unit_price_aver=unit_price_total/(double)unit_price_num;
+
+                data.put("price",price_aver);
+                data.put("area",area_aver);
+                data.put("unit_price",unit_price_aver);
+
+                ht_data.put(house_type,data);
+            }
+            date_ht_data.put(date,ht_data);
         }
+
+        return date_ht_data;
     }
 
 }
