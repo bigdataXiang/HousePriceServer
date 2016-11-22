@@ -109,19 +109,6 @@ public class GridElementInvestment {
                 obj.put("row",row);
                 obj.put("col",col);
 
-                //十二月份的数据跑起来老是内存溢出，把十二月份的
-                //数据存储到BasicData_Resold_50中，方面后面的调用
-                cs.put("code",code);
-                cs.put("row",row);
-                cs.put("col",col);
-                DBCursor rls =coll_Basic50.find(cs);
-                if(rls == null || rls.size() == 0){
-                    coll_Basic50.insert(cs);
-                }else{
-                    System.out.println("该数据已经存在!");
-                }
-
-
                 codesSet.add(code);
 
 

@@ -2,6 +2,7 @@ package com.reprocess.grid_50;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.reprocess.grid_100.util.Source;
 import com.svail.bean.Response;
 import com.svail.db.db;
@@ -29,7 +30,8 @@ public class CallGridFeature {
         condition.put("month","10");
         condition.put("source","woaiwojia");
         condition.put("N",1);
-        condition.put("export_collName","GridData_Resold_FeatureStatistics_50");
+        condition.put("export_collName","GridData_Resold_Investment_50");
+        condition.put("BasicPoi_50","BasicData_Resold_50");
 
         callIntesetGridInfo(condition);
         JSONObject result=GridAttributeSummary();
@@ -664,6 +666,82 @@ public class CallGridFeature {
             result.put(hy,temp);
         }
         return  result;
+    }
+
+    //从MongoDB中调用大格网下的所有子格网的poi数据
+    public static void dataFromBasicPoi_50(int rowmin,int rowmax,int colmin,int colmax,String source){
+        DBCollection coll_Basic50 = db.getDB().getCollection("BasicData_Resold_50");
+
+        BasicDBObject document = new BasicDBObject();
+
+        BasicDBObject cond=new BasicDBObject();
+        cond.put("$gte",rowmin);
+        cond.put("$lte",rowmax);
+        document.put("row",cond);
+
+        cond=new BasicDBObject();
+        cond.put("$gte",colmin);
+        cond.put("$lte",colmax);
+        document.put("col",cond);
+
+        document.put("source",source);
+
+        Map<String,List<BasicDBObject>> date_poilist=new HashMap<>();
+        List<DBObject> array=coll_Basic50.find(document).toArray();
+
+        String year;
+        String month;
+        String date="";
+        List<BasicDBObject> pois;
+        BasicDBObject poi;
+        String house_type;
+
+        //按照日期对poi进行分类，一个月为一类
+        for(int i=0;i<array.size();i++){
+            BasicDBObject doc=(BasicDBObject)array.get(i);
+            doc.remove("_id");
+
+
+            if(doc.containsField("year")&&doc.containsField("month")){
+                year=doc.getString("year");
+                month=doc.getString("month");
+                date=year+"-"+month;
+            }
+
+            if(date.length()!=0){
+
+                if(date_poilist.containsKey(date)){
+                    pois=date_poilist.get(date);
+                    pois.add(doc);
+                    date_poilist.put(date,pois);
+                }else{
+                    pois=new ArrayList<>();
+                    pois.add(doc);
+                    date_poilist.put(date,pois);
+                }
+            }
+        }
+
+        //遍历map，逐个月对poi的特征进行统计
+        for(Map.Entry<String,List<BasicDBObject>>entry:date_poilist.entrySet()){
+            date=entry.getKey();
+            pois=entry.getValue();
+
+            Map<String,List<BasicDBObject>> houseType_poilist=new HashMap<>();
+            for(int i=0;i<pois.size();i++){
+                poi=pois.get(i);
+
+                if(poi.containsField("house_type")){
+                    house_type=poi.getString("house_type");
+
+                    if(houseType_poilist.containsKey(house_type)){
+
+                    }else{
+
+                    }
+                }
+            }
+        }
     }
 
 }
