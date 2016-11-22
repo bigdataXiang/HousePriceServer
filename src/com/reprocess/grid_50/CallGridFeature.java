@@ -36,7 +36,8 @@ public class CallGridFeature {
         condition.put("BasicPoi_50","BasicData_Resold_50");
 
         JSONObject types=callIntesetGridInfo(condition);
-        types=timeSort_type(types);//按照日期进行排序
+        //types=timeSort_type(types);//当时间为大key时，按照日期进行排序
+        types=changeTypeStruct(types);//将数据结构由时间为大key变成以户型为dakey
         JSONObject result=GridAttributeSummary();
         result.put("type",types);
 
@@ -949,5 +950,56 @@ public class CallGridFeature {
 
         downPayment=price*(1+deedTax+serviceCharge)-netSigned*price*(1-loan);
         return downPayment;
+    }
+
+    public static JSONObject changeTypeStruct(JSONObject type){
+        JSONObject result=new JSONObject();
+
+        Iterator<String> dates=type.keys();
+        String date;
+        JSONObject hts;
+        String ht;
+        JSONObject infos;
+        while(dates.hasNext()){
+
+            date=dates.next();
+            hts=type.getJSONObject(date);
+
+            Iterator<String> it=hts.keys();
+            while(it.hasNext()){
+                ht=it.next();
+                infos=hts.getJSONObject(ht);
+
+                if(result.containsKey(ht)){
+
+                    JSONObject obj=result.getJSONObject(ht);
+                    if(obj.containsKey(date)){
+                        System.out.println("该户型这个月的数据已存在");
+                    }else {
+                        obj.put(date,infos);
+                        result.put(ht,obj);
+                    }
+                }else {
+                    JSONObject obj=new JSONObject();
+                    obj.put(date,infos);
+                    result.put(ht,obj);
+                }
+            }
+
+            //遍历result数据，对每个户型的数据进行时间排序
+
+        }
+
+        Iterator<String> iterator=result.keys();
+
+        JSONObject R=new JSONObject();
+        while (iterator.hasNext()){
+            ht=iterator.next();
+            hts=result.getJSONObject(ht);
+            hts=timeSort_type(hts);
+
+            R.put(ht,hts);
+        }
+        return R;
     }
 }
