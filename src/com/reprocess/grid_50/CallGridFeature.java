@@ -30,27 +30,26 @@ public class CallGridFeature {
         condition.put("month","10");
         condition.put("source","woaiwojia");
         condition.put("N",1);
-        condition.put("export_collName","GridData_Resold_Investment_50");
+        condition.put("export_collName","GridData_Resold_Investment_50");//GridData_Resold_FeatureStatistics_50
+        //GridData_Resold_Investment_50：不含"type"值的单元格网数据
+        //GridData_Resold_FeatureStatistics_50:含有"type"值的单元格网数据，该数据统计了基本格网内每个户型的加权面积、价格和所占比例
         condition.put("BasicPoi_50","BasicData_Resold_50");
 
         JSONObject types=callIntesetGridInfo(condition);
+        types=timeSort_type(types);//按照日期进行排序
         JSONObject result=GridAttributeSummary();
         result.put("type",types);
 
         Map<String,Map<Double,Double>> price_featureStatistics=dataFusion(time_price);
         JSONObject price=ergodicDataFusionMap(price_featureStatistics);
-        //System.out.println(price);
 
         Map<String,Map<Double,Double>> area_featureStatistics=dataFusion(time_area);
         JSONObject unitprice=ergodicDataFusionMap(area_featureStatistics);
-        //System.out.println(unitprice);
 
         Map<String,Map<Double,Double>> unitprice_featureStatistics=dataFusion(time_unitprice);
         JSONObject area=ergodicDataFusionMap(unitprice_featureStatistics);
-        //System.out.println(area);
 
         JSONObject anverW=averageWeighted(unitprice,area);
-        //System.out.println(anverW);
 
         JSONObject obj=new JSONObject();
 
@@ -79,6 +78,8 @@ public class CallGridFeature {
         result.put("curve",obj);
 
         //尝试用基本单元格的信息进行户型统计
+        JSONObject dt=date_houseTypeListStatistic(date_type);
+        result.put("types",dt);
 
 
         System.out.println(result);
@@ -602,6 +603,32 @@ public class CallGridFeature {
         }
         return result;
     }
+    /**对统计数据type":{"2016-01":{"3室1厅1卫":{"price":112,"area":93,"unit_price":1.2043011,"ratio":1}},,,进行排序*/
+    public static JSONObject timeSort_type(JSONObject obj){
+        List<JSONObject> time_price=new ArrayList<>();
+        Iterator<String> it=obj.keySet().iterator();
+
+        while(it.hasNext()){
+
+            String date=it.next();
+            JSONObject hys=obj.getJSONObject(date);
+            JSONObject r=new JSONObject();
+            r.put("date",date);
+            r.put("hys",hys);
+            time_price.add(r);
+        }
+        Collections.sort(time_price, new UtilFile.TimeComparator());
+
+        JSONObject result=new JSONObject();
+        for(int i=0;i<time_price.size();i++){
+            JSONObject r=time_price.get(i);
+            String date=r.getString("date");
+            JSONObject hys=r.getJSONObject("hys");
+            result.put(date,hys);
+        }
+        return result;
+    }
+
 
     //统计houseType_list中的每个户型的特征
     public static JSONObject houseTypeListStatistic(Map<String,List<JSONObject>> map){
@@ -610,21 +637,16 @@ public class CallGridFeature {
         JSONObject obj;
 
         JSONObject result=new JSONObject();
-        /*JSONObject ratios=new JSONObject();
-        int total_size=0;
+        //统计所有户型中每个户型所占的比率
+        double totalratios=0;
         for(Map.Entry<String,List<JSONObject>>entry:map.entrySet()){
             list=entry.getValue();
-            int size=list.size();
-            total_size+=size;
+            for(int i=0;i<list.size();i++) {
+                obj = list.get(i);
+                totalratios+=obj.getDouble("ratio");
+            }
         }
-        for(Map.Entry<String,List<JSONObject>>entry:map.entrySet()){
-            hy=entry.getKey();//户型类型
-            list=entry.getValue();
-            int size=list.size();
 
-            double ratio=(double)size/(double)total_size;
-            ratios.put(hy,ratio);
-        }*/
 
         for(Map.Entry<String,List<JSONObject>>entry:map.entrySet()){
             hy=entry.getKey();//户型类型
@@ -633,6 +655,7 @@ public class CallGridFeature {
             double total_price=0;
             double total_unitprice=0;
             double total_area=0;
+
             for(int i=0;i<list.size();i++){
                 obj=list.get(i);
                 total_price+=obj.getDouble("price");
@@ -643,6 +666,9 @@ public class CallGridFeature {
             double aver_price=0;
             double aver_unitprice=0;
             double aver_area=0;
+            double aver_ratio=0;
+
+            //统计某个特定的户型的均价，即所有格网该户型的值的加权
             for(int i=0;i<list.size();i++){
                 obj=list.get(i);
                 double price=obj.getDouble("price");
@@ -651,13 +677,15 @@ public class CallGridFeature {
                 aver_unitprice+=unitprice*(unitprice/total_unitprice);
                 double area=obj.getDouble("area");
                 aver_area+=area*(area/total_area);
+                double ratio=obj.getDouble("ratio");
+                aver_ratio+=ratio/totalratios;
             }
-            //double ratio=ratios.getDouble(hy);
 
             JSONObject temp=new JSONObject();
             temp.put("price",aver_price);
             temp.put("unitprice",aver_unitprice);
             temp.put("area",aver_area);
+            temp.put("ratio",aver_ratio);
 
             result.put(hy,temp);
         }
@@ -776,7 +804,13 @@ public class CallGridFeature {
 
         JSONObject date_ht_data=new JSONObject();
         for(Map.Entry<String,List<BasicDBObject>>entry:date_poilist.entrySet()){
-            date=entry.getKey();
+            date=entry.getKey();//date=year+"-"+month;
+            String[] d=date.split("-");
+            year=d[0];
+            month=d[1];
+            if(month.startsWith("0")){
+                month=month.substring(1);
+            }
             pois=entry.getValue();
 
             Map<String,List<BasicDBObject>> houseType_poilist=new HashMap<>();
@@ -864,6 +898,40 @@ public class CallGridFeature {
                     data.put("ratio",r);
                 }
 
+                //在这里还要讨论一下不同首付比率和契税情况下的首付问题
+                double downPayment;
+
+                JSONObject first=new JSONObject();
+                double deedTax=deedTaxCalculation(area_aver,"first",Integer.parseInt(year), Integer.parseInt(month));
+                downPayment=differentDownpayment(price_aver,0.3,deedTax);
+                first.put("in30",downPayment);
+                downPayment=differentDownpayment(price_aver,0.35,deedTax);
+                first.put("in35",downPayment);
+                downPayment=differentDownpayment(price_aver,0.4,deedTax);
+                first.put("in40",downPayment);
+                downPayment=differentDownpayment(price_aver,0.45,deedTax);
+                first.put("in45",downPayment);
+                downPayment=differentDownpayment(price_aver,0.5,deedTax);
+                first.put("in50",downPayment);
+                data.put("first",first);
+
+
+                JSONObject second=new JSONObject();
+                deedTax=deedTaxCalculation(area_aver,"second",Integer.parseInt(year), Integer.parseInt(month));
+                downPayment=differentDownpayment(price_aver,0.4,deedTax);
+                second.put("in40",downPayment);
+                downPayment=differentDownpayment(price_aver,0.5,deedTax);
+                second.put("in50",downPayment);
+                downPayment=differentDownpayment(price_aver,0.55,deedTax);
+                second.put("in55",downPayment);
+                downPayment=differentDownpayment(price_aver,0.6,deedTax);
+                second.put("in60",downPayment);
+                downPayment=differentDownpayment(price_aver,0.65,deedTax);
+                second.put("in65",downPayment);
+                downPayment=differentDownpayment(price_aver,0.70,deedTax);
+                second.put("in70",downPayment);
+                data.put("second",second);
+
                 ht_data.put(house_type,data);
             }
             date_ht_data.put(date,ht_data);
@@ -872,4 +940,14 @@ public class CallGridFeature {
         return date_ht_data;
     }
 
+    //计算不同首付比率下每个户型的首付款额度
+    public static double differentDownpayment(double price,double loan,double deedTax){
+        double downPayment=0;
+
+        double serviceCharge=0.027;
+        double netSigned=0.8;
+
+        downPayment=price*(1+deedTax+serviceCharge)-netSigned*price*(1-loan);
+        return downPayment;
+    }
 }
