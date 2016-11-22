@@ -26,8 +26,8 @@ public class CallGridFeature {
         condition.put("row",1062);
         condition.put("col",1720);
         condition.put("code",4245720);
-        condition.put("year","2015");
-        condition.put("month","10");
+        condition.put("year","2016");
+        condition.put("month","05");
         condition.put("source","woaiwojia");
         condition.put("N",1);
         condition.put("export_collName","GridData_Resold_Investment_50");
@@ -750,25 +750,42 @@ public class CallGridFeature {
 
             Map<String,List<BasicDBObject>> houseType_poilist=new HashMap<>();
 
-            //按照户型进行分类
+            //对每个月份的数据，按照户型进行分类
+            //我知道了，导致这个原因的是同一个变量名字被不同的变量用了！！
             for(int i=0;i<pois.size();i++){
                 poi=pois.get(i);
-
                 if(poi.containsField("house_type")){
                     house_type=poi.getString("house_type");
 
                     if(houseType_poilist.containsKey(house_type)){
-                        pois=houseType_poilist.get(house_type);
-                        pois.add(poi);
-                        houseType_poilist.put(house_type,pois);
+                        List<BasicDBObject> hy_pois=houseType_poilist.get(house_type);
+                        hy_pois.add(poi);
+                        houseType_poilist.put(house_type,hy_pois);
                     }else{
-                        pois=new ArrayList<>();
-                        pois.add(poi);
-                        houseType_poilist.put(house_type,pois);
+                        List<BasicDBObject> hy_pois=new ArrayList<>();
+                        hy_pois.add(poi);
+                        houseType_poilist.put(house_type,hy_pois);
                     }
                 }
             }
 
+            //遍历该月份的每个户型的pois,计算每个户型的比率
+            JSONObject ratios=new JSONObject();
+            int totals=0;
+            for(Map.Entry<String,List<BasicDBObject>>entry1:houseType_poilist.entrySet()){
+                pois=entry1.getValue();
+                totals+=pois.size();
+            }
+            double ratio;
+            for(Map.Entry<String,List<BasicDBObject>>entry1:houseType_poilist.entrySet()){
+                house_type=entry1.getKey();
+                pois=entry1.getValue();
+                //System.out.println(date+":"+house_type+":"+pois.size());
+                ratio=(double)(pois.size())/(double)totals;
+                ratios.put(house_type,ratio);
+            }
+
+            //遍历该月份的每个户型的pois，计算每个户型的均价
             JSONObject ht_data=new JSONObject();
             for(Map.Entry<String,List<BasicDBObject>>entry1:houseType_poilist.entrySet()){
                 house_type=entry1.getKey();
@@ -811,6 +828,10 @@ public class CallGridFeature {
                 data.put("price",price_aver);
                 data.put("area",area_aver);
                 data.put("unit_price",unit_price_aver);
+                if(ratios.containsKey(house_type)){
+                    double r=ratios.getDouble(house_type);
+                    data.put("ratio",r);
+                }
 
                 ht_data.put(house_type,data);
             }
