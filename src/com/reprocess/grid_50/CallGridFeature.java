@@ -23,11 +23,11 @@ public class CallGridFeature {
         JSONObject condition= new JSONObject();
 
         //{"row":1062,"col":1720,"code":4245720,"N":1,"gridTime":"2015年10月","source":"我爱我家"}
-        condition.put("row",1062);
-        condition.put("col",1720);
-        condition.put("code",4245720);
-        condition.put("year","2016");
-        condition.put("month","05");
+        condition.put("row",160);
+        condition.put("col",1516);
+        condition.put("code",637516);
+        condition.put("year","2015");
+        condition.put("month","10");
         condition.put("source","woaiwojia");
         condition.put("N",1);
         condition.put("export_collName","GridData_Resold_Investment_50");
@@ -77,6 +77,9 @@ public class CallGridFeature {
 
         //将曲线的数据加到result中去
         result.put("curve",obj);
+
+        //尝试用基本单元格的信息进行户型统计
+
 
         System.out.println(result);
     }
@@ -175,6 +178,8 @@ public class CallGridFeature {
     public static Map<String,List<String>> time_unitprice=new HashMap<>();//用于存放每月对应的均价统计信息
 
     public static Map<String,List<JSONObject>> houseType_list=new HashMap<>();//用于统计大格网中的户型特征
+    public static Map<String,List<JSONObject>> date_type=new HashMap<>();//用于统计大格网中的不同月份的户型加权统计信息
+
     //1.将所有位于大网格范围内的小网格搜集起来
     public static JSONObject callIntesetGridInfo(JSONObject condition){
         int N=condition.getInt("N");
@@ -221,7 +226,7 @@ public class CallGridFeature {
         List array=coll_export.find(document).toArray();
         for(int i=0;i<array.size();i++){
 
-            poi=array.get(i).toString();//array.size()的值为1
+            poi=array.get(i).toString();
             JSONObject obj=JSONObject.fromObject(poi);
             obj.remove("_id");
 
@@ -316,26 +321,18 @@ public class CallGridFeature {
             }
 
             //新增了"type"数据栏，该key对应的value是基本格网的户型统计信息
+
+            //date_type的key是日期，value是每个月该大网格下所有小网格的户型数据的集合
             if(obj.containsKey("type")){
-                if(y.equals(year)&&m.equals(month)){
-                    JSONObject type=obj.getJSONObject("type");
-                    //System.out.println(type);
-
-                    Iterator<String> hy_it=type.keys();
-                    while (hy_it.hasNext()){
-                        String hy=hy_it.next();
-                        JSONObject hy_obj=type.getJSONObject(hy);
-
-                        if(houseType_list.containsKey(hy)){
-                            List<JSONObject> objs=houseType_list.get(hy);
-                            objs.add(hy_obj);
-                            houseType_list.put(hy,objs);
-                        }else {
-                            List<JSONObject> objs=new ArrayList<>();
-                            objs.add(hy_obj);
-                            houseType_list.put(hy,objs);
-                        }
-                    }
+                JSONObject type=obj.getJSONObject("type");
+                if(date_type.containsKey(date)) {
+                    List<JSONObject> type_list=date_type.get(date);
+                    type_list.add(type);
+                    date_type.put(date,type_list);
+                }else {
+                    List<JSONObject> type_list=new ArrayList<>();
+                    type_list.add(type);
+                    date_type.put(date,type_list);
                 }
             }
         }
@@ -349,26 +346,24 @@ public class CallGridFeature {
         JSONObject obj=new JSONObject();
 
         String house_type=ergodicMap(houseType_map);
-
-        //List<JSONObject> house_type=ergodicMap(houseType_map);
         obj.put("house_type",house_type);
+
         String direction=ergodicMap(direction_map);
-        //List<JSONObject> direction=ergodicMap(direction_map);
         obj.put("direction",direction);
+
         String floors=ergodicMap(floors_map);
-        //List<JSONObject> floors=ergodicMap(floors_map);
         obj.put("floors",floors);
+
         String flooron=ergodicMap(flooron_map);
-        //List<JSONObject> flooron=ergodicMap(flooron_map);
         obj.put("flooron",flooron);
+
         String area=ergodicMap(area_map);
-        //List<JSONObject> area=ergodicMap(area_map);
         obj.put("area",area);
+
         String price=ergodicMap(price_map);
-        //List<JSONObject> price=ergodicMap(price_map);
         obj.put("price",price);
+
         String unitprice=ergodicMap(unitprice_map);
-        //List<JSONObject> unitprice=ergodicMap(unitprice_map);
         obj.put("unitprice",unitprice);
 
         return obj;
@@ -615,23 +610,23 @@ public class CallGridFeature {
         JSONObject obj;
 
         JSONObject result=new JSONObject();
-        JSONObject ratios=new JSONObject();
+        /*JSONObject ratios=new JSONObject();
         int total_size=0;
         for(Map.Entry<String,List<JSONObject>>entry:map.entrySet()){
             list=entry.getValue();
             int size=list.size();
             total_size+=size;
         }
-        for(Map.Entry<String,List<JSONObject>>entry:houseType_list.entrySet()){
+        for(Map.Entry<String,List<JSONObject>>entry:map.entrySet()){
             hy=entry.getKey();//户型类型
             list=entry.getValue();
             int size=list.size();
 
             double ratio=(double)size/(double)total_size;
             ratios.put(hy,ratio);
-        }
+        }*/
 
-        for(Map.Entry<String,List<JSONObject>>entry:houseType_list.entrySet()){
+        for(Map.Entry<String,List<JSONObject>>entry:map.entrySet()){
             hy=entry.getKey();//户型类型
             list=entry.getValue();
 
@@ -657,10 +652,9 @@ public class CallGridFeature {
                 double area=obj.getDouble("area");
                 aver_area+=area*(area/total_area);
             }
-            double ratio=ratios.getDouble(hy);
+            //double ratio=ratios.getDouble(hy);
 
             JSONObject temp=new JSONObject();
-            temp.put("ratio",ratio);
             temp.put("price",aver_price);
             temp.put("unitprice",aver_unitprice);
             temp.put("area",aver_area);
@@ -668,6 +662,43 @@ public class CallGridFeature {
             result.put(hy,temp);
         }
         return  result;
+    }
+
+    //按月份统计每一个houseType_list中的特征
+    public static JSONObject date_houseTypeListStatistic(Map<String,List<JSONObject>> map){
+
+        String date;
+        List<JSONObject> types;
+        JSONObject results=new JSONObject();
+        for(Map.Entry<String,List<JSONObject>>entry:map.entrySet()){
+            date=entry.getKey();
+            types=entry.getValue();
+
+            Map<String,List<JSONObject>> houseType_list=new HashMap<>();
+            for(int i=0;i<types.size();i++){
+                JSONObject type=types.get(i);
+
+                Iterator<String> hy_it=type.keys();
+                while (hy_it.hasNext()){
+                    String hy=hy_it.next();
+                    JSONObject hy_obj=type.getJSONObject(hy);
+
+                    if(houseType_list.containsKey(hy)){
+                        List<JSONObject> objs=houseType_list.get(hy);
+                        objs.add(hy_obj);
+                        houseType_list.put(hy,objs);
+                    }else {
+                        List<JSONObject> objs=new ArrayList<>();
+                        objs.add(hy_obj);
+                        houseType_list.put(hy,objs);
+                    }
+                }
+            }
+            JSONObject result=houseTypeListStatistic(houseType_list);
+            results.put(date,result);
+        }
+
+        return results;
     }
 
     //从MongoDB中调用大格网下的所有子格网的poi数据
