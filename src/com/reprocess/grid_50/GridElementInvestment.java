@@ -24,7 +24,7 @@ public class GridElementInvestment {
         condition.put("month","12");
         condition.put("source","woaiwojia");
         condition.put("export_collName","BasicData_Resold_100");
-        condition.put("import_collName","GridData_Resold_FeatureStatistics_50");
+        condition.put("import_collName","GR_FS_50");
 
         getInvestment(condition);
     }
@@ -405,6 +405,7 @@ public class GridElementInvestment {
                     double ratio=hy_ratio.getDouble(houseType);
                     ht.put("ratio",ratio);
 
+                    //System.out.println(ht);
                     hy_obj.put(houseType,ht);
                 }
                 document.put("type",hy_obj);
@@ -435,7 +436,7 @@ public class GridElementInvestment {
                 }
 
                 //System.out.println(document);
-                //将数据存入50*50的源数据表GridData_Resold_Investment_50中
+                //将数据存入50*50的源数据表GridData_Resold_Investment_50/GridData_Resold_FeatureStatistics_50中
                 DBCursor rls =coll_import.find(document);
                 if(rls == null || rls.size() == 0){
                     documentcount++;
@@ -534,6 +535,7 @@ public class GridElementInvestment {
     }
     //遍历每个户型下的子map，并且将子map的值进行加权，得到该户型的面积，价格和均价的加权值
     public static void getweightAttributeJson (Map<String,Integer> attribute,String key,JSONObject ht){
+        JSONObject obj=new JSONObject();
         String attr;
         int num;
 
@@ -550,10 +552,22 @@ public class GridElementInvestment {
             double data=Double.parseDouble(attr);
             num=entry.getValue();
 
+            String str_data=""+data;
+            if(obj.containsKey(str_data)){
+                int count=obj.getInt(str_data);
+                count+=num;
+                obj.put(str_data,count);
+            }else {
+                obj.put(str_data,num);
+            }
+
             result+=data*((double)num/totalnum);
         }
 
-        ht.put(key,result);
+        JSONObject R=new JSONObject();
+        R.put("average",result);
+        R.put("data",obj);
+        ht.put(key,R);
     }
 
     public static double getInvestmentThreshold(Map<String,Integer> attribute){
